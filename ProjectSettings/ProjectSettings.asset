@@ -19,8 +19,8 @@ PlayerSettings:
   m_ShowUnitySplashScreen: 1
   defaultScreenWidth: 1024
   defaultScreenHeight: 768
-  defaultScreenWidthWeb: 600
-  defaultScreenHeightWeb: 900
+  defaultScreenWidthWeb: 640
+  defaultScreenHeightWeb: 480
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   m_ActiveColorSpace: 0
@@ -256,7 +256,8 @@ PlayerSettings:
   psp2InfoBarColor: 0
   psmSplashimage: {fileID: 0}
   spritePackerPolicy: 
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: 
   metroPackageName: Space Shooter
   metroPackageLogo: 
   metroPackageLogo140: 
