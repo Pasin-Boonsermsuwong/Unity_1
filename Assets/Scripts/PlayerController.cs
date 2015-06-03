@@ -7,12 +7,11 @@ public class Boundary{
 }
 public class PlayerController : MonoBehaviour {
 
-	public float rotationSpeed = 300f;
+	public float torque = 300f;
 	public float power = 2000f;
 	public Rigidbody rb;
 	public Boundary boundary;
 	public float reverseFraction = 0.3f;
-	public float tilt = 15;
 
 	public float fireRate = 0.5f;
 	public float nextFire = 0.0f;
@@ -29,7 +28,7 @@ public class PlayerController : MonoBehaviour {
 		//Weapon
 		if (Input.GetButton("Fire1") && Time.time > nextFire) {
 			nextFire = Time.time + fireRate;
-			Debug.Log (transform.rotation.x + " " + transform.rotation.y + " " + transform.rotation.z);
+		//	Debug.Log (transform.rotation.x + " " + transform.rotation.y + " " + transform.rotation.z);
 
 			Instantiate(shot, gun.position, 
 			            Quaternion.Euler(new Vector3(
@@ -39,7 +38,7 @@ public class PlayerController : MonoBehaviour {
 		};
 		//Movement
 		float thrust = Input.GetAxis ("Vertical") * power;
-		float rotation = Input.GetAxis ("Horizontal") * rotationSpeed;
+		float rotation = Input.GetAxis ("Horizontal") * torque;
 		thrust *= Time.deltaTime;
 		rotation *= Time.deltaTime;
 		if(thrust > 0.0f){
@@ -48,11 +47,18 @@ public class PlayerController : MonoBehaviour {
 			rb.AddForce (transform.forward * thrust * reverseFraction);
 		};
 		transform.Rotate (0, rotation, 0);
+	//	rb.AddTorque(transform.up * torque * rotation);
+
 		rb.position = new Vector3(
 			Mathf.Clamp(rb.position.x,boundary.xMin,boundary.xMax),
 			0.0f,
 			Mathf.Clamp(rb.position.z,boundary.zMin,boundary.zMax)
 			);
+
+		if(transform.position.x>boundary.xMax)rb.AddForce(new Vector3(-power/5,0,0));
+		if(transform.position.x<boundary.xMin)rb.AddForce(new Vector3(power/5,0,0));
+		if(transform.position.z>boundary.zMax)rb.AddForce(new Vector3(0,0,-power/5));
+		if(transform.position.z<boundary.zMin)rb.AddForce(new Vector3(0,0,power/5));
 	}
 
 }
