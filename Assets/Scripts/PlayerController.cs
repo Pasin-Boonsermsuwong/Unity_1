@@ -6,19 +6,20 @@ public class Boundary{
 	public float xMin, xMax, zMin, zMax;
 }
 public class PlayerController : MonoBehaviour {
-
+	//Ship stats
 	public float torque = 300f;
 	public float power = 2000f;
 	public Rigidbody rb;
 	public Boundary boundary;
 	public float reverseFraction = 0.3f;
-
+	//Ship weapons
 	public float fireRate = 0.5f;
 	public float nextFire = 0.0f;
 	public GameObject shot;
 	public Transform gun;
 	public float shotDeviation = 5f;
-
+	//Weapon's bullet
+	//public GameObject bullet;
 	void OnStart(){
 		rb = GetComponent<Rigidbody>();
 		if(rb==null)Debug.Log("Rigidbody is null");
@@ -30,11 +31,12 @@ public class PlayerController : MonoBehaviour {
 			nextFire = Time.time + fireRate;
 		//	Debug.Log (transform.rotation.x + " " + transform.rotation.y + " " + transform.rotation.z);
 
-			Instantiate(shot, gun.position, 
+			GameObject instantiated = Instantiate(shot, gun.position, 
 			            Quaternion.Euler(new Vector3(
 											transform.rotation.eulerAngles.x, 
 											transform.rotation.eulerAngles.y+Random.Range(-shotDeviation,shotDeviation), 
-											transform.rotation.eulerAngles.z)));
+											transform.rotation.eulerAngles.z))) as GameObject;
+			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 		};
 		//Movement
 		float thrust = Input.GetAxis ("Vertical") * power;
@@ -56,9 +58,9 @@ public class PlayerController : MonoBehaviour {
 			);
 
 		if(transform.position.x>boundary.xMax)rb.AddForce(new Vector3(-power/5,0,0));
-		if(transform.position.x<boundary.xMin)rb.AddForce(new Vector3(power/5,0,0));
+		else if(transform.position.x<boundary.xMin)rb.AddForce(new Vector3(power/5,0,0));
 		if(transform.position.z>boundary.zMax)rb.AddForce(new Vector3(0,0,-power/5));
-		if(transform.position.z<boundary.zMin)rb.AddForce(new Vector3(0,0,power/5));
+		else if(transform.position.z<boundary.zMin)rb.AddForce(new Vector3(0,0,power/5));
 	}
 
 }

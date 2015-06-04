@@ -3,8 +3,8 @@ using System.Collections;
 
 public class Mover : MonoBehaviour {
 
-	public float speed = 5;
+	public float speed = 800;
 	void Start () {
-		GetComponent<Rigidbody>().velocity = transform.forward * speed;
+		GetComponent<Rigidbody>().AddForce (transform.forward * speed);
 	}
 }
