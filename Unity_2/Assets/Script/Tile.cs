@@ -19,8 +19,7 @@ public class Tile : MonoBehaviour {
 		
 		this.UpdateTiling();
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 		// If something has changed
 		if(gameObject.transform.lossyScale != prevScale || !Mathf.Approximately(this.textureToMeshZ, prevTextureToMeshZ))

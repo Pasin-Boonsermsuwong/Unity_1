@@ -7,6 +7,10 @@ public class PlayerController : MonoBehaviour {
 	public float jumpForce;
 	bool facingRight = true;
 	bool grounded;
+	bool shield;
+	public Transform groundCheck;
+	float groundedRadius = 0.15f; 
+	public LayerMask groundMask;
 	Animator anim;
 
 	Rigidbody2D rb;
@@ -18,19 +22,28 @@ public class PlayerController : MonoBehaviour {
 	
 
 	void Update () {
-	//	grounded = !rb.velocity.y<double.e);
-		float move = Input.GetAxis("Horizontal");	
+		grounded = Physics2D.OverlapCircle(groundCheck.position,groundedRadius,groundMask);
+
+		anim.SetBool("Grounded",grounded);
+		float move = Input.GetAxis("Horizontal");
 		anim.SetFloat("Speed",Mathf.Abs(move));
-		rb.velocity = new Vector2(move * moveSpd * Time.deltaTime,
-		                                                 rb.velocity.y);
-		if(Input.GetButton("Jump")){
-			rb.AddForce(new Vector2(0,70));
+		if(Input.GetAxis("Vertical")<0&&grounded&&move<double.Epsilon){
+			anim.SetBool("Shield",true); 
+			shield = true;
+		}else{
+			anim.SetBool("Shield",false);
+			shield = false;
+		}
+		rb.velocity = new Vector2(move * moveSpd * Time.deltaTime, rb.velocity.y);
+		if(Input.GetButton("Jump")&&grounded){
+			rb.AddForce(new Vector2(0,jumpForce*Time.deltaTime));
 		}
 		if(move > 0 && !facingRight){
 			Flip();
 		}else if(move < 0 && facingRight){
 			Flip();
 		}
+
 	}
 
 	void Flip(){
