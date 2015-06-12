@@ -7,7 +7,7 @@ public class CameraController : MonoBehaviour {
 	GameObject p2;
 	public float Scale;
 	Camera c;
-	public static bool OnePlayerLeft = false;
+//	public static bool OnePlayerLeft = false;
 	void Start () {
 		p1 = GameObject.Find("Player1");
 		p2 = GameObject.Find("Player2");
@@ -15,14 +15,12 @@ public class CameraController : MonoBehaviour {
 	}
 
 	void Update () {
-		if(OnePlayerLeft){
 			if(p1 == null){
-				transform.position = p2.transform.position;
-				c.orthographicSize = 3;
-			}else{
-				transform.position = p1.transform.position;
-				c.orthographicSize = 3;
-			}
+				transform.position = new Vector3(p2.transform.position.x,p2.transform.position.y,-10);
+				c.orthographicSize = 1.5f;
+			}else if (p2 == null){
+				transform.position = new Vector3(p1.transform.position.x,p1.transform.position.y,-10);
+				c.orthographicSize = 1.5f;
 		}else{
 			Vector2 P1 = p1.transform.position;
 			Vector2 P2 = p2.transform.position;
