@@ -138,6 +138,7 @@ public class PlayerController : MonoBehaviour {
 	public void TakeDamage(float damage){
 		HP -= (IsShield)?damage*0.2f:damage;
 		if(HP<0){
+			healthSlider.value = 0;
 			Destroy(gameObject);
 		}
 	}
