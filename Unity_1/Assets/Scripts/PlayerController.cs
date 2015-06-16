@@ -1,6 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+public class ModifierChangeRequest{
+	// ALL VALUE ARE ADDED
+	public float rofModifier;
+	public float dmgAdder;
+	public ModifierChangeRequest(float rof,float dmg){
+		rofModifier = rof;
+		dmgAdder = dmg;
+	}
+}
 [System.Serializable]
 public class Boundary{
 	public float xMin, xMax, zMin, zMax;
@@ -15,41 +25,27 @@ public class PlayerController : MonoBehaviour {
 	public Rigidbody rb;
 	public Boundary boundary;
 	public float reverseFraction = 0.3f;
-	private Vector3 mousePosition;
-	//Ship weapons
-	public float fireRate = 0.5f;
-	public float nextFire = 0.0f;
-	public GameObject shot;
-	public Transform gun;
-	public float shotDeviation = 5f;
-	public float gunDamage = 200;
-	//public GameObject bullet;
+	Vector3 mousePosition;
+
+
+	//WEAPONS MODIFIER
+	public float rofModifier = 1;
+	public float dmgAdder;
+
+
 	void OnStart(){
 		rb = GetComponent<Rigidbody>();
 		if(rb==null)Debug.Log("Rigidbody is null");
+		boundary = new Boundary();
 	}
 
 	void Update(){
 		if(GameController.pause)return;
 		Vector3 tf = transform.forward;
 		Vector3 tp = transform.position;
-		//////////WEAPON		
-
-		if (Input.GetButton("Fire1") && Time.time > nextFire) {											
-			GetComponent<AudioSource>().Play();
-			nextFire = Time.time + fireRate;
-			Vector3 eulerAngle = transform.rotation.eulerAngles;
-			GameObject instantiated = Instantiate(shot, gun.position, 
-			            Quaternion.Euler(new Vector3(
-											eulerAngle.x, 
-											eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
-											eulerAngle.z))) as GameObject;
-			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
-		};
 		mousePosition = Input.mousePosition;
 		mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 		mousePosition.y = 0;
-
 		////////ROTATION
 
 		Vector3 _direction = (mousePosition - tp).normalized;
@@ -66,9 +62,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		////////STRAFE
 
-	//	strafeDirection.x += (strafe>0)? 90:-90;
 		rb.AddForce(Quaternion.Euler(0, 90, 0) * tf
-	//	rb.AddForce(Quaternion.AngleAxis(-45, transform.forward)
 		            * Input.GetAxis("Horizontal") * strafeForce * Time.deltaTime);
 
 		////////BORDER
@@ -81,6 +75,15 @@ public class PlayerController : MonoBehaviour {
 		else if(tp.x<boundary.xMin)rb.AddForce(new Vector3(power/5,0,0));
 		if(tp.z>boundary.zMax)rb.AddForce(new Vector3(0,0,-power/5));
 		else if(tp.z<boundary.zMin)rb.AddForce(new Vector3(0,0,power/5));
+	}
+
+	public void editModifier(ModifierChangeRequest m){
+		dmgAdder += m.dmgAdder;
+		rofModifier = Mathf.Max(rofModifier + m.rofModifier,0.1f);
+		Gun[] gArray = GetComponentsInChildren<Gun>();
+		foreach(Gun g in gArray){
+			g.RefreshModifier();
+		}
 	}
 
 }

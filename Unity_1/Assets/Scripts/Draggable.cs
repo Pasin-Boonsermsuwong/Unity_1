@@ -8,14 +8,15 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler,IEndDrag
 	public Slot type;
 	public void OnBeginDrag(PointerEventData e){
 		parentToReturnTo = transform.parent;
-		transform.parent = transform.parent.parent;
+		transform.SetParent(transform.parent.parent);
 		GetComponent<CanvasGroup>().blocksRaycasts = false;
 	}
 	public void OnDrag(PointerEventData e){
 		this.transform.position = e.position;
 	}
 	public void OnEndDrag(PointerEventData e){
-		transform.parent = parentToReturnTo;
+		Debug.Log(e.pointerCurrentRaycast);
+		transform.SetParent(parentToReturnTo);
 		GetComponent<CanvasGroup>().blocksRaycasts = true;
 	}
 }

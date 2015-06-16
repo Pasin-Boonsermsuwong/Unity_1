@@ -37,10 +37,10 @@ public class Powerup : MonoBehaviour {
 			plr = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
 			switch(type){
 			case 0:	//firerate
-				plr.fireRate = Mathf.Max(plr.fireRate-0.015f,0.1f);
+				plr.editModifier(new ModifierChangeRequest(-0.015f,0));
 				break;
 			case 1:	//damage
-				plr.gunDamage += 30;
+				plr.editModifier(new ModifierChangeRequest(0,30));
 				break;
 			}
 
