@@ -34,6 +34,7 @@ public class Gun : MonoBehaviour {
 		PlayerController p = GetComponentInParent<PlayerController>();
 		fireRate = fireRate * p.rofModifier;
 		dmgModifier = p.dmgAdder;
+
 	}
 
 	void Update () {

@@ -4,16 +4,18 @@ using UnityEngine.EventSystems;
 
 public class Dropable : MonoBehaviour , IDropHandler, IPointerEnterHandler, IPointerExitHandler{
 	public Draggable.Slot typeOfDrop;
+	public float capacity;
 	public void OnPointerEnter(PointerEventData e){
-		Debug.Log("Pointer entered");
+//		Debug.Log("Pointer entered");
 	}
 	public void OnPointerExit(PointerEventData e){
-		Debug.Log("Pointer exited");
+//		Debug.Log("Pointer exited");
 	}
 	public void OnDrop(PointerEventData e){
 		Draggable d = e.pointerDrag.GetComponent<Draggable>();
 		if(d!=null){
-			if(d.type == typeOfDrop || typeOfDrop == Draggable.Slot.INV){
+			if((d.type == typeOfDrop || typeOfDrop == Draggable.Slot.INV)
+			   && transform.childCount<capacity){
 				d.parentToReturnTo = this.transform;
 			}
 		

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿	using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -24,9 +24,6 @@ public class GameController : MonoBehaviour
 	public Text waveText;
 	//Pause stuff
 	public GameObject pauseObject;
-//	public Text pauseText;
-	public Canvas invCanvas;
-
 
 	bool gameOver;
 	bool restart;
@@ -38,7 +35,7 @@ public class GameController : MonoBehaviour
 	{
 		pauseObject.SetActive(false);
 	//	pauseText.enabled = false;
-		invCanvas.enabled = false;
+	//	invCanvas.enabled = false;
 		gameOver = false;
 		restart = false;
 		restartText.text = "";
@@ -64,12 +61,12 @@ public class GameController : MonoBehaviour
 			if(pause){
 				Time.timeScale = 0;
 				pauseObject.SetActive(true);
-				invCanvas.enabled = true;
+	//			invCanvas.enabled = true;
 			}
 			if(!pause){
 				Time.timeScale = 1;
 				pauseObject.SetActive(false);
-				invCanvas.enabled = false;
+	//			invCanvas.enabled = false;
 			}
 
 		}
