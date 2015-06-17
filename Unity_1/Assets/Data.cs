@@ -42,6 +42,7 @@ public class ItemData{
 
 	public static string[][] itemInfo = {
 		new string[]{"1","WEAPON1","item1","The basic weapon"}
+
 	};
 	public static string[][] info = {
 		new string[]{"1","0.3","800","shotBolt","5"}

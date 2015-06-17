@@ -9,18 +9,18 @@ public class BulletMod{
 	}
 }
 public class Gun : MonoBehaviour {
-
+//represents gun hardpoint on ship
 	Rigidbody rb;
-	//Ship weapons
+
+	public int ID;
 	public float fireRate = 0.5f;
 	float nextFire;
 	public float fireSpeed;
 	public GameObject shot;
 	public float shotDeviation = 5f;
-
+	public bool equipped;
 
 	//modifier from parent
-//	float rofModifier;
 	float dmgModifier;
 
 	void Start () {
@@ -38,7 +38,7 @@ public class Gun : MonoBehaviour {
 	}
 
 	void Update () {
-		if(GameController.pause)return;
+		if(GameController.pause||!equipped)return;
 
 		if (Input.GetButton("Fire1") && Time.time > nextFire) {											
 			GetComponent<AudioSource>().Play();
