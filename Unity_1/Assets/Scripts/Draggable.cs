@@ -13,10 +13,12 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler,IEndDrag
 		"\n *1111111111" +
 			"\n *2222222222";
 	public Text infobox_text;
+	public GameObject infobox_panel;
+
 
 	public void Start(){
 		if(infoText=="")infoText = infoText_default;
-
+		infobox_panel.SetActive(false);
 	}
 
 	public void OnBeginDrag(PointerEventData e){
@@ -32,12 +34,16 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler,IEndDrag
 		transform.SetParent(parentToReturnTo);
 		GetComponent<CanvasGroup>().blocksRaycasts = true;
 	}
+	//Show infobox
 	public void OnPointerEnter(PointerEventData e){
-	//	Debug.Log("PointerEnter");
+		infobox_panel.SetActive(true);
 		infobox_text.text = infoText;
 	}
 	public void OnPointerExit(PointerEventData e){
-	//	Debug.Log("PointerExit");
+		infobox_panel.SetActive(false);
 		infobox_text.text = "";
+	}
+	public void SetParent(Transform parent){
+		transform.SetParent(parent);
 	}
 }

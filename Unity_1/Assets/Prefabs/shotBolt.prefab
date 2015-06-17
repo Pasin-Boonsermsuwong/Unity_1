@@ -27,11 +27,10 @@ GameObject:
   - 4: {fileID: 441640}
   - 54: {fileID: 5436308}
   - 136: {fileID: 13670038}
-  - 114: {fileID: 11437560}
   - 114: {fileID: 11484926}
   - 114: {fileID: 11481638}
   m_Layer: 0
-  m_Name: Bolt
+  m_Name: shotBolt
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,18 +137,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &11437560
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 152498}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 759ad5d8b7304964592c6846011ce4f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 800
 --- !u!114 &11481638
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -163,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosion: {fileID: 131844, guid: 4e0ed15b68efb54479807f5b73a7dd1b, type: 2}
   dmgText: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
-  damage: 200
+  baseDamage: 200
 --- !u!114 &11484926
 MonoBehaviour:
   m_ObjectHideFlags: 1

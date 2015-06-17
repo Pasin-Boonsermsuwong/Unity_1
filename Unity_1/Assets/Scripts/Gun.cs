@@ -4,7 +4,6 @@ using System.Collections;
 public class BulletMod{
 
 	public float dmgAdder;
-
 	public BulletMod(float dmgAdd){
 		dmgAdder = dmgAdd;
 	}
@@ -14,7 +13,8 @@ public class Gun : MonoBehaviour {
 	Rigidbody rb;
 	//Ship weapons
 	public float fireRate = 0.5f;
-	public float nextFire = 0.0f;
+	float nextFire;
+	public float fireSpeed;
 	public GameObject shot;
 	public float shotDeviation = 5f;
 
@@ -39,20 +39,24 @@ public class Gun : MonoBehaviour {
 
 	void Update () {
 		if(GameController.pause)return;
-		//////////WEAPON		
-		
+
 		if (Input.GetButton("Fire1") && Time.time > nextFire) {											
 			GetComponent<AudioSource>().Play();
 			nextFire = Time.time + fireRate;
 			Vector3 eulerAngle = transform.rotation.eulerAngles;
+			//Fire deviation
 			GameObject instantiated = Instantiate(shot, transform.position, 
 			                                      Quaternion.Euler(new Vector3(
 				eulerAngle.x, 
 				eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
 				eulerAngle.z))) as GameObject;
+			//Initial velocity
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
+			//Fire speed
+			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*fireSpeed);
 			instantiated.GetComponent<BoltCollision>().ActivateBulletMod(new BulletMod(dmgModifier));
 		};
 
 	}
+
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
+//Change player's modifier
 public class ModifierChangeRequest{
 	// ALL VALUE ARE ADDED
 	public float rofModifier;
@@ -17,6 +17,10 @@ public class Boundary{
 }
 public class PlayerController : MonoBehaviour {
 	//Ship stats
+
+
+	public string[] mountList = {"Weapon1","Weapon2"};
+	public Vector3[] mountPosition;
 	public float strafeForce = 100f;
 	public float RotationSpeed = 300f;
 	public float power = 200f;
@@ -37,6 +41,8 @@ public class PlayerController : MonoBehaviour {
 		rb = GetComponent<Rigidbody>();
 		if(rb==null)Debug.Log("Rigidbody is null");
 		boundary = new Boundary();
+
+		
 	}
 
 	void Update(){
@@ -86,4 +92,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	public void updateMount(){
+
+	}
 }
