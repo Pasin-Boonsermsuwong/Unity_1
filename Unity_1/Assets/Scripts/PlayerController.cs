@@ -107,10 +107,10 @@ public class PlayerController : MonoBehaviour {
 	//Guns only
 	public void updateMount(){
 		foreach(string s in mountList ){
-			Debug.Log (s);
+	//		Debug.Log (s);
 			Transform G = shipImage.transform.Find(s+"Mount");
 			if(G.childCount==0){
-				Debug.Log("Mount childcount = 0");
+	//			Debug.Log("Mount childcount = 0");
 				Gun g1 = transform.Find(s).GetComponent<Gun>();
 				g1.equipped = false;
 				return;

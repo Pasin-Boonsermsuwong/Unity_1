@@ -38,11 +38,17 @@ public class GameController : MonoBehaviour
 	int sectorX;
 	int sectorY;
 	Renderer background ;
-	float difficulty;
+	float difficultyMin;
+	float difficultyMax;
+	int zone;
+
+
+
+
 
 	void Start ()
 	{
-		background = GameObject.Find("BackgroundTint").GetComponent<Renderer>();
+		background = GameObject.Find("Background").GetComponent<Renderer>();
 	//	background.material.color = Color.red;
 
 //		Debug.Log("BG: "+background);
@@ -200,14 +206,14 @@ public class GameController : MonoBehaviour
 		sectorY += dy;
 		sectorText.text = "Sector: "+sectorX+" , "+sectorY;
 		//Tint BG color
-		difficulty = Mathf.Sqrt(sectorX*2)*sectorX/1.8f+100;
+		difficultyMax = Mathf.Sqrt(Mathf.Pow(sectorX,2)+Mathf.Pow(sectorX,3));
+		difficultyMin = Mathf.Max(difficultyMax-20,0);
+		Debug.Log("DifficultyMin = "+difficultyMin+" DifficultyMax = "+difficultyMax);
+		/*
 		float c = Mathf.Clamp(difficulty/15,0,180)/255;
 		Debug.Log("C= "+c);
-
-
-
-
 		background.material.color = new Color(174.0f/255.0f,0,0,c);
 			//new Color(255.0f,c,c);
+			*/
 	}
 }
