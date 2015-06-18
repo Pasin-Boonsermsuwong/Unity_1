@@ -16,9 +16,10 @@ public class Boundary{
 	public float xMin, xMax, zMin, zMax;
 }
 public class PlayerController : MonoBehaviour {
+
+	GameController gameController;
+
 	//Ship stats
-
-
 	public string[] mountList = {"Weapon1","Weapon2"};
 //	public Vector3[] mountPosition;
 	public float strafeForce = 100f;
@@ -42,9 +43,10 @@ public class PlayerController : MonoBehaviour {
 		if(rb==null)Debug.Log("Rigidbody is null");
 		boundary = new Boundary();
 		updateMount();
-		
 	}
-
+	void Start(){
+		gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+	}
 	void Update(){
 		if(GameController.pause)return;
 		Vector3 tf = transform.forward;
@@ -59,7 +61,7 @@ public class PlayerController : MonoBehaviour {
 
 		////////THRUST
 
-		rb.AddForce (tf * thrust * 
+		rb.AddForce (tf * thrust *
 		             Mathf.Clamp(Vector3.Distance (tp, mousePosition)-4.5f,0,maxSpeed)
 		             );
 		float backwardThrust = Input.GetAxis("Vertical");
@@ -71,21 +73,31 @@ public class PlayerController : MonoBehaviour {
 		rb.AddForce(Quaternion.Euler(0, 90, 0) * tf
 		            * Input.GetAxis("Horizontal") * strafeForce * Time.deltaTime);
 
-		////////BORDER
-		rb.position = new Vector3(
-			Mathf.Clamp(rb.position.x,boundary.xMin,boundary.xMax),
-			0.0f,
-			Mathf.Clamp(rb.position.z,boundary.zMin,boundary.zMax)
-		);
-		if(tp.x>boundary.xMax)rb.AddForce(new Vector3(-power/5,0,0));
-		else if(tp.x<boundary.xMin)rb.AddForce(new Vector3(power/5,0,0));
-		if(tp.z>boundary.zMax)rb.AddForce(new Vector3(0,0,-power/5));
-		else if(tp.z<boundary.zMin)rb.AddForce(new Vector3(0,0,power/5));
+		////////BOUNDARY
+		if(tp.x>boundary.xMax){
+			gameController.SwitchSector(1,0);
+			transform.position = new Vector3(boundary.xMin,0.0f,transform.position.z);
+		}
+		else if(tp.x<boundary.xMin){
+			gameController.SwitchSector(-1,0);
+			transform.position = new Vector3(boundary.xMax,0.0f,transform.position.z);
+		}
+		if(tp.z>boundary.zMax){
+			gameController.SwitchSector(0,1);
+			transform.position = new Vector3(transform.position.x,0.0f,boundary.zMin);
+		}
+		else if(tp.z<boundary.zMin){
+			gameController.SwitchSector(0,-1);
+			transform.position = new Vector3(transform.position.x,0.0f,boundary.zMax);
+		}
 	}
 	//Edit player modifier and update modifier in all mounts
 	public void editModifier(ModifierChangeRequest m){
 		dmgAdder += m.dmgAdder;
 		rofModifier = Mathf.Max(rofModifier + m.rofModifier,0.1f);
+		applyModifier();
+	}
+	public void applyModifier(){
 		Gun[] gArray = GetComponentsInChildren<Gun>();
 		foreach(Gun g in gArray){
 			g.RefreshModifier();
@@ -119,6 +131,7 @@ public class PlayerController : MonoBehaviour {
 				g.shotDeviation = float.Parse(info[4]);
 			}
 		}
+		applyModifier();
 	}
 	
 }

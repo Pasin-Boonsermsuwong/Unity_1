@@ -4,6 +4,7 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
+
 	public GameObject hazard;
 	public GameObject powerup;
 	public Vector3 spawnValues;
@@ -22,17 +23,32 @@ public class GameController : MonoBehaviour
 	public Text restartText;
 	public Text gameOverText;
 	public Text waveText;
+	public Text sectorText;
 	//Pause stuff
 	public GameObject pauseObject;
 
+	//Main Canvas
 	bool gameOver;
 	bool restart;
 	public static bool pause;
 	int score;
 	int wave;
 
+	//Sector
+	int sectorX;
+	int sectorY;
+	Renderer background ;
+	float difficulty;
+
 	void Start ()
 	{
+		background = GameObject.Find("BackgroundTint").GetComponent<Renderer>();
+	//	background.material.color = Color.red;
+
+//		Debug.Log("BG: "+background);
+		sectorX = 0;
+		sectorY = 0;
+		SwitchSector(0,0);
 		pauseObject.SetActive(false);
 	//	pauseText.enabled = false;
 	//	invCanvas.enabled = false;
@@ -43,6 +59,8 @@ public class GameController : MonoBehaviour
 		score = 0;
 		UpdateScore ();
 		wave = 1;
+
+
 		StartCoroutine (SpawnWaves ());
 		StartCoroutine (SpawnPowerups());
 	}
@@ -176,5 +194,20 @@ public class GameController : MonoBehaviour
 		GetComponent<AudioSource>().Stop();
 		gameOverText.text = "Game Over!";
 		gameOver = true;
+	}
+	public void SwitchSector (int dx,int dy){
+		sectorX += dx;
+		sectorY += dy;
+		sectorText.text = "Sector: "+sectorX+" , "+sectorY;
+		//Tint BG color
+		difficulty = Mathf.Sqrt(sectorX*2)*sectorX/1.8f+100;
+		float c = Mathf.Clamp(difficulty/15,0,180)/255;
+		Debug.Log("C= "+c);
+
+
+
+
+		background.material.color = new Color(174.0f/255.0f,0,0,c);
+			//new Color(255.0f,c,c);
 	}
 }
