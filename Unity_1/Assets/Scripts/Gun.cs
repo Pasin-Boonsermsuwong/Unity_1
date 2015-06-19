@@ -19,6 +19,7 @@ public class Gun : MonoBehaviour {
 	public GameObject shot;
 	public float shotDeviation = 5f;
 	public bool equipped;
+	public float energyRequirement;
 
 	//modifier from parent
 	float dmgModifier;

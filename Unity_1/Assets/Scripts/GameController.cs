@@ -4,25 +4,16 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
+	public GameObject player;
 
 	public GameObject hazard;
 	public GameObject powerup;
 	public Vector3 spawnValues;
 	public int hazardCount;
 	public int hazardInc;
-	public float spawnWait;
-	public float spawnWaitDec;
-	public float scale;
-	public float scaleInc;
-	public float speed;
-	public float speedInc;
-	public float startWait;
-	public float waveWait;
-	
 	public Text scoreText;
 	public Text restartText;
 	public Text gameOverText;
-	public Text waveText;
 	public Text sectorText;
 	//Pause stuff
 	public GameObject pauseObject;
@@ -35,6 +26,13 @@ public class GameController : MonoBehaviour
 	int wave;
 
 	//Sector
+	float boundaryX;
+	float boundaryZ;
+	float boundaryInnerX;//for spawn target
+	float boundaryInnerZ;
+	float boundarySpawnX;//for spawn position
+	float boundarySpawnZ;
+
 	int sectorX;
 	int sectorY;
 	Renderer background ;
@@ -42,13 +40,22 @@ public class GameController : MonoBehaviour
 	float difficultyMax;
 	int zone;
 
-
+	GameObject[] sectorEnemy;
+	float[] sectorEnemyChance;
 
 
 
 	void Start ()
 	{
-		background = GameObject.Find("Background").GetComponent<Renderer>();
+		GameObject bgGameObject = GameObject.FindWithTag("Background");
+		background = bgGameObject.GetComponent<Renderer>();
+		boundaryX = bgGameObject.transform.localScale.x/2;
+		boundaryZ = bgGameObject.transform.localScale.y/2;
+		boundaryInnerX = boundaryX * 0.7f;	
+		boundaryInnerZ = boundaryZ * 0.7f;
+		boundarySpawnX = boundaryX + 50;	
+		boundarySpawnZ = boundaryZ + 50;
+		player = GameObject.FindWithTag("Player");
 	//	background.material.color = Color.red;
 
 //		Debug.Log("BG: "+background);
@@ -67,10 +74,28 @@ public class GameController : MonoBehaviour
 		wave = 1;
 
 
-		StartCoroutine (SpawnWaves ());
+	//	StartCoroutine (SpawnWaves ());
 		StartCoroutine (SpawnPowerups());
 	}
-	
+	void FixedUpdate(){
+		//Spawn enemies
+		if(!gameOver){
+			for(int i = 0;i<sectorEnemy.Length;i++){
+				if(!Data.chance(sectorEnemyChance[i]))continue;
+				Vector3 spawnPosition = randomSpawnPosition();
+				Instantiate (hazard,
+				             spawnPosition,
+				             Quaternion.Slerp(
+					transform.rotation,
+					Quaternion.LookRotation(
+					(new Vector3 (Random.Range (-boundaryInnerX, boundaryInnerX), 0,Random.Range (-boundaryInnerZ, boundaryInnerZ)) - spawnPosition).normalized
+					),
+					360
+					)
+				             );
+			}
+		}
+	}
 	void Update ()
 	{
 		if (restart)
@@ -94,31 +119,37 @@ public class GameController : MonoBehaviour
 			}
 
 		}
-	}
 
+		if (gameOver&&!restart)
+		{
+			restartText.text = "Press 'R' for Restart";
+			restart = true;
+		}
+	}
+	
 	Vector3 randomSpawnPosition(){
 		int ran = Random.Range(0,3);
 		Vector3 spawnPosition = new Vector3(0,0,0);
 		switch (ran)
 		{
 		case 3:
-			spawnPosition = new Vector3 (Random.Range (-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
+			spawnPosition = new Vector3 (Random.Range (-boundarySpawnX, boundarySpawnX), 0, boundarySpawnZ);
 			break;
 		case 2:
-			spawnPosition = new Vector3 (Random.Range (-spawnValues.x, spawnValues.x), spawnValues.y, -spawnValues.z);
+			spawnPosition = new Vector3 (Random.Range (-boundarySpawnX, boundarySpawnX), 0, -boundarySpawnZ);
 			break;
 		case 1:
-			spawnPosition = new Vector3 (spawnValues.x, spawnValues.y, Random.Range (-spawnValues.z, spawnValues.z));
+			spawnPosition = new Vector3 (boundarySpawnX, 0, Random.Range (-boundarySpawnZ, boundarySpawnZ));
 			break;
 		case 0:
-			spawnPosition = new Vector3 (-spawnValues.x, spawnValues.y, Random.Range (-spawnValues.z, spawnValues.z));
+			spawnPosition = new Vector3 (-boundarySpawnX, 0, Random.Range (-boundarySpawnZ, boundarySpawnZ));
 			break;
 		}
 		return spawnPosition;
 	}
+
 	IEnumerator SpawnPowerups ()
 	{
-		yield return new WaitForSeconds (startWait);
 		while (true)
 		{
 			yield return new WaitForSeconds (Random.Range(5,15));
@@ -129,60 +160,21 @@ public class GameController : MonoBehaviour
 			             Quaternion.Slerp(
 				transform.rotation,
 				Quaternion.LookRotation(
-				(new Vector3 (Random.Range (-14, 14), spawnValues.y,Random.Range (-14, 14)) - spawnPosition).normalized
+				(new Vector3 (Random.Range (-boundaryInnerX, boundaryInnerX), 0,Random.Range (-boundaryInnerZ, boundaryInnerZ)) - spawnPosition).normalized
 				),
 				360
 				)
-			);
+			             );
 			if (gameOver)
 			{
 				break;
 			}
 		}
 	}
-	IEnumerator SpawnWaves ()
-	{
-		yield return new WaitForSeconds (startWait);
-		while (true)
-		{
-			waveText.text = "Wave: "+wave;
-			for (int i = 0;i<4;i++) {
-				waveText.color = Color.red;
-				yield return new WaitForSeconds (waveWait/16);
-				waveText.color = Color.white;
-				yield return new WaitForSeconds (waveWait/16);
-			}
-			for (int i = 0; i < hazardCount; i++){
-				//	GameObject hazard = hazards [Random.Range (0, hazards.Length)];
-				Vector3 spawnPosition = randomSpawnPosition();
-				Instantiate (hazard,
-					         spawnPosition,
-					         Quaternion.Slerp(
-								transform.rotation,
-								Quaternion.LookRotation(
-									(new Vector3 (Random.Range (-14, 14), spawnValues.y,Random.Range (-14, 14)) - spawnPosition).normalized
-									),
-									360
-								)
-							);
-				yield return new WaitForSeconds (spawnWait);
-			}
-			//PREPARE NEXT WAVE
-			spawnWait -= spawnWaitDec;
-			spawnWait = Mathf.Max(spawnWait,0.05f);
-			hazardCount += hazardInc;
-			scale += scaleInc;
-			speed += speedInc;
-			yield return new WaitForSeconds (waveWait/2);
-			if (gameOver)
-			{
-				restartText.text = "Press 'R' for Restart";
-				restart = true;
-				break;
-			}
-			wave++;
-		}
-	}
+
+
+
+
 	
 	public void AddScore (int newScoreValue)
 	{
@@ -205,15 +197,29 @@ public class GameController : MonoBehaviour
 		sectorX += dx;
 		sectorY += dy;
 		sectorText.text = "Sector: "+sectorX+" , "+sectorY;
-		//Tint BG color
+
+		//Calculate difficulty based on distance
 		difficultyMax = Mathf.Sqrt(Mathf.Pow(sectorX,2)+Mathf.Pow(sectorX,3));
 		difficultyMin = Mathf.Max(difficultyMax-20,0);
 		Debug.Log("DifficultyMin = "+difficultyMin+" DifficultyMax = "+difficultyMax);
-		/*
-		float c = Mathf.Clamp(difficulty/15,0,180)/255;
-		Debug.Log("C= "+c);
-		background.material.color = new Color(174.0f/255.0f,0,0,c);
-			//new Color(255.0f,c,c);
-			*/
+
+		// create sectorEnemy[] and chance array
+		zone = ZoneData.getRandomZone(difficultyMin,difficultyMax);
+		string[] zoneEnemies = ZoneData.getZoneEnemyInfo(zone);
+		int numberOfEnemyTypes = 0;
+		for(int i = 1;i<zoneEnemies.Length;i++){
+			if(zoneEnemies[i]==null)break;
+			numberOfEnemyTypes++;
+		}
+		sectorEnemy = new GameObject[numberOfEnemyTypes];
+		sectorEnemyChance = new float[numberOfEnemyTypes];
+		for(int i = 0;i<numberOfEnemyTypes;i++){
+			sectorEnemy[i] = GameObject.Find(zoneEnemies[i+1]);
+			sectorEnemyChance[i] = float.Parse(zoneEnemies[i+6]);
+			Debug.Log("sectorEnemy[i]: "+sectorEnemy[i]);
+			Debug.Log("sectorEnemyChance[i]: "+sectorEnemyChance[i]);
+		}
+		Debug.Log("Number of enemies type: "+sectorEnemy.Length);
+
 	}
 }

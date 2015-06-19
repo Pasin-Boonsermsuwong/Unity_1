@@ -14,7 +14,7 @@ public class BoltCollision : MonoBehaviour {
 		if(other.tag=="Enemy"){
 			Instantiate(explosion, transform.position, transform.rotation);
 			Destroy (gameObject);
-			other.GetComponent<AsteroidHealth>().TakeDamage(baseDamage);
+			other.GetComponent<Health>().TakeDamage(baseDamage);
 			dmgText = Instantiate(dmgText, transform.position, Quaternion.Euler(90, 0, 0)) as GameObject;
 			dmgText.GetComponent<TextMesh>().text = baseDamage + "";
 		}

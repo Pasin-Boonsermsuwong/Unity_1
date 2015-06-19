@@ -32,6 +32,10 @@ public class PlayerController : MonoBehaviour {
 	public float reverseFraction = 0.3f;
 	Vector3 mousePosition;
 	public GameObject shipImage;	//Image of ship in inventory UI
+	public float energyCapacity;
+	public float energyRegen;
+	float energy;
+
 
 	//WEAPONS MODIFIER
 	public float rofModifier = 1;
@@ -41,11 +45,17 @@ public class PlayerController : MonoBehaviour {
 	void OnStart(){
 		rb = GetComponent<Rigidbody>();
 		if(rb==null)Debug.Log("Rigidbody is null");
-		boundary = new Boundary();
+
 		updateMount();
 	}
 	void Start(){
 		gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+		boundary = new Boundary();
+		GameObject bg = GameObject.FindWithTag("Background");
+		boundary.xMax = bg.transform.localScale.x/2;
+		boundary.xMin = -bg.transform.localScale.x/2;
+		boundary.zMax = bg.transform.localScale.y/2;
+		boundary.zMin = -bg.transform.localScale.y/2;
 	}
 	void Update(){
 		if(GameController.pause)return;
@@ -129,6 +139,7 @@ public class PlayerController : MonoBehaviour {
 				g.fireSpeed = float.Parse(info[2]);
 				g.shot = (GameObject)Resources.Load("Prefabs/"+info[3]);
 				g.shotDeviation = float.Parse(info[4]);
+				g.energyRequirement = float.Parse(info[5]);
 			}
 		}
 		applyModifier();

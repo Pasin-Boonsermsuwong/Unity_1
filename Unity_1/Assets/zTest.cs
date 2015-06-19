@@ -3,12 +3,9 @@ using System.Collections;
 
 public class zTest : MonoBehaviour {
 	void Start(){
-		/*
-		Random.seed = 100;
-		for(int i=0;i<10;i++){
-Debug.Log(Random.value);
-		}
-*/
+		Random r = new Random();
+		Random.seed = 16;
+		Debug.Log (Random.value);
 	}
 	// Update is called once per frame
 	void Update () {

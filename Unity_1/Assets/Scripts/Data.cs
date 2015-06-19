@@ -4,7 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Data : MonoBehaviour {
-
+	public static bool chance(float prop){
+		return Random.value<=prop;
+	}
 }
 
 [System.Serializable]
@@ -34,9 +36,9 @@ public class ItemData{
 		new string[]{"1","WEAPON1","item1","The basic weapon"}
 
 	};
-			//ID , firerate, speed, bullet prefab name, shotDeviation
+			//ID , firerate, speed, bullet prefab name, shotDeviation, energyRequirement
 	public static string[][] info = {
-		new string[]{"1","0.3","800","shotBolt","5"}
+		new string[]{"1","0.3","800","shotBolt","5","30"}
 	};
 	public static string[] getItemInfo(int ID){		//When instantiate eqiupped weapon
 		return itemInfo[ID];
@@ -45,27 +47,57 @@ public class ItemData{
 		return info[ID];
 	}
 }
-
+/*
+        Dictionary<string, BadGuy> badguys = new Dictionary<string, BadGuy>();
+        
+        BadGuy bg1 = new BadGuy("Harvey", 50);
+        BadGuy bg2 = new BadGuy("Magneto", 100);
+        
+        //You can place variables into the Dictionary with the
+        //Add() method.
+        badguys.Add("gangster", bg1);
+        badguys.Add("mutant", bg2);
+        
+        BadGuy magneto = badguys["mutant"];
+ */
 [System.Serializable]
 public class ZoneData{
 	//Type of enemies 
-	//Zone ID, BG material name ,enemy1 (prefab name), enemy2, enemy3, enemy4, (ABSOLUTE 0<x<1) freq1, freq2, freq3, freq4
+	//Zone ID, BG material name ,enemy1 (prefab name), enemy2, enemy3, enemy4, enemy5, (ABSOLUTE 0<x<1) freq1, freq2, freq3, freq4, freq5
 	public static string[][] zoneEnemyInfo = {
-		new string[]{"1","Asteroid",null,null,null,"0.12","0","0","0"},
+		new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null},
 		
 	};
 	public static string[][] zoneSelectInfo = {
 
 		//Zone ID, difficulty requirement, chance(relative)
-		//DIFFICULTY REQUIREMENT MUST BE ORDERED FROM SMALL TO BIG!
-		new string[]{"1","0","10"},
-		new string[]{"2","10","8"},
-		new string[]{"3","20","7"},
-		new string[]{"4","1000","1"},
+		//Difficulty requirement must be sorted from small to large
+		new string[]{"0","0","10"}
+	//	new string[]{"2","10","8"},
+	//	new string[]{"3","20","7"},
+		//new string[]{"4","1000","1"},
 	};
+	/*
+	public static Dictionary<string,Object> getZoneEnemyInfoDict(int ID){
+		Dictionary<string,Object> temp = new Dictionary<string,Object>();
+		temp.Add("id",zoneEnemyInfo[ID][0]);
+		temp.Add("enemy1",zoneEnemyInfo[ID][1]);
+		temp.Add("enemy2",zoneEnemyInfo[ID][2]);
+		temp.Add("enemy3",zoneEnemyInfo[ID][3]);
+		temp.Add("enemy4",zoneEnemyInfo[ID][4]);
+		temp.Add("freq1",zoneEnemyInfo[ID][5]);
+		temp.Add("freq2",zoneEnemyInfo[ID][6]);
+		temp.Add("freq3",zoneEnemyInfo[ID][7]);
+		temp.Add("freq4",zoneEnemyInfo[ID][8]);
+
+		return temp;
+	}
+	*/
 	public static string[] getZoneEnemyInfo(int ID){
+		
 		return zoneEnemyInfo[ID];
 	}
+
 	//Get random zone ID that doesn't exceed given difficulty
 	public static int getRandomZone(float difficultyMin, float difficultyMax){
 		if(difficultyMin>difficultyMax)Debug.LogError("difficultyMin is higher than Max!");

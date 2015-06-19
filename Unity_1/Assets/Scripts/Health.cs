@@ -2,28 +2,36 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class AsteroidHealth : MonoBehaviour {
+[System.Serializable]
+public class SpeedTumbleScale{
+	public float speedMin,speedMax,tumble,scaleMin,scaleMax;
+}
+public class Health : MonoBehaviour {
 
 	public float maxHP = 100;
 	public float curHP;
 	public Slider slider;
-	//public Image Fill;
 	public int score = 100;
 	public GameObject explosion;
-	public float deviation = 200;
-//	public GameObject explosionClone;
-	//private boolean isDead;
+
+	//Initial speed / rotation / scale. Only needed for asteroids or other unmanned object
+	public bool speedTumbleScale;
+	public SpeedTumbleScale STS;
 
 	void Start () {
+	//	isDead = false;
 		GameController gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
-		GetComponent<Rigidbody>().AddForce (transform.forward * Mathf.Max(50,(gc.speed+Random.Range(-deviation,deviation))));
-		GetComponent<Rigidbody>().angularVelocity = Random.insideUnitSphere * 5;
-		float scale = Random.Range(1.0f,gc.scale);
-	//	Debug.Log(scale);
-		transform.localScale += new Vector3(scale*1.5f,scale*1.5f,scale*1.5f);
-		maxHP = maxHP * scale  ;
-		curHP = maxHP;
+		float scale = 1.0f;
+		if(speedTumbleScale){
+			GetComponent<Rigidbody>().AddForce (transform.forward * Random.Range(STS.speedMin,STS.speedMax));
+			GetComponent<Rigidbody>().angularVelocity = Random.insideUnitSphere * STS.tumble;
+			scale = Random.Range(STS.scaleMin,STS.scaleMax);
+			transform.localScale += new Vector3(scale*1.5f,scale*1.5f,scale*1.5f);
+			maxHP = maxHP * scale  ;
+			curHP = maxHP;
+		}
+
 		slider.value = 1;
 		score = (int)Mathf.Round(score * scale);
 	}
@@ -32,7 +40,6 @@ public class AsteroidHealth : MonoBehaviour {
 		curHP -= amount;
 		if(curHP<=0)Death ();
 		slider.value = curHP/maxHP;
-	//	Fill.material.color = Color.Lerp(Color.red,Color.green,curHP/maxHP);
 	}
 
 	void Death(){

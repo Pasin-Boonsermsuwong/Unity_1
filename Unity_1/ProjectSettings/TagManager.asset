@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Bullet
   - Background
+  - Loot
   layers:
   - Default
   - TransparentFX
@@ -18,8 +19,8 @@ TagManager:
   - 
   - 
   - ShipImg
-  - 
-  - 
+  - Minimap
+  - MinimapBorder
   - 
   - 
   - 

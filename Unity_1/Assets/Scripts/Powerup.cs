@@ -26,7 +26,7 @@ public class Powerup : MonoBehaviour {
 			break;
 		}
 		//Add initial speed
-		GetComponent<Rigidbody>().AddForce (transform.forward * gc.speed*1.5f);
+		GetComponent<Rigidbody>().AddForce (transform.forward * 300f);
 		GetComponent<Rigidbody>().angularVelocity = Random.insideUnitSphere * 5;
 	}
 	void OnTriggerEnter(Collider other){
