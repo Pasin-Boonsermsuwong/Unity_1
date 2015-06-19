@@ -4,7 +4,11 @@ using System.Collections;
 public class zTest : MonoBehaviour {
 	void Start(){
 		Random r = new Random();
-		Random.seed = 16;
+		Random.seed = 16*4*4;
+		Debug.Log (Random.value);
+		Random.seed = 999;
+		Debug.Log (Random.value);
+		Random.seed = 16*4*4;
 		Debug.Log (Random.value);
 	}
 	// Update is called once per frame

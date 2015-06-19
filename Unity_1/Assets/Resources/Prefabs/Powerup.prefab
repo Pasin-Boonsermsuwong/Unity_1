@@ -16,7 +16,7 @@ GameObject:
   - 114: {fileID: 11416344}
   m_Layer: 0
   m_Name: Powerup
-  m_TagString: Collectible
+  m_TagString: Loot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -125,7 +125,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 0}
       propertyPath: m_TagString
-      value: Collectible
+      value: Loot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

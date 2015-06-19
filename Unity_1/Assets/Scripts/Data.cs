@@ -64,18 +64,19 @@ public class ItemData{
 public class ZoneData{
 	//Type of enemies 
 	//Zone ID, BG material name ,enemy1 (prefab name), enemy2, enemy3, enemy4, enemy5, (ABSOLUTE 0<x<1) freq1, freq2, freq3, freq4, freq5
+	//textureName, tilingX, tilingY
 	public static string[][] zoneEnemyInfo = {
-		new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null},
-		
+		new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null,"tile_nebula_green_dff","8","4"},
+		new string[]{"1","Asteroid",null,null,null,null,"0.07",null,null,null,null,"background_asteroid1","14","10.5"},
 	};
 	public static string[][] zoneSelectInfo = {
 
 		//Zone ID, difficulty requirement, chance(relative)
 		//Difficulty requirement must be sorted from small to large
-		new string[]{"0","0","10"}
-	//	new string[]{"2","10","8"},
-	//	new string[]{"3","20","7"},
-		//new string[]{"4","1000","1"},
+		new string[]{"0","0","10"},
+		new string[]{"1","1","10"}
+	//	new string[]{"2","20","7"},
+		//new string[]{"3","1000","1"},
 	};
 	/*
 	public static Dictionary<string,Object> getZoneEnemyInfoDict(int ID){
@@ -98,7 +99,7 @@ public class ZoneData{
 		return zoneEnemyInfo[ID];
 	}
 
-	//Get random zone ID that doesn't exceed given difficulty
+	//Get random zone ID that is within difficulty range
 	public static int getRandomZone(float difficultyMin, float difficultyMax){
 		if(difficultyMin>difficultyMax)Debug.LogError("difficultyMin is higher than Max!");
 		List<int> list = new List<int>();

@@ -8,19 +8,19 @@ public class SpeedTumbleScale{
 }
 public class Health : MonoBehaviour {
 
-	public float maxHP = 100;
+	public float maxHP;
 	public float curHP;
 	public Slider slider;
-	public int score = 100;
+	public int score;
 	public GameObject explosion;
-
+	GameController gc;
 	//Initial speed / rotation / scale. Only needed for asteroids or other unmanned object
 	public bool speedTumbleScale;
 	public SpeedTumbleScale STS;
 
 	void Start () {
 	//	isDead = false;
-		GameController gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
 		float scale = 1.0f;
 		if(speedTumbleScale){
@@ -29,9 +29,9 @@ public class Health : MonoBehaviour {
 			scale = Random.Range(STS.scaleMin,STS.scaleMax);
 			transform.localScale += new Vector3(scale*1.5f,scale*1.5f,scale*1.5f);
 			maxHP = maxHP * scale  ;
-			curHP = maxHP;
-		}
 
+		}
+		curHP = maxHP;
 		slider.value = 1;
 		score = (int)Mathf.Round(score * scale);
 	}
@@ -42,11 +42,11 @@ public class Health : MonoBehaviour {
 		slider.value = curHP/maxHP;
 	}
 
-	void Death(){
+	public void Death(){
 		Instantiate(explosion, transform.position, transform.rotation);
 		//GameObject explosionClone = Instantiate(explosion, transform.position, transform.rotation) as GameObject;
 		//explosionClone.transform.localScale = (new Vector3(scale*1.5f,scale*1.5f,scale*1.5f));
-		GameObject.FindWithTag("GameController").GetComponent<GameController>().AddScore(score);
+		gc.AddScore(score);
 		Destroy (gameObject);
 	}
 }

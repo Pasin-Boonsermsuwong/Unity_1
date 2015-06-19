@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 //Change player's modifier
 public class ModifierChangeRequest{
@@ -32,15 +33,17 @@ public class PlayerController : MonoBehaviour {
 	public float reverseFraction = 0.3f;
 	Vector3 mousePosition;
 	public GameObject shipImage;	//Image of ship in inventory UI
+
 	public float energyCapacity;
 	public float energyRegen;
-	float energy;
-
+	public float energy;
 
 	//WEAPONS MODIFIER
 	public float rofModifier = 1;
 	public float dmgAdder;
 
+	//UI
+	public Slider sliderEnergy;
 
 	void OnStart(){
 		rb = GetComponent<Rigidbody>();
@@ -49,6 +52,7 @@ public class PlayerController : MonoBehaviour {
 		updateMount();
 	}
 	void Start(){
+		energy = energyCapacity;
 		gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		boundary = new Boundary();
 		GameObject bg = GameObject.FindWithTag("Background");
@@ -70,7 +74,6 @@ public class PlayerController : MonoBehaviour {
 		transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_direction), Time.deltaTime * RotationSpeed);
 
 		////////THRUST
-
 		rb.AddForce (tf * thrust *
 		             Mathf.Clamp(Vector3.Distance (tp, mousePosition)-4.5f,0,maxSpeed)
 		             );
@@ -78,6 +81,7 @@ public class PlayerController : MonoBehaviour {
 		if(backwardThrust<0){
 			rb.AddForce(tf * thrust * backwardThrust * reverseFraction);
 		}
+
 		////////STRAFE
 
 		rb.AddForce(Quaternion.Euler(0, 90, 0) * tf
@@ -100,6 +104,11 @@ public class PlayerController : MonoBehaviour {
 			gameController.SwitchSector(0,-1);
 			transform.position = new Vector3(transform.position.x,0.0f,boundary.zMax);
 		}
+
+		//////ENERGY
+		energy = Mathf.Clamp(energy+energyRegen*Time.deltaTime,0,energyCapacity);
+		sliderEnergy.value = energy/energyCapacity;
+
 	}
 	//Edit player modifier and update modifier in all mounts
 	public void editModifier(ModifierChangeRequest m){
@@ -113,7 +122,7 @@ public class PlayerController : MonoBehaviour {
 			g.RefreshModifier();
 		}
 	}
-	//new string[]{"1","0.3","800","shotBolt","5"}
+
 	//Guns only
 	public void updateMount(){
 		foreach(string s in mountList ){
