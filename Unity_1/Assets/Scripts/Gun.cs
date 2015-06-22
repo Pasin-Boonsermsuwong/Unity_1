@@ -14,11 +14,11 @@ public class Gun : MonoBehaviour {
 	Transform myTransform;
 	Rigidbody rb;
 	public int ID;
-	public float fireRate = 0.5f;
+	public float fireRate;
 	float nextFire;
 	public float fireSpeed;
 	public GameObject shot;
-	public float shotDeviation = 5f;
+	public float shotDeviation;
 	public bool equipped;
 	public float energyRequirement;
 

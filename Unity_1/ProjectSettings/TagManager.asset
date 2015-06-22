@@ -9,6 +9,7 @@ TagManager:
   - Bullet
   - Background
   - Loot
+  - BulletEnemy
   layers:
   - Default
   - TransparentFX

@@ -11,15 +11,15 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler,IEndDrag
 	public string infoText;
 	string infoText_default = "<size=25>INFOCARD TITLE</size>" +
 		"\n *1111111111" +
-			"\n *2222222222";
-	public Text infobox_text;
+		"\n *2222222222";
+	public Text infoBox;
 	public GameObject infobox_panel;
 //	public Transform defaultItemParent;
 
 	public void Start(){
 		if(infoText=="")infoText = infoText_default;
-		else infobox_text.text = infoText;
 		infobox_panel.SetActive(false);
+		infoBox = GameObject.Find("InfoBoxText").GetComponent<Text>();
 	}
 
 	public void OnBeginDrag(PointerEventData e){
@@ -40,15 +40,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler,IEndDrag
 	}
 	//Show infobox
 	public void OnPointerEnter(PointerEventData e){
-		infobox_panel.SetActive(true);
-	//	defaultItemParent = this.transform;
-	//	infobox_panel.transform.SetParent(this.transform.parent);
-//		infobox_text.text = infoText;
+		infoBox.text = infoText;
 	}
 	public void OnPointerExit(PointerEventData e){
-		infobox_panel.SetActive(false);
-	//	infobox_panel.transform.SetParent(defaultItemParent);
-	//	infobox_text.text = "";
+		infoBox.text = "";
 	}
 	public void SetParent(Transform parent){
 		transform.SetParent(parent);

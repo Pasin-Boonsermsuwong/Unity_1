@@ -70,7 +70,7 @@ MonoBehaviour:
   parentToReturnTo: {fileID: 0}
   type: 0
   infoText: 
-  infobox_text: {fileID: 11455950}
+  infoBox: {fileID: 0}
   infobox_panel: {fileID: 147374}
 --- !u!114 &11430112
 MonoBehaviour:

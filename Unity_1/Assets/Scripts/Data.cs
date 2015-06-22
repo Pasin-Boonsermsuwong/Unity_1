@@ -66,17 +66,17 @@ public class ZoneData{
 	//Zone ID, BG material name ,enemy1 (prefab name), enemy2, enemy3, enemy4, enemy5, (ABSOLUTE 0<x<1) freq1, freq2, freq3, freq4, freq5
 	//textureName, tilingX, tilingY
 	public static string[][] zoneEnemyInfo = {
-	//	new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null,"tile_nebula_green_dff","8","4"},
-		new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null,"tile_nebula_green_dff","8","4"},
+		new string[]{"0","Asteroid","Enemy1",null,null,null,"0.02","0.01",null,null,null,"tile_nebula_green_dff","8","4"},
 		new string[]{"1","Asteroid",null,null,null,null,"0.07",null,null,null,null,"background_asteroid1","14","10.5"},
+		new string[]{"2","Enemy1",null,null,null,null,"0.01",null,null,null,null,"tile_nebula_green_dff","8","4"},
 	};
 	public static string[][] zoneSelectInfo = {
 
 		//Zone ID, difficulty requirement, chance(relative)
 		//Difficulty requirement must be sorted from small to large
 		new string[]{"0","0","10"},
-		new string[]{"1","1","10"}
-	//	new string[]{"2","20","7"},
+		new string[]{"1","1","10"},
+		new string[]{"2","5","5"},
 		//new string[]{"3","1000","1"},
 	};
 	/*

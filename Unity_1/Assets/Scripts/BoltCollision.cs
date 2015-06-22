@@ -11,10 +11,17 @@ public class BoltCollision : MonoBehaviour {
 //		damage = p.gunDamage;
 	}
 	void OnTriggerEnter(Collider other){
-		if(other.tag=="Enemy"){
+		if(tag=="Bullet" && other.tag=="Enemy"){
 			Instantiate(explosion, transform.position, transform.rotation);
 			Destroy (gameObject);
 			other.GetComponent<Health>().TakeDamage(baseDamage);
+			dmgText = Instantiate(dmgText, transform.position, Quaternion.Euler(90, 0, 0)) as GameObject;
+			dmgText.GetComponent<TextMesh>().text = baseDamage + "";
+		}
+		else if(tag=="BulletEnemy" && other.tag =="Player"){
+			Instantiate(explosion, transform.position, transform.rotation);
+			Destroy (gameObject);
+			other.GetComponent<HealthPlayer>().TakeDamage(baseDamage);
 			dmgText = Instantiate(dmgText, transform.position, Quaternion.Euler(90, 0, 0)) as GameObject;
 			dmgText.GetComponent<TextMesh>().text = baseDamage + "";
 		}

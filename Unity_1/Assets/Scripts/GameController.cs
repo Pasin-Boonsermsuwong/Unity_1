@@ -5,8 +5,7 @@ using System.Collections;
 public class GameController : MonoBehaviour
 {
 	public GameObject player;
-
-	public GameObject hazard;
+	
 	public GameObject powerup;
 	public Vector3 spawnValues;
 	public int hazardCount;
@@ -47,7 +46,7 @@ public class GameController : MonoBehaviour
 
 	void Start ()
 	{
-		Random.seed = 10;
+	//	Random.seed = 10;
 		GameObject bgGameObject = GameObject.FindWithTag("Background");
 		background = bgGameObject.GetComponent<Renderer>();
 		boundaryX = bgGameObject.transform.localScale.x/2;
@@ -86,7 +85,7 @@ public class GameController : MonoBehaviour
 			for(int i = 0;i<sectorEnemy.Length;i++){
 				if(!Data.chance(sectorEnemyChance[i]))continue;
 				Vector3 spawnPosition = randomSpawnPosition();
-				Instantiate (hazard,
+				Instantiate (sectorEnemy[i],
 				             spawnPosition,
 				             Quaternion.Slerp(
 					transform.rotation,
@@ -113,12 +112,10 @@ public class GameController : MonoBehaviour
 			if(pause){
 				Time.timeScale = 0;
 				pauseObject.SetActive(true);
-	//			invCanvas.enabled = true;
 			}
 			if(!pause){
 				Time.timeScale = 1;
 				pauseObject.SetActive(false);
-	//			invCanvas.enabled = false;
 			}
 
 		}
@@ -221,23 +218,29 @@ public class GameController : MonoBehaviour
 		zone = ZoneData.getRandomZone(difficultyMin,difficultyMax);
 		string[] zoneData = ZoneData.getZoneEnemyInfo(zone);
 		int numberOfEnemyTypes = 0;
-		for(int i = 1;i<zoneData.Length;i++){
+		for(int i = 1;i<6;i++){
 			if(zoneData[i]==null)break;
 			numberOfEnemyTypes++;
 		}
 		sectorEnemy = new GameObject[numberOfEnemyTypes];
 		sectorEnemyChance = new float[numberOfEnemyTypes];
 		for(int i = 0;i<numberOfEnemyTypes;i++){
-			sectorEnemy[i] = GameObject.Find(zoneData[i+1]);
+			sectorEnemy[i] = (GameObject)Resources.Load("Prefabs/Enemy/"+zoneData[i+1]);
 			sectorEnemyChance[i] = float.Parse(zoneData[i+6]);
-		//	Debug.Log("sectorEnemy[i]: "+sectorEnemy[i]);
-		//	Debug.Log("sectorEnemyChance[i]: "+sectorEnemyChance[i]);
+		}
+		Debug.Log("Number of enemies type: "+sectorEnemy.Length);
+		Debug.Log("Number of enemies typeL: "+sectorEnemyChance.Length);
+		foreach(GameObject s in sectorEnemy){
+			Debug.Log("OBJ: "+s);
+		}
+		foreach(float f in sectorEnemyChance){
+			Debug.Log("FRE: "+f);
 		}
 
 		//Set background
 		background.sharedMaterial.SetTexture("_MainTex",(Texture)Resources.Load("Textures/"+zoneData[11]));
 		background.sharedMaterial.SetTextureScale("_MainTex",new Vector2(float.Parse(zoneData[12]),float.Parse(zoneData[13])));
-		Debug.Log("Number of enemies type: "+sectorEnemy.Length);
+
 
 	}
 }

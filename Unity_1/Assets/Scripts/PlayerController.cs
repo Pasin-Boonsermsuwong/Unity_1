@@ -23,14 +23,13 @@ public class PlayerController : MonoBehaviour {
 
 	//Ship stats
 	public string[] mountList = {"Weapon1","Weapon2"};
-	public float strafeForce = 100f;
-	public float RotationSpeed = 300f;
-	public float power = 200f;
+	public float strafeForce;
+	public float RotationSpeed;
 	public float thrust;
 	public float maxSpeed;
 	public Rigidbody rb;
 	public Boundary boundary;
-	public float reverseFraction = 0.3f;
+	public float reverseFraction;
 	Vector3 mousePosition;
 	public GameObject shipImage;	//Image of ship in inventory UI
 
@@ -62,6 +61,7 @@ public class PlayerController : MonoBehaviour {
 		boundary.zMax = bg.transform.localScale.y/2;
 		boundary.zMin = -bg.transform.localScale.y/2;
 	}
+
 	void Update(){
 		if(GameController.pause)return;
 		Vector3 tf = myTransform.forward;
@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour {
 		myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(_direction), Time.deltaTime * RotationSpeed);
 
 		////////THRUST
-		rb.AddForce (tf * thrust *
+		rb.AddForce (tf * thrust * Time.deltaTime *
 		             Mathf.Clamp(Vector3.Distance (tp, mousePosition)-4.5f,0,maxSpeed)
 		             );
 		float backwardThrust = Input.GetAxis("Vertical");
@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour {
 				g.ID = i.ID;
 				g.fireRate = float.Parse(info[1]);
 				g.fireSpeed = float.Parse(info[2]);
-				g.shot = (GameObject)Resources.Load("Prefabs/"+info[3]);
+				g.shot = (GameObject)Resources.Load("Prefabs/Bullet/"+info[3]);
 				g.shotDeviation = float.Parse(info[4]);
 				g.energyRequirement = float.Parse(info[5]);
 			}
