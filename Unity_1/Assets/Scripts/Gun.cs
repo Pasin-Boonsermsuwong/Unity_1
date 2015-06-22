@@ -11,6 +11,7 @@ public class BulletMod{
 public class Gun : MonoBehaviour {
 //represents gun hardpoint on ship
 	PlayerController playerController;
+	Transform myTransform;
 	Rigidbody rb;
 	public int ID;
 	public float fireRate = 0.5f;
@@ -25,6 +26,7 @@ public class Gun : MonoBehaviour {
 	float dmgModifier;
 
 	void Start () {
+		myTransform = GetComponent<Transform>();
 		playerController = GetComponentInParent<PlayerController>();
 		fireRate = fireRate * playerController.rofModifier;
 		dmgModifier = playerController.dmgAdder;
@@ -46,9 +48,9 @@ public class Gun : MonoBehaviour {
 			playerController.energy -= energyRequirement;
 			GetComponent<AudioSource>().Play();
 			nextFire = Time.time + fireRate;
-			Vector3 eulerAngle = transform.rotation.eulerAngles;
+			Vector3 eulerAngle = myTransform.rotation.eulerAngles;
 			//Fire deviation
-			GameObject instantiated = Instantiate(shot, transform.position, 
+			GameObject instantiated = Instantiate(shot, myTransform.position, 
 			                                      Quaternion.Euler(new Vector3(
 				eulerAngle.x, 
 				eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 

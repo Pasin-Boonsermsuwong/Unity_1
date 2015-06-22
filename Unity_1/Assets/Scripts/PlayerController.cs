@@ -19,10 +19,10 @@ public class Boundary{
 public class PlayerController : MonoBehaviour {
 
 	GameController gameController;
+	Transform myTransform;
 
 	//Ship stats
 	public string[] mountList = {"Weapon1","Weapon2"};
-//	public Vector3[] mountPosition;
 	public float strafeForce = 100f;
 	public float RotationSpeed = 300f;
 	public float power = 200f;
@@ -52,6 +52,7 @@ public class PlayerController : MonoBehaviour {
 		updateMount();
 	}
 	void Start(){
+		myTransform = GetComponent<Transform>();
 		energy = energyCapacity;
 		gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		boundary = new Boundary();
@@ -63,15 +64,15 @@ public class PlayerController : MonoBehaviour {
 	}
 	void Update(){
 		if(GameController.pause)return;
-		Vector3 tf = transform.forward;
-		Vector3 tp = transform.position;
+		Vector3 tf = myTransform.forward;
+		Vector3 tp = myTransform.position;
 		mousePosition = Input.mousePosition;
 		mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 		mousePosition.y = 0;
-		////////ROTATION
+		////////ROTATION TOWARD MOUSE
 
 		Vector3 _direction = (mousePosition - tp).normalized;
-		transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_direction), Time.deltaTime * RotationSpeed);
+		myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(_direction), Time.deltaTime * RotationSpeed);
 
 		////////THRUST
 		rb.AddForce (tf * thrust *
@@ -90,19 +91,19 @@ public class PlayerController : MonoBehaviour {
 		////////BOUNDARY
 		if(tp.x>boundary.xMax){
 			gameController.SwitchSector(1,0);
-			transform.position = new Vector3(boundary.xMin,0.0f,transform.position.z);
+			myTransform.position = new Vector3(boundary.xMin,0.0f,myTransform.position.z);
 		}
 		else if(tp.x<boundary.xMin){
 			gameController.SwitchSector(-1,0);
-			transform.position = new Vector3(boundary.xMax,0.0f,transform.position.z);
+			myTransform.position = new Vector3(boundary.xMax,0.0f,myTransform.position.z);
 		}
 		if(tp.z>boundary.zMax){
 			gameController.SwitchSector(0,1);
-			transform.position = new Vector3(transform.position.x,0.0f,boundary.zMin);
+			myTransform.position = new Vector3(myTransform.position.x,0.0f,boundary.zMin);
 		}
 		else if(tp.z<boundary.zMin){
 			gameController.SwitchSector(0,-1);
-			transform.position = new Vector3(transform.position.x,0.0f,boundary.zMax);
+			myTransform.position = new Vector3(myTransform.position.x,0.0f,boundary.zMax);
 		}
 
 		//////ENERGY
@@ -130,18 +131,18 @@ public class PlayerController : MonoBehaviour {
 			Transform G = shipImage.transform.Find(s+"Mount");
 			if(G.childCount==0){
 	//			Debug.Log("Mount childcount = 0");
-				Gun g1 = transform.Find(s).GetComponent<Gun>();
+				Gun g1 = myTransform.Find(s).GetComponent<Gun>();
 				g1.equipped = false;
 				return;
 			}
 			ItemController i = G.GetChild(0).GetComponent<ItemController>();//get hardpoint from inventory canvas
 			if(i==null){	//Deactivate gun since it is not equipped
-				Gun g1 = transform.Find(s).GetComponent<Gun>();
+				Gun g1 = myTransform.Find(s).GetComponent<Gun>();
 				g1.equipped = false;
 			}
 			else {			//Equip a new gun
 				string[] info = ItemData.getInfo(i.ID);
-				Gun g = transform.Find(s).GetComponent<Gun>();
+				Gun g = myTransform.Find(s).GetComponent<Gun>();
 				g.equipped = true;
 				g.ID = i.ID;
 				g.fireRate = float.Parse(info[1]);

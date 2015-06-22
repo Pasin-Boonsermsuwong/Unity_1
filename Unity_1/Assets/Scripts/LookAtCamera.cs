@@ -1,18 +1,24 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 
 public class LookAtCamera : MonoBehaviour {
+	
+	Transform parent;
+	Transform myTransform;
+	Quaternion rotation;
+	public float yOffset;
+	public float zOffset;
 
-	public Image Fill;
-	public Transform parent;
 	void Start(){
-		transform.position = new Vector3(parent.position.x,parent.position.y+5,parent.position.z+5);
-		transform.rotation = Quaternion.Euler(90, 0, 0); 
+		myTransform = GetComponent<Transform>();
+		rotation = Quaternion.Euler(90, 0, 0); 
+		parent = transform.root;
+		myTransform.position = new Vector3(parent.position.x,parent.position.y+yOffset,parent.position.z+zOffset);
+		myTransform.rotation = rotation;
 	}
 	void Update() {
-		transform.position = new Vector3(parent.position.x,parent.position.y+5,parent.position.z+5);
-		transform.rotation = Quaternion.Euler(90, 0, 0); 
+		myTransform.position = new Vector3(parent.position.x,parent.position.y+yOffset,parent.position.z+zOffset);
+		myTransform.rotation = rotation;
 
 	}
 }

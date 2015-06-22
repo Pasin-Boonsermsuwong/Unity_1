@@ -66,6 +66,7 @@ public class ZoneData{
 	//Zone ID, BG material name ,enemy1 (prefab name), enemy2, enemy3, enemy4, enemy5, (ABSOLUTE 0<x<1) freq1, freq2, freq3, freq4, freq5
 	//textureName, tilingX, tilingY
 	public static string[][] zoneEnemyInfo = {
+	//	new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null,"tile_nebula_green_dff","8","4"},
 		new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null,"tile_nebula_green_dff","8","4"},
 		new string[]{"1","Asteroid",null,null,null,null,"0.07",null,null,null,null,"background_asteroid1","14","10.5"},
 	};
