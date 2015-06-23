@@ -96,6 +96,7 @@ GameObject:
   - 114: {fileID: 11414638}
   - 54: {fileID: 5498914}
   - 136: {fileID: 13634224}
+  - 114: {fileID: 11437884}
   m_Layer: 0
   m_Name: Asteroid
   m_TagString: Enemy
@@ -277,6 +278,22 @@ MonoBehaviour:
     tumble: 5
     scaleMin: 1
     scaleMax: 3
+  dmgText: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
+--- !u!114 &11437884
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 149732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 151c25d7b9834d7498b1aa37bd386dfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 00000000
+  chance:
+  - .300000012
+  collectible: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
 --- !u!114 &11439140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -288,6 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f05e3b75328c73e49ba72e404ede9c20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dmgText: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
 --- !u!114 &11451836
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -573,6 +591,14 @@ Prefab:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 0}
+      propertyPath: ID.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: chance.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
       propertyPath: m_SizeDelta.x
       value: 1
       objectReference: {fileID: 0}
@@ -592,6 +618,30 @@ Prefab:
       propertyPath: zOffset
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Drag
+      value: .5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Constraints
+      value: 116
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: chance.Array.data[0]
+      value: .300000012
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: collectible
+      value: 
+      objectReference: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
+    - target: {fileID: 0}
+      propertyPath: dmgText
+      value: 
+      objectReference: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 149732}

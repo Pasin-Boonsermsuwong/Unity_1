@@ -10,6 +10,7 @@ TagManager:
   - Background
   - Loot
   - BulletEnemy
+  - Inventory
   layers:
   - Default
   - TransparentFX

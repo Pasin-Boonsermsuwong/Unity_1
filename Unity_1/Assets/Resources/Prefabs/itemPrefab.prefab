@@ -50,7 +50,7 @@ GameObject:
   - 114: {fileID: 11436182}
   - 114: {fileID: 11491026}
   m_Layer: 5
-  m_Name: item
+  m_Name: itemPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
