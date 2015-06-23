@@ -17,6 +17,8 @@ public class Health : MonoBehaviour {
 	//Initial speed / rotation / scale. Only needed for asteroids or other unmanned object
 	public bool speedTumbleScale;
 	public SpeedTumbleScale STS;
+	public GameObject dmgText;
+
 
 	void Start () {
 	//	isDead = false;
@@ -38,8 +40,9 @@ public class Health : MonoBehaviour {
 
 	public void TakeDamage(float amount){
 		curHP -= amount;
-		if(curHP<=0)Death ();
 		slider.value = curHP/maxHP;
+		if(curHP<=0)Death ();
+
 	}
 
 	public void Death(){

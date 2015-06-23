@@ -8,6 +8,7 @@ public class HealthPlayer : MonoBehaviour {
 	public Slider slider;
 	public GameObject explosion;
 	GameController gc;
+	public GameObject dmgText;
 	
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
@@ -16,8 +17,9 @@ public class HealthPlayer : MonoBehaviour {
 	
 	public void TakeDamage(float amount){
 		curHP -= amount;
-		if(curHP<=0)Death ();
 		slider.value = curHP/maxHP;
+		if(curHP<=0)Death ();
+
 	}
 	
 	void Death(){
