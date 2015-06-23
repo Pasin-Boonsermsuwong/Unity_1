@@ -7,8 +7,6 @@ public class BoltCollision : MonoBehaviour {
 	public float baseDamage = 200;
 	//public AsteroidHealth sc;
 	void Start(){
-//		PlayerController p = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
-//		damage = p.gunDamage;
 	}
 	void OnTriggerEnter(Collider other){
 		if(tag=="Bullet" && other.tag=="Enemy"){

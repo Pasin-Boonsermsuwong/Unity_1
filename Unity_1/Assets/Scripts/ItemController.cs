@@ -11,7 +11,7 @@ public class ItemController : MonoBehaviour {
 		this.ID = ID;
 		string[] s = ItemData.getItemInfo(ID);
 		GetComponent<Draggable>().type = (Draggable.Slot)System.Enum.Parse( typeof( Draggable.Slot ), s[1]);
-		GetComponent<Image>().sprite = Resources.Load<Sprite>(s[2]);
+		GetComponent<Image>().sprite = Resources.Load<Sprite>("Textures/"+s[2]);
 		GetComponent<Draggable>().infoText = s[3];
 	}
 }

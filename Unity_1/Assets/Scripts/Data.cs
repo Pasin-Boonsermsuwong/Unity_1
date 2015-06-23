@@ -31,14 +31,18 @@ public class ShipData{
 [System.Serializable]
 public class ItemData{
 
-				//ID, Draggable.type, sprite name, infocard
+			//ID, Draggable.type, sprite name, infocard
 	public static string[][] itemInfo = {
-		new string[]{"1","WEAPON1","item1","The basic weapon"}
+		new string[]{"1","WEAPON1","item1","The basic weapon"},
+		new string[]{"2","WEAPON1","itemShotgun","Shotgun"},
+		new string[]{"3","WEAPON1","itemSnipe","something sniper"}
 
 	};
-			//ID , firerate, speed, bullet prefab name, shotDeviation, energyRequirement
+			//ID , firerate, speedMin, speedMax, bullet prefab name, shotDeviation, energyRequirement, shotAmount
 	public static string[][] info = {
-		new string[]{"1","0.3","800","shotBolt","5","30"}
+		new string[]{"1","0.3","800","800","shotBolt","5","30","1"},
+		new string[]{"2","1","600","1000","shotBolt","13","120","6"},
+		new string[]{"3","1","2000","2500","shotLarge","0","150","1"}
 	};
 	public static string[] getItemInfo(int ID){		//When instantiate eqiupped weapon
 		return itemInfo[ID];
@@ -47,19 +51,6 @@ public class ItemData{
 		return info[ID];
 	}
 }
-/*
-        Dictionary<string, BadGuy> badguys = new Dictionary<string, BadGuy>();
-        
-        BadGuy bg1 = new BadGuy("Harvey", 50);
-        BadGuy bg2 = new BadGuy("Magneto", 100);
-        
-        //You can place variables into the Dictionary with the
-        //Add() method.
-        badguys.Add("gangster", bg1);
-        badguys.Add("mutant", bg2);
-        
-        BadGuy magneto = badguys["mutant"];
- */
 [System.Serializable]
 public class ZoneData{
 	//Type of enemies 
@@ -77,7 +68,6 @@ public class ZoneData{
 		new string[]{"0","0","10"},
 		new string[]{"1","1","10"},
 		new string[]{"2","5","5"},
-		//new string[]{"3","1000","1"},
 	};
 	/*
 	public static Dictionary<string,Object> getZoneEnemyInfoDict(int ID){

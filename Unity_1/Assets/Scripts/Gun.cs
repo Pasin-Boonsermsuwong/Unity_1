@@ -16,11 +16,13 @@ public class Gun : MonoBehaviour {
 	public int ID;
 	public float fireRate;
 	float nextFire;
-	public float fireSpeed;
+	public float fireSpeedMin;
+	public float fireSpeedMax;
 	public GameObject shot;
 	public float shotDeviation;
 	public bool equipped;
 	public float energyRequirement;
+	public float shotAmount;
 
 	//modifier from parent
 	float dmgModifier;
@@ -48,20 +50,27 @@ public class Gun : MonoBehaviour {
 			playerController.energy -= energyRequirement;
 			GetComponent<AudioSource>().Play();
 			nextFire = Time.time + fireRate;
-			Vector3 eulerAngle = myTransform.rotation.eulerAngles;
-			//Fire deviation
-			GameObject instantiated = Instantiate(shot, myTransform.position, 
-			                                      Quaternion.Euler(new Vector3(
-				eulerAngle.x, 
-				eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
-				eulerAngle.z))) as GameObject;
-			//Initial velocity
-			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
-			//Fire speed
-			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*fireSpeed);
-			instantiated.GetComponent<BoltCollision>().ActivateBulletMod(new BulletMod(dmgModifier));
+			for(int i = 0;i<shotAmount;i++){
+				Vector3 eulerAngle = myTransform.rotation.eulerAngles;
+				float shootSpeed;
+				if(Mathf.Approximately(fireSpeedMax,fireSpeedMin)){
+					shootSpeed = fireSpeedMin;
+				}else{
+					shootSpeed = Random.Range(fireSpeedMin,fireSpeedMax);
+				}
+
+				//Fire deviation
+				GameObject instantiated = Instantiate(shot, myTransform.position, 
+				                                      Quaternion.Euler(new Vector3(
+					eulerAngle.x, 
+					eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
+					eulerAngle.z))) as GameObject;
+				//Initial velocity
+				instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
+				//Fire speed
+				instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*shootSpeed);
+				instantiated.GetComponent<BoltCollision>().ActivateBulletMod(new BulletMod(dmgModifier));
+			}
 		};
-
 	}
-
 }

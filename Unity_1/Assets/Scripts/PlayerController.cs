@@ -114,6 +114,7 @@ public class PlayerController : MonoBehaviour {
 	//Edit player modifier and update modifier in all mounts
 	public void editModifier(ModifierChangeRequest m){
 		dmgAdder += m.dmgAdder;
+		//decrease rof (minimun = 0.1)
 		rofModifier = Mathf.Max(rofModifier + m.rofModifier,0.1f);
 		applyModifier();
 	}
@@ -146,10 +147,12 @@ public class PlayerController : MonoBehaviour {
 				g.equipped = true;
 				g.ID = i.ID;
 				g.fireRate = float.Parse(info[1]);
-				g.fireSpeed = float.Parse(info[2]);
-				g.shot = (GameObject)Resources.Load("Prefabs/Bullet/"+info[3]);
-				g.shotDeviation = float.Parse(info[4]);
-				g.energyRequirement = float.Parse(info[5]);
+				g.fireSpeedMin = float.Parse(info[2]);
+				g.fireSpeedMax = float.Parse(info[3]);
+				g.shot = (GameObject)Resources.Load("Prefabs/Bullet/"+info[4]);
+				g.shotDeviation = float.Parse(info[5]);
+				g.energyRequirement = float.Parse(info[6]);
+				g.shotAmount = float.Parse(info[7]);
 			}
 		}
 		applyModifier();

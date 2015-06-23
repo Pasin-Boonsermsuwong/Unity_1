@@ -3436,11 +3436,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 0
   fireRate: 0
-  fireSpeed: 0
+  fireSpeedMin: 0
+  fireSpeedMax: 0
   shot: {fileID: 0}
   shotDeviation: 0
   equipped: 0
   energyRequirement: 0
+  shotAmount: 0
 --- !u!82 &1800865335
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3621,11 +3623,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 0
   fireRate: 0
-  fireSpeed: 0
+  fireSpeedMin: 0
+  fireSpeedMax: 0
   shot: {fileID: 0}
   shotDeviation: 0
   equipped: 0
   energyRequirement: 0
+  shotAmount: 0
 --- !u!1 &1852198988
 GameObject:
   m_ObjectHideFlags: 0

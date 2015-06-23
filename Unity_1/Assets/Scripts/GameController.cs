@@ -22,7 +22,6 @@ public class GameController : MonoBehaviour
 	bool restart;
 	public static bool pause;
 	int score;
-	int wave;
 
 	//Sector
 	float boundaryX;
@@ -46,7 +45,6 @@ public class GameController : MonoBehaviour
 
 	void Start ()
 	{
-	//	Random.seed = 10;
 		GameObject bgGameObject = GameObject.FindWithTag("Background");
 		background = bgGameObject.GetComponent<Renderer>();
 		boundaryX = bgGameObject.transform.localScale.x/2;
@@ -56,27 +54,16 @@ public class GameController : MonoBehaviour
 		boundarySpawnX = boundaryX + 50;	
 		boundarySpawnZ = boundaryZ + 50;
 		player = GameObject.FindWithTag("Player");
-	//	background.material.color = Color.red;
-
-//		Debug.Log("BG: "+background);
 		sectorX = 0;
 		sectorY = 0;
 		SwitchSector(0,0);
 		pauseObject.SetActive(false);
-	//	pauseText.enabled = false;
-	//	invCanvas.enabled = false;
 		gameOver = false;
 		restart = false;
 		restartText.text = "";
 		gameOverText.text = "";
 		score = 0;
 		UpdateScore ();
-		wave = 1;
-
-
-			//SetTextureOffset("_MainTex",new Vector2(x,savedOffset.y));
-
-	//	StartCoroutine (SpawnWaves ());
 		StartCoroutine (SpawnPowerups());
 	}
 	void FixedUpdate(){

@@ -9,8 +9,10 @@ public class InventoryController : MonoBehaviour {
 		//test
 		InsertItem(0);
 		InsertItem(0);
-		InsertItem(0);
-
+		InsertItem(1);
+		InsertItem(1);
+		InsertItem(2);
+		InsertItem(2);
 	}
 
 	public void InsertItem (int ID){
