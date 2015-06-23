@@ -44,8 +44,13 @@ public class Health : MonoBehaviour {
 
 	public void Death(){
 		Instantiate(explosion, transform.position, transform.rotation);
-		//GameObject explosionClone = Instantiate(explosion, transform.position, transform.rotation) as GameObject;
-		//explosionClone.transform.localScale = (new Vector3(scale*1.5f,scale*1.5f,scale*1.5f));
+		//Spawn loot
+		EnemyDrop e = GetComponent<EnemyDrop>();
+		if(e!=null){
+			e.SpawnLoot();
+		}else{
+			Debug.Log("Health script w/o enemyDrop found");
+		}
 		gc.AddScore(score);
 		Destroy (gameObject);
 	}

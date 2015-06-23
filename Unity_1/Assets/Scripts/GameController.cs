@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour
 	public Text restartText;
 	public Text gameOverText;
 	public Text sectorText;
+	public GameObject inventoryPanel;
 	//Pause stuff
 	public GameObject pauseObject;
 
@@ -64,7 +65,6 @@ public class GameController : MonoBehaviour
 		gameOverText.text = "";
 		score = 0;
 		UpdateScore ();
-		StartCoroutine (SpawnPowerups());
 	}
 	void FixedUpdate(){
 		//Spawn enemies
@@ -135,34 +135,6 @@ public class GameController : MonoBehaviour
 		return spawnPosition;
 	}
 
-	IEnumerator SpawnPowerups ()
-	{
-		while (true)
-		{
-			yield return new WaitForSeconds (Random.Range(5,15));
-		//	Debug.Log("Powerup spawned");
-			Vector3 spawnPosition = randomSpawnPosition();
-			Instantiate (powerup,
-			             spawnPosition,
-			             Quaternion.Slerp(
-				transform.rotation,
-				Quaternion.LookRotation(
-				(new Vector3 (Random.Range (-boundaryInnerX, boundaryInnerX), 0,Random.Range (-boundaryInnerZ, boundaryInnerZ)) - spawnPosition).normalized
-				),
-				360
-				)
-			             );
-			if (gameOver)
-			{
-				break;
-			}
-		}
-	}
-
-
-
-
-	
 	public void AddScore (int newScoreValue)
 	{
 		score += newScoreValue;
@@ -180,7 +152,15 @@ public class GameController : MonoBehaviour
 		gameOverText.text = "Game Over!";
 		gameOver = true;
 	}
+
+	public void insertItem(int ID){
+		inventoryPanel.GetComponent<InventoryController>().InsertItem(ID);
+	}
+
 	public void SwitchSector (int dx,int dy){
+
+
+
 		//Destroy all existing enemy / loot
 		GameObject[] g = GameObject.FindGameObjectsWithTag("Enemy");
 		for(int i = 0;i<g.Length;i++){
@@ -217,17 +197,9 @@ public class GameController : MonoBehaviour
 		}
 		Debug.Log("Number of enemies type: "+sectorEnemy.Length);
 		Debug.Log("Number of enemies typeL: "+sectorEnemyChance.Length);
-		foreach(GameObject s in sectorEnemy){
-			Debug.Log("OBJ: "+s);
-		}
-		foreach(float f in sectorEnemyChance){
-			Debug.Log("FRE: "+f);
-		}
 
 		//Set background
 		background.sharedMaterial.SetTexture("_MainTex",(Texture)Resources.Load("Textures/"+zoneData[11]));
 		background.sharedMaterial.SetTextureScale("_MainTex",new Vector2(float.Parse(zoneData[12]),float.Parse(zoneData[13])));
-
-
 	}
 }

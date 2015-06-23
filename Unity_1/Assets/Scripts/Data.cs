@@ -31,18 +31,24 @@ public class ShipData{
 [System.Serializable]
 public class ItemData{
 
-			//ID, Draggable.type, sprite name, infocard
+		//ID, Draggable.type, sprite name, infocard, Name
 	public static string[][] itemInfo = {
-		new string[]{"1","WEAPON1","item1","The basic weapon"},
-		new string[]{"2","WEAPON1","itemShotgun","Shotgun"},
-		new string[]{"3","WEAPON1","itemSnipe","something sniper"}
+		new string[]{"0","WEAPON1","item1","The basic peashooter","Basic gun"},
+		new string[]{"1","WEAPON1","itemShotgun","Classic multiple shot shotgun","Shotgun"},
+		new string[]{"2","WEAPON1","itemSnipe","Shoot powerful high-velocity bullet","Sniper rifle"}
 
 	};
-			//ID , firerate, speedMin, speedMax, bullet prefab name, shotDeviation, energyRequirement, shotAmount
+		//ID , firerate, speedMin, speedMax, bullet prefab name, shotDeviation, energyRequirement, shotAmount
 	public static string[][] info = {
-		new string[]{"1","0.3","800","800","shotBolt","5","30","1"},
-		new string[]{"2","1","600","1000","shotBolt","13","120","6"},
-		new string[]{"3","1","2000","2500","shotLarge","0","150","1"}
+		new string[]{"0","0.3","800","800","shotBolt","5","30","1"},
+		new string[]{"1","1","600","1000","shotBolt","13","120","6"},
+		new string[]{"2","1","2000","2500","shotLarge","0","150","1"}
+	};
+	//ID, drop1, chance1, drop2, chance2, drop3, chance3,
+	public static string[][] dropInfo = {
+		new string[]{"0","0.3","800","800","shotBolt","5","30","1"},
+		new string[]{"1","1","600","1000","shotBolt","13","120","6"},
+		new string[]{"2","1","2000","2500","shotLarge","0","150","1"}
 	};
 	public static string[] getItemInfo(int ID){		//When instantiate eqiupped weapon
 		return itemInfo[ID];
@@ -69,22 +75,6 @@ public class ZoneData{
 		new string[]{"1","1","10"},
 		new string[]{"2","5","5"},
 	};
-	/*
-	public static Dictionary<string,Object> getZoneEnemyInfoDict(int ID){
-		Dictionary<string,Object> temp = new Dictionary<string,Object>();
-		temp.Add("id",zoneEnemyInfo[ID][0]);
-		temp.Add("enemy1",zoneEnemyInfo[ID][1]);
-		temp.Add("enemy2",zoneEnemyInfo[ID][2]);
-		temp.Add("enemy3",zoneEnemyInfo[ID][3]);
-		temp.Add("enemy4",zoneEnemyInfo[ID][4]);
-		temp.Add("freq1",zoneEnemyInfo[ID][5]);
-		temp.Add("freq2",zoneEnemyInfo[ID][6]);
-		temp.Add("freq3",zoneEnemyInfo[ID][7]);
-		temp.Add("freq4",zoneEnemyInfo[ID][8]);
-
-		return temp;
-	}
-	*/
 	public static string[] getZoneEnemyInfo(int ID){
 		
 		return zoneEnemyInfo[ID];
@@ -144,5 +134,8 @@ public class Library{
 		}
 		Debug.LogError("weightedRandom Error");
 		return 0;
+	}
+	public static bool chance(float chance){
+		return Random.value<chance;
 	}
 }
