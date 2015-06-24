@@ -1,4 +1,4 @@
-﻿	using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -7,9 +7,6 @@ public class GameController : MonoBehaviour
 	public GameObject player;
 	
 	public GameObject powerup;
-	public Vector3 spawnValues;
-	public int hazardCount;
-	public int hazardInc;
 	public Text scoreText;
 	public Text restartText;
 	public Text gameOverText;
@@ -27,10 +24,14 @@ public class GameController : MonoBehaviour
 	//Sector
 	float boundaryX;
 	float boundaryZ;
-	float boundaryInnerX;//for spawn target
-	float boundaryInnerZ;
-	float boundarySpawnX;//for spawn position
+	
+	//for spawn position (outside actual boundary)
+	float boundarySpawnX;
 	float boundarySpawnZ;
+
+	//for spawned to move toward to
+	float boundaryInnerX;
+	float boundaryInnerZ;
 
 	int sectorX;
 	int sectorY;
@@ -67,7 +68,9 @@ public class GameController : MonoBehaviour
 		UpdateScore ();
 	}
 	void FixedUpdate(){
-		//Spawn enemies
+
+		//SPAWN ENEMIES
+
 		if(!gameOver){
 			for(int i = 0;i<sectorEnemy.Length;i++){
 				if(!Data.chance(sectorEnemyChance[i]))continue;
@@ -94,7 +97,9 @@ public class GameController : MonoBehaviour
 				Application.LoadLevel (Application.loadedLevel);
 			}
 		}
-		if(Input.GetKeyDown("p")){
+
+		//PAUSE
+		if(Input.GetButtonDown("Pause")){
 			pause = !pause;
 			if(pause){
 				Time.timeScale = 0;
@@ -159,8 +164,6 @@ public class GameController : MonoBehaviour
 
 	public void SwitchSector (int dx,int dy){
 
-
-
 		//Destroy all existing enemy / loot
 		GameObject[] g = GameObject.FindGameObjectsWithTag("Enemy");
 		for(int i = 0;i<g.Length;i++){
@@ -171,17 +174,12 @@ public class GameController : MonoBehaviour
 			Destroy(g2[i]);
 		}
 
-		//Change sector
-		sectorX += dx;
-		sectorY += dy;
-		sectorText.text = "Sector: "+sectorX+" , "+sectorY;
-
 		//Calculate difficulty based on distance
 		difficultyMax = Mathf.Sqrt(Mathf.Pow(sectorX,2)+Mathf.Pow(sectorX,3));
 		difficultyMin = Mathf.Max(difficultyMax/1.3f-10,0);
 		Debug.Log("DifficultyMin = "+difficultyMin+" DifficultyMax = "+difficultyMax);
 
-		//Create sectorEnemy[] and chance array
+		//Create sectorEnemy[] and sectorEnemyChance[] array
 		zone = ZoneData.getRandomZone(difficultyMin,difficultyMax);
 		string[] zoneData = ZoneData.getZoneEnemyInfo(zone);
 		int numberOfEnemyTypes = 0;
@@ -201,5 +199,11 @@ public class GameController : MonoBehaviour
 		//Set background
 		background.sharedMaterial.SetTexture("_MainTex",(Texture)Resources.Load("Textures/"+zoneData[11]));
 		background.sharedMaterial.SetTextureScale("_MainTex",new Vector2(float.Parse(zoneData[12]),float.Parse(zoneData[13])));
+
+		//Change sector text
+		sectorX += dx;
+		sectorY += dy;
+		sectorText.text = "Sector: ("+sectorX+" , "+sectorY+") - "+zoneData[14];
+
 	}
 }

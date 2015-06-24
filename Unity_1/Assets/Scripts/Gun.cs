@@ -70,6 +70,8 @@ public class Gun : MonoBehaviour {
 				//Fire speed
 				instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*shootSpeed);
 				instantiated.GetComponent<BoltCollision>().ActivateBulletMod(new BulletMod(dmgModifier));
+
+				instantiated.tag = "BulletPlayer";
 			}
 		};
 	}

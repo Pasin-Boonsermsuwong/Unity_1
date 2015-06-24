@@ -29,7 +29,7 @@ public class Health : MonoBehaviour {
 			GetComponent<Rigidbody>().AddForce (transform.forward * Random.Range(STS.speedMin,STS.speedMax));
 			GetComponent<Rigidbody>().angularVelocity = Random.insideUnitSphere * STS.tumble;
 			scale = Random.Range(STS.scaleMin,STS.scaleMax);
-			transform.localScale += new Vector3(scale*1.5f,scale*1.5f,scale*1.5f);
+			transform.localScale += new Vector3(scale,scale,scale);
 			maxHP = maxHP * scale  ;
 
 		}

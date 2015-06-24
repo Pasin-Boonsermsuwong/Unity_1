@@ -6,13 +6,8 @@ public class Powerup : MonoBehaviour {
 	public string s;
 	PlayerController plr;
 	int type;
-			/*
-			0 = improve firerate
-			1 = improve damage
-			 */
 
 	void Start(){
-		GameController gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		//Determine powerup type
 		type = Random.Range(0,2);
 		switch(type){

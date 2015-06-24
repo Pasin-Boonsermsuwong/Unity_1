@@ -11,7 +11,7 @@ public class BoltCollision : MonoBehaviour {
 	void Start(){
 	}
 	void OnTriggerEnter(Collider other){
-		if(tag=="Bullet" && other.tag=="Enemy"){
+		if(tag=="BulletPlayer" && other.tag=="Enemy"){
 			other.GetComponent<Health>().TakeDamage(baseDamage);
 			Hit (other);
 		}

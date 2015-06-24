@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &100074
 GameObject:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
@@ -170,6 +170,7 @@ Transform:
   m_Children:
   - {fileID: 461242}
   - {fileID: 471628}
+  - {fileID: 445464}
   - {fileID: 22427356}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -179,12 +180,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100074}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: .899999976, z: 1}
+  m_LocalRotation: {x: .707106829, y: 0, z: 0, w: .707106709}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 0}
   m_Children: []
-  m_Father: {fileID: 22427356}
-  m_RootOrder: 0
+  m_Father: {fileID: 426102}
+  m_RootOrder: 2
 --- !u!4 &461242
 Transform:
   m_ObjectHideFlags: 1
@@ -535,10 +536,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfad5816bfc0c90449a3099a4ebdb245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 500
+  maxHP: 700
   curHP: 0
   slider: {fileID: 11424448}
-  score: 0
+  score: 500
   explosion: {fileID: 100012, guid: 384371afbb4354cc9a3fc68eab303756, type: 2}
   speedTumbleScale: 0
   STS:
@@ -621,12 +622,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ef763927e1eeb4bb2cec228411b342, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireSpeed: 400
+  fireSpeedMin: 400
+  fireSpeedMax: 450
   shot: {fileID: 154326, guid: 000d2c9a98fad844aa34141f293af42b, type: 2}
   shotDeviation: 10
   minCooldown: .5
   maxCooldown: 2.5
   engageRange: 20
+  shotAmount: 1
 --- !u!114 &11460588
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -651,12 +654,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ef763927e1eeb4bb2cec228411b342, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireSpeed: 400
+  fireSpeedMin: 400
+  fireSpeedMax: 450
   shot: {fileID: 154326, guid: 000d2c9a98fad844aa34141f293af42b, type: 2}
   shotDeviation: 10
   minCooldown: .5
   maxCooldown: 2.5
   engageRange: 20
+  shotAmount: 1
 --- !u!212 &21299768
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -740,10 +745,9 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 445464}
   - {fileID: 22431974}
   m_Father: {fileID: 426102}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -762,7 +766,7 @@ RectTransform:
   - {fileID: 22475988}
   - {fileID: 22419454}
   m_Father: {fileID: 22427356}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: 0, y: 1.20000005}
@@ -841,6 +845,22 @@ Prefab:
       propertyPath: dmgText
       value: 
       objectReference: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
+    - target: {fileID: 0}
+      propertyPath: maxHP
+      value: 700
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: fireSpeedMin
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: fireSpeedMax
+      value: 450
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: score
+      value: 500
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 149532}

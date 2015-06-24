@@ -12,7 +12,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler,IEndDrag
 	string infoText_default = "<size=25>INFOCARD TITLE</size>" +
 		"\n *1111111111" +
 		"\n *2222222222";
-	public Text infoBox;
+	Text infoBox;
 	public GameObject infobox_panel;
 //	public Transform defaultItemParent;
 
@@ -32,10 +32,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler,IEndDrag
 	}
 	public void OnEndDrag(PointerEventData e){
 		transform.SetParent(parentToReturnTo);
-	//	if(GetComponentInParent<Dropable>().capacity==1){	//if the new parent is a mount, update mount on player
-			transform.GetComponent<mountPlayerCaller>().UpdateMount();
-	//	}
-	
+		transform.GetComponent<mountPlayerCaller>().UpdateMount();
 		GetComponent<CanvasGroup>().blocksRaycasts = true;
 	}
 	//Show infobox

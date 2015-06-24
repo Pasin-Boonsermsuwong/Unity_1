@@ -7,7 +7,7 @@ public class CollisionKillHealth : MonoBehaviour {
 		if(other.tag=="Player"){
 			float dmg = this.GetComponent<Health>().curHP;
 			other.GetComponent<HealthPlayer>().TakeDamage(dmg);
-			dmgText = Instantiate(dmgText, transform.position, Quaternion.Euler(90, 0, 0)) as GameObject;
+			dmgText = Instantiate(dmgText, other.transform.position, Quaternion.Euler(90, 0, 0)) as GameObject;
 			dmgText.GetComponent<TextMesh>().text = Mathf.Round(dmg) + "";
 			GetComponent<Health>().Death();
 		}
