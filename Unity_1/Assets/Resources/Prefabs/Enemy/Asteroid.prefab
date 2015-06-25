@@ -269,7 +269,7 @@ MonoBehaviour:
   loot:
     ID: 00000000
     chance:
-    - .699999988
+    - .200000003
     collectible: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
   dmgText: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
   isDead: 0
