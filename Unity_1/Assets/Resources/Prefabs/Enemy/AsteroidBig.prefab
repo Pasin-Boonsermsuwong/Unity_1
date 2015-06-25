@@ -44,7 +44,6 @@ GameObject:
   - 114: {fileID: 11464480}
   - 114: {fileID: 11464730}
   - 54: {fileID: 5451038}
-  - 114: {fileID: 11483894}
   - 136: {fileID: 13651750}
   m_Layer: 0
   m_Name: AsteroidBig
@@ -308,7 +307,12 @@ MonoBehaviour:
     tumble: 2
     scaleMin: 22
     scaleMax: 30
+  loot:
+    ID: 
+    chance: []
+    collectible: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
   dmgText: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
+  isDead: 0
 --- !u!114 &11476112
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -330,20 +334,6 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &11483894
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 109416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 151c25d7b9834d7498b1aa37bd386dfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: 
-  chance: []
-  collectible: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
 --- !u!114 &11486530
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -612,6 +602,10 @@ Prefab:
       propertyPath: explosion
       value: 
       objectReference: {fileID: 178078, guid: 7bbb268657e94224486a25d098f1be1e, type: 2}
+    - target: {fileID: 0}
+      propertyPath: loot.collectible
+      value: 
+      objectReference: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 109416}

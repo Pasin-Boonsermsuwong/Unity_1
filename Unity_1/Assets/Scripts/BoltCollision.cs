@@ -22,7 +22,6 @@ public class BoltCollision : MonoBehaviour {
 	}
 	public void ActivateBulletMod(BulletMod g){
 		baseDamage += g.dmgAdder;
-	//	GetComponent<Rigidbody>().AddForce (transform.forward * g.speed);
 	}
 	void Hit(Collider other){
 		Instantiate(explosion, transform.position, transform.rotation);

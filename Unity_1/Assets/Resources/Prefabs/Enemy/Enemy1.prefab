@@ -83,7 +83,6 @@ GameObject:
   - 65: {fileID: 6559500}
   - 114: {fileID: 11460588}
   - 114: {fileID: 11433890}
-  - 114: {fileID: 11404112}
   m_Layer: 0
   m_Name: Enemy1
   m_TagString: Enemy
@@ -407,21 +406,6 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
---- !u!114 &11404112
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 149532}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 151c25d7b9834d7498b1aa37bd386dfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: 01000000
-  chance:
-  - .100000001
-  collectible: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
 --- !u!114 &11414986
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -548,7 +532,12 @@ MonoBehaviour:
     tumble: 0
     scaleMin: 0
     scaleMax: 0
+  loot:
+    ID: 
+    chance: []
+    collectible: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
   dmgText: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
+  isDead: 0
 --- !u!114 &11433890
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -560,7 +549,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3082ce5ce16553a4384939e4896ba53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   distanceToTarget: 0
 --- !u!114 &11435942
 MonoBehaviour:
@@ -861,6 +849,10 @@ Prefab:
       propertyPath: score
       value: 500
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: loot.collectible
+      value: 
+      objectReference: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 149532}

@@ -19,9 +19,7 @@ public class HealthPlayer : MonoBehaviour {
 		curHP -= amount;
 		slider.value = curHP/maxHP;
 		if(curHP<=0)Death ();
-
 	}
-	
 	void Death(){
 		Instantiate(explosion, transform.position, transform.rotation);
 		Destroy (gameObject);

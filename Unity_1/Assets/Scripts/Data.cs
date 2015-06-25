@@ -24,8 +24,6 @@ public class ShipData{
 	public ShipData(){
 
 	}
-
-
 }
 
 [System.Serializable]
@@ -55,12 +53,12 @@ public class ItemData{
 [System.Serializable]
 public class ZoneData{
 
-	//Zone ID, BG material name ,(prefab name) enemy1, enemy2, enemy3, enemy4, enemy5, (ABSOLUTE 0<x<1) freq1, freq2, freq3, freq4, freq5
+	//[0-10]	Zone ID ,(prefab name) enemy1, enemy2, enemy3, enemy4, enemy5, (ABSOLUTE 0<x<1) freq1, freq2, freq3, freq4, freq5
 	 
-	//textureName, tilingX, tilingY, Sector name
+	//[11-14]	textureName, tilingX, tilingY, Sector name
 	public static string[][] zoneEnemyInfo = {
-		new string[]{"0","Enemy1","AsteroidBig",null,null,null,"0.01","0.01",null,null,null,"tile_nebula_green_dff","8","4","TEST SECTOR"},
-	//	new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null,"tile_nebula_green_dff","8","4","Safe Space"},
+	//	new string[]{"0","Enemy1","AsteroidBig",null,null,null,"0.01","0.01",null,null,null,"tile_nebula_green_dff","8","4","TEST SECTOR"},
+		new string[]{"0","Asteroid",null,null,null,null,"0.02",null,null,null,null,"tile_nebula_green_dff","8","4","Safe Space"},
 		new string[]{"1","Asteroid",null,null,null,null,"0.06",null,null,null,null,"background_asteroid1","14","10.5","Asteroid Field"},
 		new string[]{"2","Enemy1","Asteroid",null,null,null,"0.02","0.004",null,null,null,"tile_nebula_green_dff","8","4","Open Space"},
 		new string[]{"3","Enemy1","EnemyRed",null,null,null,"0.01","0.001",null,null,null,"backgroundRed","6","6","Dangerous Space"},
@@ -69,17 +67,14 @@ public class ZoneData{
 
 	};
 	public static string[][] zoneSelectInfo = {
-
-
 		//Difficulty requirement must be sorted from small to large
-
 		//Zone ID, difficulty requirement, chance(relative)
 		new string[]{"0","0","10"},
 		new string[]{"1","1","10"},
 		new string[]{"2","5","11"},
 		new string[]{"3","7","11"},
 		new string[]{"4","7","11"},
-		new string[]{"5","15","3"}
+		new string[]{"5","15","5"}
 
 	};
 	public static string[] getZoneEnemyInfo(int ID){

@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour {
 	public float thrust;
 	public float maxSpeed;
 	public Rigidbody rb;
-	public Boundary boundary;
+	Boundary boundary;
 	public float reverseFraction;
 	Vector3 mousePosition;
 	public GameObject shipImage;	//Image of ship in inventory UI
@@ -69,7 +69,8 @@ public class PlayerController : MonoBehaviour {
 		mousePosition = Input.mousePosition;
 		mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 		mousePosition.y = 0;
-		////////ROTATION TOWARD MOUSE
+
+		////////ROTATE TOWARD MOUSE
 
 		Vector3 _direction = (mousePosition - tp).normalized;
 		myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(_direction), Time.deltaTime * RotationSpeed);
@@ -88,25 +89,25 @@ public class PlayerController : MonoBehaviour {
 		rb.AddForce(Quaternion.Euler(0, 90, 0) * tf
 		            * Input.GetAxis("Horizontal") * strafeForce * Time.deltaTime);
 
-		////////BOUNDARY
+		////////MOVE BEYOND BOUNDARY = SWITCH SECTOR
 		if(tp.x>boundary.xMax){
 			gameController.SwitchSector(1,0);
-			myTransform.position = new Vector3(boundary.xMin,0.0f,myTransform.position.z);
+			tp = new Vector3(boundary.xMin,0.0f,myTransform.position.z);
 		}
 		else if(tp.x<boundary.xMin){
 			gameController.SwitchSector(-1,0);
-			myTransform.position = new Vector3(boundary.xMax,0.0f,myTransform.position.z);
+			tp = new Vector3(boundary.xMax,0.0f,myTransform.position.z);
 		}
 		if(tp.z>boundary.zMax){
 			gameController.SwitchSector(0,1);
-			myTransform.position = new Vector3(myTransform.position.x,0.0f,boundary.zMin);
+			tp = new Vector3(myTransform.position.x,0.0f,boundary.zMin);
 		}
 		else if(tp.z<boundary.zMin){
 			gameController.SwitchSector(0,-1);
-			myTransform.position = new Vector3(myTransform.position.x,0.0f,boundary.zMax);
+			tp = new Vector3(myTransform.position.x,0.0f,boundary.zMax);
 		}
 
-		//////ENERGY
+		//////ENERGY REGEN
 		energy = Mathf.Clamp(energy+energyRegen*Time.deltaTime,0,energyCapacity);
 		sliderEnergy.value = energy/energyCapacity;
 

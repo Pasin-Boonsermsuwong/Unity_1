@@ -168,7 +168,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &29814363
 Transform:
   m_ObjectHideFlags: 0
@@ -1869,6 +1869,56 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f7db760a77a574947a21d3625fe847c3, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1497798765
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 423078, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 13.094367
+      objectReference: {fileID: 0}
+    - target: {fileID: 423078, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -4.04825592
+      objectReference: {fileID: 0}
+    - target: {fileID: 423078, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 9.33753967
+      objectReference: {fileID: 0}
+    - target: {fileID: 423078, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 423078, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 423078, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 423078, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 423078, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 22484510, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 22484510, guid: 71f8d712029013f4db048646822a0406, type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 71f8d712029013f4db048646822a0406, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1562121187
 GameObject:
@@ -4190,16 +4240,11 @@ MonoBehaviour:
   mountList:
   - Weapon1
   - Weapon2
-  strafeForce: 5000
+  strafeForce: 3000
   RotationSpeed: 10
   thrust: 600
   maxSpeed: 16
   rb: {fileID: 2117514228}
-  boundary:
-    xMin: -125
-    xMax: 125
-    zMin: -125
-    zMax: 125
   reverseFraction: 5
   shipImage: {fileID: 2009964970}
   energyCapacity: 1000

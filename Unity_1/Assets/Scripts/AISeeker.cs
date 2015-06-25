@@ -22,8 +22,6 @@ public class AISeeker : MonoBehaviour {
 		if(target==null)return;	
 		Vector3 _direction = (target.position - myTransform.position).normalized;
 		myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(_direction), Time.deltaTime * rotationSpeed);
-		//move towards the player
 		rb.AddForce(myTransform.forward * Time.deltaTime * moveSpeed);
-	//	rb.AddForce(myTransform.forward * Mathf.Clamp(Vector3.Distance (myTransform.position, target.position),0,moveSpeed) * Time.deltaTime);
 	}
 }

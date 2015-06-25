@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler,IEndDragHandler, IPointerEnterHandler, IPointerExitHandler{
-
+	
 	public Transform parentToReturnTo = null;
 	public enum Slot {WEAPON1, WEAPON2, ENGINE, MODULE, WM, INV};
 	public Slot type;

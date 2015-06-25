@@ -96,7 +96,6 @@ GameObject:
   - 114: {fileID: 11420306}
   - 54: {fileID: 5498914}
   - 136: {fileID: 13634224}
-  - 114: {fileID: 11437884}
   m_Layer: 0
   m_Name: Asteroid
   m_TagString: Enemy
@@ -267,22 +266,13 @@ MonoBehaviour:
     tumble: 5
     scaleMin: 2
     scaleMax: 5
+  loot:
+    ID: 00000000
+    chance:
+    - .699999988
+    collectible: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
   dmgText: {fileID: 161210, guid: 89e26f56064080648a9bd0461cbd7916, type: 2}
---- !u!114 &11437884
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 149732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 151c25d7b9834d7498b1aa37bd386dfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: 00000000
-  chance:
-  - .300000012
-  collectible: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
+  isDead: 0
 --- !u!114 &11439140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -598,6 +588,14 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
+      propertyPath: loot.ID.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: loot.chance.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
       propertyPath: m_SizeDelta.x
       value: 1
       objectReference: {fileID: 0}
@@ -652,6 +650,18 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: STS.scaleMax
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: loot.collectible
+      value: 
+      objectReference: {fileID: 110348, guid: 3b764656ce418f84287f29de80ef3114, type: 2}
+    - target: {fileID: 0}
+      propertyPath: loot.loot
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: loot.chance.Array.data[0]
+      value: .699999988
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

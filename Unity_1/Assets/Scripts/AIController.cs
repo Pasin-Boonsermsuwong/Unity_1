@@ -3,7 +3,7 @@ using System.Collections;
 
 public class AIController : MonoBehaviour {
 	
-	public Transform target;
+	Transform target;
 	Transform myTransform;
 	public float distanceToTarget;
 	// Use this for initialization

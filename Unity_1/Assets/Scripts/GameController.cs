@@ -4,21 +4,24 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
+	Transform myTransform;
 	public GameObject player;
-	
 	public GameObject powerup;
+
+	//In-game HUD
 	public Text scoreText;
 	public Text restartText;
 	public Text gameOverText;
 	public Text sectorText;
 	public GameObject inventoryPanel;
+
 	//Pause stuff
 	public GameObject pauseObject;
+	public static bool pause;
 
 	//Main Canvas
 	bool gameOver;
 	bool restart;
-	public static bool pause;
 	int score;
 
 	//Sector
@@ -47,6 +50,7 @@ public class GameController : MonoBehaviour
 
 	void Start ()
 	{
+		myTransform = GetComponent<Transform>();
 		GameObject bgGameObject = GameObject.FindWithTag("Background");
 		background = bgGameObject.GetComponent<Renderer>();
 		boundaryX = bgGameObject.transform.localScale.x/2;
@@ -75,16 +79,9 @@ public class GameController : MonoBehaviour
 			for(int i = 0;i<sectorEnemy.Length;i++){
 				if(!Data.chance(sectorEnemyChance[i]))continue;
 				Vector3 spawnPosition = randomSpawnPosition();
-				Instantiate (sectorEnemy[i],
-				             spawnPosition,
-				             Quaternion.Slerp(
-					transform.rotation,
-					Quaternion.LookRotation(
+				Instantiate (sectorEnemy[i], spawnPosition, Quaternion.LookRotation(
 					(new Vector3 (Random.Range (-boundaryInnerX, boundaryInnerX), 0,Random.Range (-boundaryInnerZ, boundaryInnerZ)) - spawnPosition).normalized
-					),
-					360
-					)
-				             );
+					));
 			}
 		}
 	}
@@ -174,8 +171,13 @@ public class GameController : MonoBehaviour
 			Destroy(g2[i]);
 		}
 
+		//Change sector number
+		sectorX += dx;
+		sectorY += dy;
+
+
 		//Calculate difficulty based on distance
-		difficultyMax = Mathf.Sqrt(Mathf.Pow(sectorX,2)+Mathf.Pow(sectorX,3));
+		difficultyMax = Mathf.Sqrt(Mathf.Pow(sectorX,2)+Mathf.Pow(sectorY,2));
 		difficultyMin = Mathf.Max(difficultyMax/1.3f-10,0);
 		Debug.Log("DifficultyMin = "+difficultyMin+" DifficultyMax = "+difficultyMax);
 
@@ -193,16 +195,14 @@ public class GameController : MonoBehaviour
 			sectorEnemy[i] = (GameObject)Resources.Load("Prefabs/Enemy/"+zoneData[i+1]);
 			sectorEnemyChance[i] = float.Parse(zoneData[i+6]);
 		}
-		Debug.Log("Number of enemies type: "+sectorEnemy.Length);
-		Debug.Log("Number of enemies typeL: "+sectorEnemyChance.Length);
+	//	Debug.Log("Number of enemies type: "+sectorEnemy.Length);
+	//	Debug.Log("Number of enemies typeL: "+sectorEnemyChance.Length);
 
 		//Set background
 		background.sharedMaterial.SetTexture("_MainTex",(Texture)Resources.Load("Textures/"+zoneData[11]));
 		background.sharedMaterial.SetTextureScale("_MainTex",new Vector2(float.Parse(zoneData[12]),float.Parse(zoneData[13])));
 
 		//Change sector text
-		sectorX += dx;
-		sectorY += dy;
 		sectorText.text = "Sector: ("+sectorX+" , "+sectorY+") - "+zoneData[14];
 
 	}

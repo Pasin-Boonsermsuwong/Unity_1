@@ -6,6 +6,12 @@ using System.Collections;
 public class SpeedTumbleScale{
 	public float speedMin,speedMax,tumble,scaleMin,scaleMax;
 }
+[System.Serializable]
+public class Loot{
+	public int[] ID;
+	public float[] chance;
+	public GameObject collectible;
+}
 public class Health : MonoBehaviour {
 
 	public float maxHP;
@@ -17,11 +23,11 @@ public class Health : MonoBehaviour {
 	//Initial speed / rotation / scale. Only needed for asteroids or other unmanned object
 	public bool speedTumbleScale;
 	public SpeedTumbleScale STS;
+	public Loot loot;
 	public GameObject dmgText;
-
-
+	public bool isDead;
 	void Start () {
-	//	isDead = false;
+		isDead = false;
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
 		float scale = 1.0f;
@@ -39,22 +45,28 @@ public class Health : MonoBehaviour {
 	}
 
 	public void TakeDamage(float amount){
+		if(isDead)return;
 		curHP -= amount;
 		slider.value = curHP/maxHP;
-		if(curHP<=0)Death ();
-
+		if(curHP<=0){
+			isDead = true;
+			Death ();
+		}
 	}
-
 	public void Death(){
 		Instantiate(explosion, transform.position, transform.rotation);
 		//Spawn loot
-		EnemyDrop e = GetComponent<EnemyDrop>();
-		if(e!=null){
-			e.SpawnLoot();
-		}else{
-			Debug.Log("Health script w/o enemyDrop found");
-		}
+		SpawnLoot();
 		gc.AddScore(score);
 		Destroy (gameObject);
+	}
+	void SpawnLoot(){
+		for(int i = 0;i<loot.ID.Length;i++){
+			Debug.Log("Lootcall: "+i);
+			if(Library.chance(loot.chance[i])){
+				GameObject instantiated = Instantiate(loot.collectible, transform.position, transform.rotation) as GameObject;
+				instantiated.GetComponent<CollectibleItem>().Set(loot.ID[i]);
+			}
+		}
 	}
 }
