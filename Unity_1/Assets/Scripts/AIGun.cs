@@ -49,7 +49,6 @@ public class AIGun : MonoBehaviour {
 		{
 			yield return new WaitForSeconds (Random.Range(minCooldown,maxCooldown));
 			Fire ();
-			
 		}
 	}
 

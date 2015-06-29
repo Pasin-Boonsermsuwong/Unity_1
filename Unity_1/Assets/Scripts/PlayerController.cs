@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-
+using UnityEditor;
 //Change player's modifier
 public class ModifierChangeRequest{
 	// ALL VALUE ARE ADDED
@@ -92,19 +92,19 @@ public class PlayerController : MonoBehaviour {
 		////////MOVE BEYOND BOUNDARY = SWITCH SECTOR
 		if(tp.x>boundary.xMax){
 			gameController.SwitchSector(1,0);
-			tp = new Vector3(boundary.xMin,0.0f,myTransform.position.z);
+			myTransform.position = new Vector3(boundary.xMin,0.0f,myTransform.position.z);
 		}
 		else if(tp.x<boundary.xMin){
 			gameController.SwitchSector(-1,0);
-			tp = new Vector3(boundary.xMax,0.0f,myTransform.position.z);
+			myTransform.position = new Vector3(boundary.xMax,0.0f,myTransform.position.z);
 		}
 		if(tp.z>boundary.zMax){
 			gameController.SwitchSector(0,1);
-			tp = new Vector3(myTransform.position.x,0.0f,boundary.zMin);
+			myTransform.position = new Vector3(myTransform.position.x,0.0f,boundary.zMin);
 		}
 		else if(tp.z<boundary.zMin){
 			gameController.SwitchSector(0,-1);
-			tp = new Vector3(myTransform.position.x,0.0f,boundary.zMax);
+			myTransform.position = new Vector3(myTransform.position.x,0.0f,boundary.zMax);
 		}
 
 		//////ENERGY REGEN
@@ -129,10 +129,8 @@ public class PlayerController : MonoBehaviour {
 	//Guns only
 	public void updateMount(){
 		foreach(string s in mountList ){
-	//		Debug.Log (s);
 			Transform G = shipImage.transform.Find(s+"Mount");
 			if(G.childCount==0){
-	//			Debug.Log("Mount childcount = 0");
 				Gun g1 = myTransform.Find(s).GetComponent<Gun>();
 				g1.equipped = false;
 				return;
@@ -154,9 +152,22 @@ public class PlayerController : MonoBehaviour {
 				g.shotDeviation = float.Parse(info[5]);
 				g.energyRequirement = float.Parse(info[6]);
 				g.shotAmount = float.Parse(info[7]);
+				g.isBeam = bool.Parse(info[8]);
+				////BEAM WEAPON INFO
+				if(g.isBeam){
+			//		g.gameObject.AddComponent<LineRenderer>(g.shot.GetComponent<LineRenderer>());
+					BeamData lineSaved = g.shot.GetComponent<BeamData>();
+
+					g.line = g.GetComponentInChildren<LineRenderer>();
+					g.line.SetWidth(lineSaved.widthStart,lineSaved.widthEnd);
+					g.line.SetColors(lineSaved.colorStart,lineSaved.colorEnd);
+					g.beamRange = lineSaved.range;
+					g.beamDamage = lineSaved.dmg;
+
+				}
 			}
 		}
 		applyModifier();
 	}
-	
+
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BoltCollision : MonoBehaviour {
+public class BoltData : MonoBehaviour {
 	public ParticleSystem explosion;
 	public float baseDamage = 200;
 	//explosion

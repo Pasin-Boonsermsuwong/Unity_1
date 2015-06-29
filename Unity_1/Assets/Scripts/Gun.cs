@@ -24,6 +24,14 @@ public class Gun : MonoBehaviour {
 	public float energyRequirement;
 	public float shotAmount;
 
+	//// BEAM WEAPON STAT
+	public bool isBeam;
+	public LineRenderer line;
+//	ParticleSystem beamHitEffect;
+	public float beamRange;
+	public float beamDamage;
+
+
 	//modifier from parent
 	float dmgModifier;
 
@@ -39,13 +47,23 @@ public class Gun : MonoBehaviour {
 		PlayerController p = GetComponentInParent<PlayerController>();
 		fireRate = fireRate * p.rofModifier;
 		dmgModifier = p.dmgAdder;
-
 	}
 
 	void Update () {
 		if(GameController.pause||!equipped)return;
 
-		if (Input.GetButton("Fire1") && Time.time > nextFire) {	
+		///////BEAM
+		if(isBeam){
+			if(Input.GetButtonDown("Fire1")){
+				if(energyRequirement>playerController.energy)return;
+				playerController.energy -= energyRequirement;
+				StopCoroutine("FireLaser");
+				StartCoroutine("FireLaser");
+			};
+		}
+
+		///////PROJECTILE
+		else if (Input.GetButton("Fire1") && Time.time > nextFire) {	
 			if(energyRequirement>playerController.energy)return;
 			playerController.energy -= energyRequirement;
 			GetComponent<AudioSource>().Play();
@@ -69,10 +87,32 @@ public class Gun : MonoBehaviour {
 				instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 				//Fire speed
 				instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*shootSpeed);
-				instantiated.GetComponent<BoltCollision>().ActivateBulletMod(new BulletMod(dmgModifier));
+				instantiated.GetComponent<BoltData>().ActivateBulletMod(new BulletMod(dmgModifier));
 
 				instantiated.tag = "BulletPlayer";
 			}
 		};
+	}
+	IEnumerator FireLaser(){
+		line.enabled = true;
+		while(Input.GetButton("Fire1")){
+			if(energyRequirement>playerController.energy)break;
+			playerController.energy -= energyRequirement;
+			Ray ray = new Ray(transform.position,transform.forward);
+			RaycastHit hit;
+			line.SetPosition(0,ray.origin);
+			if(Physics.Raycast (ray,out hit,beamRange)){
+				line.SetPosition(1,hit.point);
+				GameObject hitObject = hit.transform.gameObject;
+				if(hitObject.tag == "Enemy"){
+					hitObject.GetComponent<Health>().TakeDamage(beamDamage);
+				}
+			}
+			else {
+				line.SetPosition(1,ray.GetPoint(beamRange));
+			}
+			yield return null;
+		}
+		line.enabled = false;
 	}
 }

@@ -15,6 +15,8 @@ public class InventoryController : MonoBehaviour {
 		InsertItem(2);
 		InsertItem(3);
 		InsertItem(3);
+		InsertItem(4);
+		InsertItem(4);
 	}
 
 	public void InsertItem (int ID){
