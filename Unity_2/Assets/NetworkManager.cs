@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityStandardAssets.Characters.FirstPerson;
 
 public class NetworkManager : MonoBehaviour {
 
@@ -33,15 +34,14 @@ public class NetworkManager : MonoBehaviour {
 
 	void OnJoinedRoom(){
 		SpawnMyPlayer();
+
 	}
 
 	void SpawnMyPlayer(){
 		GameObject ins = PhotonNetwork.Instantiate("CharFighter",new Vector3(Random.Range(-50,50),50,Random.Range(-50,50)),Quaternion.identity,0) as GameObject;
 		ins.transform.FindChild("FirstPersonCharacter").gameObject.SetActive(true);
 		ins.GetComponent<Gun>().enabled = true;
-	//	ins.GetComponent<>
-		//ins.GetComponent<>().enabled = false;
-		gc.LockCursor(); 
-
+		ins.GetComponent<FirstPersonController>().enabled = true;
+		gc.LockCursor();
 	}
 }
