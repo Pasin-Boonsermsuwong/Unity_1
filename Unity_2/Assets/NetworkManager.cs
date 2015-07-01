@@ -41,7 +41,8 @@ public class NetworkManager : MonoBehaviour {
 		GameObject ins = PhotonNetwork.Instantiate("CharFighter",new Vector3(Random.Range(-50,50),50,Random.Range(-50,50)),Quaternion.identity,0) as GameObject;
 		ins.transform.FindChild("FirstPersonCharacter").gameObject.SetActive(true);
 		ins.GetComponent<Gun>().enabled = true;
-		ins.GetComponent<RigidbodyFirstPersonController>().enabled = true;
+		ins.GetComponent<FirstPersonController>().enabled = true;
+		ins.GetComponent<CharacterController>().enabled = true;
 		gc.LockCursor();
 	}
 }
