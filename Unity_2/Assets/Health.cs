@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour {
@@ -13,12 +13,14 @@ public class Health : MonoBehaviour {
 	void Start () {
 		curHP = maxHP;
 	}
-	
+
+	[PunRPC]
 	public void TakeDamage(float amount){
 		curHP -= amount;
 		slider.value = curHP/maxHP;
 		if(curHP<=0)Death ();
 	}
+
 	void Death(){
 		Instantiate(explosion, transform.position, transform.rotation);
 		Destroy (gameObject);

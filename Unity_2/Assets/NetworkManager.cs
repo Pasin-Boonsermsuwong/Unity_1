@@ -7,6 +7,8 @@ public class NetworkManager : MonoBehaviour {
 
 	GameController gc;
 
+	public bool offlineMode = false;
+
 	public Text logText;
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
@@ -14,7 +16,13 @@ public class NetworkManager : MonoBehaviour {
 	}
 	
 	void Connect(){
-		PhotonNetwork.ConnectUsingSettings("v001");
+		if(offlineMode){
+			PhotonNetwork.offlineMode = true;
+			OnJoinedLobby();
+		}else{
+			PhotonNetwork.ConnectUsingSettings("v001");
+		}
+
 
 	}
 
@@ -42,7 +50,7 @@ public class NetworkManager : MonoBehaviour {
 		ins.transform.FindChild("FirstPersonCharacter").gameObject.SetActive(true);
 		ins.GetComponent<Gun>().enabled = true;
 		ins.GetComponent<FirstPersonController>().enabled = true;
-		ins.GetComponent<CharacterController>().enabled = true;
+		//ins.GetComponent<CharacterController>().enabled = true;
 		gc.LockCursor();
 	}
 }

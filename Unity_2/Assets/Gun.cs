@@ -16,7 +16,7 @@ public class Gun : MonoBehaviour {
 	string ownerName;
 	public float fireRate;
 	float nextFire;
-	public GameObject shot;
+	public string shot;
 	public float launchSpeed;
 	public float shotDeviation;
 	public float shotAmount;
@@ -36,19 +36,18 @@ public class Gun : MonoBehaviour {
 			if(audio!=null)audio.Play();
 			nextFire = Time.time + fireRate;
 			for(int i = 0;i<shotAmount;i++){
-
-
+			
 				GameObject instantiated;
 				if(shotDeviation<double.Epsilon){
-					instantiated = Instantiate(shot, gunHardpoint.position, 
-					                           gunHardpoint.rotation) as GameObject;
+					instantiated = PhotonNetwork.Instantiate(shot, gunHardpoint.position, 
+					                           gunHardpoint.rotation,0) as GameObject;
 				}else{
 					Vector3 eulerAngle = gunHardpoint.rotation.eulerAngles;
-					instantiated = Instantiate(shot, gunHardpoint.position, 
+					instantiated = PhotonNetwork.Instantiate(shot, gunHardpoint.position, 
 					                                      Quaternion.Euler(new Vector3(
 						eulerAngle.x, 
 						eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
-						eulerAngle.z))) as GameObject;
+						eulerAngle.z)),0) as GameObject;
 				}
 
 				instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
