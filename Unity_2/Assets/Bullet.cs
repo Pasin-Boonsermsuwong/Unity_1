@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class Bullet : MonoBehaviour {
+public class Bullet : NetworkBehaviour {
 	public ParticleSystem explosion;
 	public float damage;
 	public string ownerName;

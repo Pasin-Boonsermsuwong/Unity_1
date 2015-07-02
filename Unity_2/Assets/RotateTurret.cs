@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class RotateTurret : MonoBehaviour {
+public class RotateTurret : NetworkBehaviour {
 
 	Transform myTransform;
 	Transform cameraTransform;
 
 	void Start () {
 		myTransform = GetComponent<Transform>();
-		cameraTransform = myTransform.root.Find("FirstPersonCharacter");
+		cameraTransform = transform.root.Find("Camera").transform;
 	}
 
 	void Update () {

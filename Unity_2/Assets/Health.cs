@@ -1,23 +1,26 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class Health : MonoBehaviour {
+public class Health : NetworkBehaviour {
 
 	public string ownerName;
-	public float maxHP;
+	public float HP;
+	[SyncVar]
 	float curHP;
+
 	public Slider slider;
 	public GameObject explosion;
-	public GameObject dmgText;
+	//public GameObject dmgText;
 	
 	void Start () {
-		curHP = maxHP;
+		curHP = HP;
 	}
 
-	//[PunRPC]
 	public void TakeDamage(float amount){
+		if(!isServer)return;
 		curHP -= amount;
-		slider.value = curHP/maxHP;
+//		slider.value = curHP/HP;
 		if(curHP<=0)Death ();
 	}
 
