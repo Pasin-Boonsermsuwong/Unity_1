@@ -8,7 +8,7 @@ public class NetworkManager : MonoBehaviour {
 	GameController gc;
 
 	public bool offlineMode = false;
-
+	/*
 	public Text logText;
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
@@ -53,4 +53,6 @@ public class NetworkManager : MonoBehaviour {
 		//ins.GetComponent<CharacterController>().enabled = true;
 		gc.LockCursor();
 	}
+	*/
 }
+

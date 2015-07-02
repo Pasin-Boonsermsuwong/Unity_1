@@ -14,7 +14,7 @@ public class Health : MonoBehaviour {
 		curHP = maxHP;
 	}
 
-	[PunRPC]
+	//[PunRPC]
 	public void TakeDamage(float amount){
 		curHP -= amount;
 		slider.value = curHP/maxHP;
