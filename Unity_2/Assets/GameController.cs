@@ -3,8 +3,9 @@ using System.Collections;
 
 public class GameController : MonoBehaviour {
 	
-	bool playerSpawned {get; set;}
+	public bool playerSpawned {get; set;}
 	public bool pause;
+//	bool gainFocus;
 	public GameObject pauseObject;
 	void Start () {
 	
@@ -14,34 +15,34 @@ public class GameController : MonoBehaviour {
 	void Update () {
 		if(Input.GetButtonDown("Pause")||Input.GetButtonDown("Cancel")){
 			pause = !pause;
-			ChangePauseState();
-			
+			CheckPauseState();
+	//		gainFocus = false;
 		}
 	}
-	void ChangePauseState(){
+	void CheckPauseState(){
 		if(pause){
 			pauseObject.SetActive(true);
 			UnlockCursor();
 		}
-		if(!pause){
+		else if(!pause){
 			pauseObject.SetActive(false);
 			LockCursor();
 		}
 	}
 	public void LockCursor(){
-	//	Cursor.visible = false;
+		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
-		Debug.Log ("LockCursor");
 	}
 
 	public void UnlockCursor(){
-	//	Cursor.visible = true;
+		Cursor.visible = true;
 		Cursor.lockState = CursorLockMode.None;
 	}
 	void OnApplicationFocus(bool focus){
-		Debug.Log(focus);
-		pause = !focus;
-		ChangePauseState();
+		if(!playerSpawned)return;
+	//	pause = !focus;
+		CheckPauseState();
+	//	gainFocus = focus;
 	}
 
 

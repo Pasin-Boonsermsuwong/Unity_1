@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 
-public class RotateTurret : NetworkBehaviour {
+public class RotateTurret : MonoBehaviour {
 
 	Transform myTransform;
 	Transform cameraTransform;

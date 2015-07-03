@@ -20,7 +20,7 @@ public class Health : NetworkBehaviour {
 	public void TakeDamage(float amount){
 		if(!isServer)return;
 		curHP -= amount;
-//		slider.value = curHP/HP;
+		slider.value = curHP/HP;
 		if(curHP<=0)Death ();
 	}
 
