@@ -2,13 +2,6 @@
 using UnityEngine.Networking;
 using System.Collections;
 
-public class BulletMod{
-
-	public float dmgAdder;
-	public BulletMod(float dmgAdd){
-		dmgAdder = dmgAdd;
-	}
-}
 public class Gun : NetworkBehaviour {
 //Transform myTransform;
 	public Transform gunHardpoint;
@@ -33,15 +26,16 @@ public class Gun : NetworkBehaviour {
 	}
 
 	void Update () {
+	//	Debug.Log(Time.time.ToString());
 		if (base.isLocalPlayer && Input.GetButton("Fire1") && Time.time > nextFire) {	
 		//	if(audio!=null)audio.Play();
 			CmdFire();
 		};
-		Debug.Log(Time.time);
+	//	Debug.Log(Time.time);
 	}
 	[Command]
 	void CmdFire(){
-		if(audio!=null)audio.Play();
+	//	if(audio!=null)audio.Play();
 		nextFire = Time.time + fireRate;
 		for(int i = 0;i<shotAmount;i++){
 			
