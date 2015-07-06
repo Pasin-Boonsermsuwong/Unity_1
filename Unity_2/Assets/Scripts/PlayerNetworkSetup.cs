@@ -18,10 +18,7 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 			gc.LockCursor();
 		}else{
 			canvas.SetActive(true);
-
 		}
-
-
 	}
 	public void ChangeLayersRecursively(Transform trans, string name)
 	{

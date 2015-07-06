@@ -11,42 +11,42 @@ namespace UnityStandardAssets.Characters.FirstPerson
     [RequireComponent(typeof (AudioSource))]
     public class FirstPersonController : NetworkBehaviour
     {
-        [SerializeField] private bool m_IsWalking;
-        [SerializeField] private float m_WalkSpeed;
-        [SerializeField] private float m_RunSpeed;
-        [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
-        [SerializeField] private float m_JumpSpeed;
-        [SerializeField] private float m_StickToGroundForce;
-        [SerializeField] private float m_GravityMultiplier;
-        [SerializeField] private MouseLook m_MouseLook;
-        [SerializeField] private bool m_UseFovKick;
-        [SerializeField] private FOVKick m_FovKick = new FOVKick();
-        [SerializeField] private bool m_UseHeadBob;
-        [SerializeField] private CurveControlledBob m_HeadBob = new CurveControlledBob();
-        [SerializeField] private LerpControlledBob m_JumpBob = new LerpControlledBob();
-        [SerializeField] private float m_StepInterval;
-        [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
-        [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
-        [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+        [SerializeField] bool m_IsWalking;
+        [SerializeField] float m_WalkSpeed;
+        [SerializeField] float m_RunSpeed;
+        [SerializeField] [Range(0f, 1f)] float m_RunstepLenghten;
+        [SerializeField] float m_JumpSpeed;
+        [SerializeField] float m_StickToGroundForce;
+        [SerializeField] float m_GravityMultiplier;
+        [SerializeField] MouseLook m_MouseLook;
+        [SerializeField] bool m_UseFovKick;
+        [SerializeField] FOVKick m_FovKick = new FOVKick();
+        [SerializeField] bool m_UseHeadBob;
+        [SerializeField] CurveControlledBob m_HeadBob = new CurveControlledBob();
+        [SerializeField] LerpControlledBob m_JumpBob = new LerpControlledBob();
+        [SerializeField] float m_StepInterval;
+        [SerializeField] AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
+        [SerializeField] AudioClip m_JumpSound;           // the sound played when character leaves the ground.
+        [SerializeField] AudioClip m_LandSound;           // the sound played when character touches back on ground.
 
-        private Camera m_Camera;
-        private bool m_Jump;
-        private float m_YRotation;
-        private Vector2 m_Input;
-        private Vector3 m_MoveDir = Vector3.zero;
-        private CharacterController m_CharacterController;
-        private CollisionFlags m_CollisionFlags;
-        private bool m_PreviouslyGrounded;
-        private Vector3 m_OriginalCameraPosition;
-        private float m_StepCycle;
-        private float m_NextStep;
-        private bool m_Jumping;
-        private AudioSource m_AudioSource;
+        Camera m_Camera;
+        bool m_Jump;
+        float m_YRotation;
+        Vector2 m_Input;
+        Vector3 m_MoveDir = Vector3.zero;
+        CharacterController m_CharacterController;
+        CollisionFlags m_CollisionFlags;
+        bool m_PreviouslyGrounded;
+        Vector3 m_OriginalCameraPosition;
+        float m_StepCycle;
+        float m_NextStep;
+        bool m_Jumping;
+        AudioSource m_AudioSource;
 
 //		bool isOwner;
 
         // Use this for initialization
-        private void Start()
+        void Start()
         {
 		//	isOwner = isLocalPlayer;
 
@@ -64,7 +64,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
 
         // Update is called once per frame
-        private void Update()
+        void Update()
         {
 	//		if(!base.isLocalPlayer)return;
             RotateView();
@@ -90,7 +90,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void PlayLandingSound()
+        void PlayLandingSound()
         {
             m_AudioSource.clip = m_LandSound;
             m_AudioSource.Play();
@@ -98,7 +98,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void FixedUpdate()
+        void FixedUpdate()
         {
 		//	if(!base.isLocalPlayer)return;
             float speed;
@@ -139,14 +139,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void PlayJumpSound()
+        void PlayJumpSound()
         {
             m_AudioSource.clip = m_JumpSound;
             m_AudioSource.Play();
         }
 
 
-        private void ProgressStepCycle(float speed)
+        void ProgressStepCycle(float speed)
         {
             if (m_CharacterController.velocity.sqrMagnitude > 0 && (m_Input.x != 0 || m_Input.y != 0))
             {
@@ -165,7 +165,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void PlayFootStepAudio()
+        void PlayFootStepAudio()
         {
             if (!m_CharacterController.isGrounded)
             {
@@ -182,7 +182,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void UpdateCameraPosition(float speed)
+        void UpdateCameraPosition(float speed)
         {
             Vector3 newCameraPosition;
             if (!m_UseHeadBob)
@@ -206,7 +206,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void GetInput(out float speed)
+        void GetInput(out float speed)
         {
             // Read input
             float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
@@ -238,13 +238,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void RotateView()
+        void RotateView()
         {
             m_MouseLook.LookRotation (transform, m_Camera.transform);
         }
 
 
-        private void OnControllerColliderHit(ControllerColliderHit hit)
+        void OnControllerColliderHit(ControllerColliderHit hit)
         {
             Rigidbody body = hit.collider.attachedRigidbody;
             //dont move the rigidbody if the character is on top of it

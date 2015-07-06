@@ -13,16 +13,12 @@ public class LookAtCamera : MonoBehaviour {
 
 	void Start(){
 		myTransform = GetComponent<Transform>();
-		 
 
-		cameraTransform = GameObject.FindWithTag("MainCamera").transform;
-	//	cameraTransform = transform.Find("Camera");
-
-
+		GameObject c = GameObject.FindWithTag("MainCamera");
+		if(c==null)return;
+		cameraTransform = c.transform;
 	}
 	void Update() {
-	//	myTransform.position = new Vector3(parent.position.x,parent.position.y+yOffset,parent.position.z);
 		myTransform.LookAt(cameraTransform);
-
 	}
 }

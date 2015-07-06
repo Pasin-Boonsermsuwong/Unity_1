@@ -1,14 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.UI;
 public class GameController : MonoBehaviour {
 	
 	public bool playerSpawned {get; set;}
 	public bool pause;
-//	bool gainFocus;
+	public GameObject deadPanel;
+	public Text respawnCountDown;
+	public bool respawn;
+
 	public GameObject pauseObject;
+	GameObject player;
+
 	void Start () {
-	
+
 	}
 	
 	// Update is called once per frame
@@ -43,6 +48,22 @@ public class GameController : MonoBehaviour {
 	//	pause = !focus;
 		CheckPauseState();
 	//	gainFocus = focus;
+	}
+	/*
+	public void DeadScreenInit(){
+		yield return StartCoroutine(DeadScreen);
+	}
+	*/
+	public IEnumerator DeadScreen(Health h) {
+		respawn = false;
+		deadPanel.SetActive(true);
+		for(int i = 6;i>0;i--){
+			respawnCountDown.text = i+"";
+			yield return new WaitForSeconds(1);
+		}
+		deadPanel.SetActive(false);
+		respawn = true;
+		h.RpcRespawn();
 	}
 
 

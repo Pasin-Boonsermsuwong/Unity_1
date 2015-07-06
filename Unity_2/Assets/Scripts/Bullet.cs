@@ -14,7 +14,7 @@ public class Bullet : NetworkBehaviour {
 	}
 	void OnCollisionEnter(Collision other){
 		Transform otherTransform = other.transform;
-		if(otherTransform.tag=="Player"||!bounce){
+		if(otherTransform.tag=="Player"||(!bounce&&otherTransform.tag=="Terrain")){
 			Instantiate(explosion, transform.position, transform.rotation);
 			if(!isExplode){
 				if(otherTransform.tag=="Player")otherTransform.GetComponent<Health>().TakeDamage(damage);

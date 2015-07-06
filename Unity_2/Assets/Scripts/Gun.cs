@@ -11,7 +11,8 @@ public class Gun : NetworkBehaviour {
 	public float fireRate;
 	float nextFire;
 	public GameObject shot;
-	public float launchSpeed;
+	public float launchForceMin;
+	public float launchForceMax;
 	public float shotDeviation;
 	public float shotAmount;
 	
@@ -35,6 +36,7 @@ public class Gun : NetworkBehaviour {
 	}
 	[Command]
 	void CmdFire(){
+		Debug.Log("CmdFire");
 	//	if(audio!=null)audio.Play();
 		nextFire = Time.time + fireRate;
 		for(int i = 0;i<shotAmount;i++){
@@ -53,7 +55,7 @@ public class Gun : NetworkBehaviour {
 			}
 			
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
-			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*launchSpeed);
+			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
 			instantiated.GetComponent<Bullet>().ownerName = ownerName;
 			NetworkServer.Spawn(instantiated);
 		}
