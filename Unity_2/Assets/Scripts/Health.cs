@@ -23,7 +23,6 @@ public class Health : NetworkBehaviour {
 	Transform myTransform;
 	GameController gc;
 	void Start () {
-
 		gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
 		myTransform = GetComponent<Transform>();
 		spawnPosition = GameObject.FindWithTag("SpawnPosition").transform;
