@@ -8,8 +8,13 @@ public class GameController : MonoBehaviour {
 	public GameObject deadPanel;
 	public Text respawnCountDown;
 	public bool respawn;
-
 	public GameObject pauseObject;
+	public Slider localSliderHealth;
+	public Slider localSliderReload;
+	public Slider localSliderCharge;
+	public GameObject weaponPanel;
+	public static int currentClass = 0;
+
 	GameObject player;
 
 	void Start () {

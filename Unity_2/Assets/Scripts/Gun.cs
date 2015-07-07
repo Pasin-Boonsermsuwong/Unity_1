@@ -1,47 +1,304 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Gun : NetworkBehaviour {
-//Transform myTransform;
+	public enum characterClass{Fighter,Healer,Ranger,Scout,Tank,Spartan,Juggernaut};
+	int currentClass;
+	// 0 = fighter
+	// 1 = healer
+	// 2 = ranger
+	// 3 = scout
+	// 4 = tank
+	// 5 = spartan
+	// 6 = juggernaut
+	GameController gc;
 	public Transform gunHardpoint;
 	Rigidbody rb;
 	AudioSource audio;
 	string ownerName;
-	public float fireRate;
+	float fireRate;
 	float nextFire;
-	public GameObject shot;
-	public float launchForceMin;
-	public float launchForceMax;
-	public float shotDeviation;
-	public float shotAmount;
-	
-	//modifier from parent
-	float dmgModifier;
+
+	int weaponAmount = 6;
+	Text[] weaponText;
+	int activeWeapon;
+
+	float[][] fireRateTable = {
+		new float[]{0.33f,10f,10f,10f,10f,10f},//fighter
+		new float[]{10f,10f,10f,10f,10f,10f},//healer
+		new float[]{10f,10f,10f,10f,10f,10f},//range
+		new float[]{10f,10f,10f,10f,10f,10f},//scout
+		new float[]{10f,10f,10f,10f,10f,10f},//tank
+		new float[]{10f,10f,10f,10f,10f,10f},//spartan
+		new float[]{10f,10f,10f,10f,10f,10f},//juggernaut
+	};
+
+	GameObject[] shotTable;
+	string[] shotNameTable = {"Bullet50"};
 
 	void Start () {
-	//	myTransform = GetComponent<Transform>();
+		currentClass = GameController.currentClass;
+		shotTable = new GameObject[shotNameTable.Length];
+		for(int i = 0;i<shotTable.Length;i++){
+			shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
+		}
+		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+
+		////GetComponent<Draggable>().type = (Draggable.Slot)System.Enum.Parse( typeof( Draggable.Slot ), s[1]);
+		weaponText = new Text[weaponAmount];
+		for(int i =0;i<weaponAmount;i++){
+			weaponText[i] = gc.weaponPanel.transform.GetChild(i).GetComponent<Text>();
+		}
+		setActiveWeapon(0,true);
 		rb = GetComponentInParent<Rigidbody>();
 		audio = GetComponent<AudioSource>();
 		ownerName = GetComponentInParent<Health>().ownerName;
 	}
 
 	void Update () {
-	//	Debug.Log(Time.time.ToString());
-		if (base.isLocalPlayer && Input.GetButton("Fire1") && Time.time > nextFire) {	
-		//	if(audio!=null)audio.Play();
-			CmdFire();
+	//	Debug.Log("GUN TIME: "+(Time.time > nextFire));
+	//	Debug.Log("GUN LOCL: "+(base.isLocalPlayer));
+	//	Debug.Log("GUN INPT: "+(Input.GetButton("Fire1")));
+		gc.localSliderReload.value = Mathf.Clamp((nextFire - Time.time)/fireRate,0,1);
+
+		if(Input.GetButtonDown("Weapon0")){
+			setActiveWeapon(0);
+		}else if(Input.GetButtonDown("Weapon1")){
+			setActiveWeapon(1);
+		}else if(Input.GetButtonDown("Weapon2")){
+			setActiveWeapon(2);
+		}else if(Input.GetButtonDown("Weapon3")){
+			setActiveWeapon(3);
+		}else if(Input.GetButtonDown("Weapon4")){
+			setActiveWeapon(4);
+		}else if(Input.GetButtonDown("Weapon5")){
+			setActiveWeapon(5);
+		}else if(Input.GetButtonDown("WeaponNext")){
+			setActiveWeapon(Mathf.Clamp(activeWeapon+1,0,weaponAmount-1));
+		}else if(Input.GetButtonDown("WeaponPrevious")){
+			setActiveWeapon(Mathf.Clamp(activeWeapon-1,0,weaponAmount-1));
 		};
-	//	Debug.Log(Time.time);
+		if (base.isLocalPlayer && Input.GetButton("Fire1") && Time.time > nextFire) {
+			switch (currentClass)
+			{
+			case 0:
+				switch (activeWeapon)
+				{
+				case 0:
+					//void CmdFireStandard(GameObject shot,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
+					CmdFireStandard(shotTable[0],9000,9000,0,1);
+					break;
+				case 1:
+					CmdFireStandard(shotTable[0],9000,9000,0,1);
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					
+					break;
+				case 5:
+					
+					break;
+				default:
+					Debug.LogError("WTF!?");
+					break;
+				}
+				break;
+			case 1:
+				switch (activeWeapon)
+				{
+				case 0:
+					
+					break;
+				case 1:
+					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					
+					break;
+				case 5:
+					
+					break;
+				default:
+					Debug.LogError("WTF!?");
+					break;
+				}
+				break;
+			case 2:
+				switch (activeWeapon)
+				{
+				case 0:
+					
+					break;
+				case 1:
+					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					
+					break;
+				case 5:
+					
+					break;
+				default:
+					Debug.LogError("WTF!?");
+					break;
+				}
+				break;
+			case 3:
+				switch (activeWeapon)
+				{
+				case 0:
+					
+					break;
+				case 1:
+					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					
+					break;
+				case 5:
+					
+					break;
+				default:
+					Debug.LogError("WTF!?");
+					break;
+				}
+				break;
+			case 4:
+				switch (activeWeapon)
+				{
+				case 0:
+					
+					break;
+				case 1:
+					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					
+					break;
+				case 5:
+					
+					break;
+				default:
+					Debug.LogError("WTF!?");
+					break;
+				}
+				break;
+			case 5:
+				switch (activeWeapon)
+				{
+				case 0:
+					
+					break;
+				case 1:
+					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					
+					break;
+				case 5:
+					
+					break;
+				default:
+					Debug.LogError("WTF!?");
+					break;
+				}
+				break;
+			case 6:
+				switch (activeWeapon)
+				{
+				case 0:
+					
+					break;
+				case 1:
+					
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					
+					break;
+				case 5:
+					
+					break;
+				default:
+					Debug.LogError("WTF!?");
+					break;
+				}
+				break;
+			default:
+				Debug.LogError("WTF!?");
+				break;
+			}
+		//	if(audio!=null)audio.Play();
+
+			nextFire = Time.time + fireRate;
+		};
 	}
-	[Command]
-	void CmdFire(){
-		Debug.Log("CmdFire");
-	//	if(audio!=null)audio.Play();
+	void setActiveWeapon(int n,bool skipCheck){
+		if(n<0||n>=weaponAmount)Debug.LogError("setActiveWeapon out of range");
+		if(activeWeapon==n&&!skipCheck)return;
+		int lastActiveWeapon = activeWeapon;
+		activeWeapon = n;
+		weaponText[lastActiveWeapon].color = Color.black;
+		weaponText[activeWeapon].color = Color.magenta;
+
+		fireRate = fireRateTable[currentClass][n];
 		nextFire = Time.time + fireRate;
+	}
+	void setActiveWeapon(int n){
+		setActiveWeapon(n,false);
+	}
+
+	[Command]
+	void CmdFireStandard(GameObject shot,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
+	//	Debug.Log("CmdFire");
+	//	if(audio!=null)audio.Play();
 		for(int i = 0;i<shotAmount;i++){
 			
+		// CREATE SERVER SIDE INSTANCE
 			GameObject instantiated;
+		//SET UP BULLET PROPERTIES
 			if(shotDeviation<double.Epsilon){
 				instantiated = Instantiate(shot, gunHardpoint.position, 
 				                           gunHardpoint.rotation) as GameObject;
@@ -53,10 +310,10 @@ public class Gun : NetworkBehaviour {
 					eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
 					eulerAngle.z))) as GameObject;
 			}
-			
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
 			instantiated.GetComponent<Bullet>().ownerName = ownerName;
+		//SPAWN IN CLIENTS
 			NetworkServer.Spawn(instantiated);
 		}
 

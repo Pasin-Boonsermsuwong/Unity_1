@@ -3,14 +3,14 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Collections;
 public class Health : NetworkBehaviour {
-
+	
 	public string ownerName;
 	public float maxHP;
-
-
+	
 	[SyncVar]
 	float curHP;
 
+	Slider localSlider;
 	public Slider slider;
 	public GameObject deathExplosion;
 	GameObject model;
@@ -24,6 +24,8 @@ public class Health : NetworkBehaviour {
 	GameController gc;
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
+		localSlider = gc.localSliderHealth;
+
 		myTransform = GetComponent<Transform>();
 		spawnPosition = GameObject.FindWithTag("SpawnPosition").transform;
 		spawnPositionScript = spawnPosition.GetComponent<SpawnPosition>();
@@ -35,25 +37,33 @@ public class Health : NetworkBehaviour {
 	}
 
 	public void TakeDamage(float amount){
-		if(!isServer)return;
 		curHP -= amount;
+
+		localSlider.value = curHP/maxHP;
 		slider.value = curHP/maxHP;
+
 		if(curHP<=0)Death ();
 	}
 
 	void Death(){
-		isDead = true;
+		//TODO: death sound
 		Instantiate(deathExplosion, transform.position, transform.rotation);
-		StartCoroutine(gc.DeadScreen(this));
-		curHP = maxHP;
-
 		model.SetActive(false);
-		characterController.enabled = false;
-		gun.enabled = false;
+		if(isLocalPlayer){
+			isDead = true;
+			StartCoroutine(gc.DeadScreen(this));
+			curHP = maxHP;
+
+			characterController.enabled = false;
+			gun.enabled = false;
+		}
+
 	}
 
 	[ClientRpc]
 	public void RpcRespawn(){
+		localSlider.value = curHP/maxHP;
+		slider.value = curHP/maxHP;
 		if(isLocalPlayer){
 			spawnPositionScript.ChangeSpawnPosition();
 			myTransform.position = spawnPosition.position;
