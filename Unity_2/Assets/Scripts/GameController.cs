@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour {
 	public Slider localSliderCharge;
 	public GameObject weaponPanel;
 	public static int currentClass = 0;
+	public string nameInput;
 
 	GameObject player;
 
@@ -69,6 +70,11 @@ public class GameController : MonoBehaviour {
 		deadPanel.SetActive(false);
 		respawn = true;
 		h.RpcRespawn();
+	}
+
+	public void nameInputChanged(string s){
+	//	Debug.Log ("nameInputChanged");
+		nameInput = s;
 	}
 
 

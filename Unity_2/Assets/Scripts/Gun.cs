@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class Gun : NetworkBehaviour {
-	public enum characterClass{Fighter,Healer,Ranger,Scout,Tank,Spartan,Juggernaut};
 	int currentClass;
 	// 0 = fighter
 	// 1 = healer
@@ -61,7 +60,7 @@ public class Gun : NetworkBehaviour {
 	//	Debug.Log("GUN TIME: "+(Time.time > nextFire));
 	//	Debug.Log("GUN LOCL: "+(base.isLocalPlayer));
 	//	Debug.Log("GUN INPT: "+(Input.GetButton("Fire1")));
-		gc.localSliderReload.value = Mathf.Clamp((nextFire - Time.time)/fireRate,0,1);
+		gc.localSliderReload.value = Mathf.Clamp(1-(nextFire - Time.time)/fireRate,0,1);
 
 		if(Input.GetButtonDown("Weapon0")){
 			setActiveWeapon(0);

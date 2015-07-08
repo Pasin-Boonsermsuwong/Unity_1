@@ -3,15 +3,15 @@ using System.Collections;
 
 public class RotateTurret : MonoBehaviour {
 
-	Transform myTransform;
+	public Transform turretTransform;
 	Transform cameraTransform;
 
 	void Start () {
-		myTransform = GetComponent<Transform>();
-		cameraTransform = transform.root.Find("Camera").transform;
+	//	turretTransform = GetComponent<Transform>();
+		cameraTransform = transform.Find("Camera").transform;
 	}
 
 	void Update () {
-		myTransform.rotation = cameraTransform.rotation;
+		turretTransform.rotation = cameraTransform.rotation;
 	}
 }

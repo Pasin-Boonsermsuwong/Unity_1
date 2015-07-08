@@ -9,8 +9,8 @@ public class Bullet : NetworkBehaviour {
 	public string ownerName;
 	//explosion
 
-	public bool bounce;
-	public bool collideWithOtherBullet;
+	public bool ignoreTerrain;
+	public bool ignoreBullet;
 
 	public bool isExplode;
 	public float explodeRadius;
@@ -19,11 +19,16 @@ public class Bullet : NetworkBehaviour {
 	}
 	void OnCollisionEnter(Collision other){
 		Transform otherTransform = other.transform;
-		if(otherTransform.tag == "Untagged")return;
-		if(bounce&&otherTransform.tag=="Terrain")return;
-		if(collideWithOtherBullet&&otherTransform.tag=="Bullet")return;
-
+		if(otherTransform.tag == "Untagged"	||
+		   ignoreTerrain&&otherTransform.tag=="Terrain" ||
+		   ignoreBullet&&otherTransform.tag=="Bullet"
+		   )return;
 		Instantiate(explosion, myTransform.position, myTransform.rotation);
+		CmdDamagePlayer(otherTransform);
+	}
+	[Command]
+	void CmdDamagePlayer(Transform otherTransform){
+	//	Debug.Log("CmdDamagePlayer"+otherTransform.tag);
 		if(!isExplode){
 			//EXPLOSIVE BULLET CALCULATION
 			Collider[] objectsInRange = Physics.OverlapSphere(myTransform.position, explodeRadius); 
@@ -40,6 +45,5 @@ public class Bullet : NetworkBehaviour {
 			if(otherTransform.tag=="Player")otherTransform.GetComponent<Health>().TakeDamage(damage);
 		}
 		Destroy (gameObject);
-
 	}
 }

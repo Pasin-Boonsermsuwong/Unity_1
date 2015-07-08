@@ -7,8 +7,7 @@ public class Health : NetworkBehaviour {
 	public string ownerName;
 	public float maxHP;
 	
-	[SyncVar]
-	float curHP;
+	[SyncVar (hook = "OnHealthChanged")]float curHP;
 
 	Slider localSlider;
 	public Slider slider;
@@ -37,13 +36,21 @@ public class Health : NetworkBehaviour {
 	}
 
 	public void TakeDamage(float amount){
+		Debug.Log(ownerName+" TakeDamage");
 		curHP -= amount;
-
-		localSlider.value = curHP/maxHP;
-		slider.value = curHP/maxHP;
-
 		if(curHP<=0)Death ();
 	}
+
+	void OnHealthChanged(float h){
+		Debug.Log("OnHealthChanged");
+		curHP = h;
+		if(isLocalPlayer){
+			localSlider.value = curHP/maxHP;
+		}else{
+			slider.value = curHP/maxHP;
+		}
+	}
+
 
 	void Death(){
 		//TODO: death sound
