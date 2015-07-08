@@ -25,28 +25,33 @@ public class Gun : NetworkBehaviour {
 	int activeWeapon;
 
 	float[][] fireRateTable = {
-		new float[]{0.33f,10f,10f,10f,10f,10f},//fighter
-		new float[]{10f,10f,10f,10f,10f,10f},//healer
-		new float[]{10f,10f,10f,10f,10f,10f},//range
-		new float[]{10f,10f,10f,10f,10f,10f},//scout
-		new float[]{10f,10f,10f,10f,10f,10f},//tank
-		new float[]{10f,10f,10f,10f,10f,10f},//spartan
-		new float[]{10f,10f,10f,10f,10f,10f},//juggernaut
+		new float[]{0.33f,10f,0,0,0,0},//fighter
+		new float[]{0,0,0,0,0,0},//healer
+		new float[]{0,0,0,0,0,0},//range
+		new float[]{0,0,0,0,0,0},//scout
+		new float[]{0,0,0,0,0,0},//tank
+		new float[]{0,0,0,0,0,0},//spartan
+		new float[]{0,0,0,0,0,0},//juggernaut
 	};
 
-	GameObject[] shotTable;
-	string[] shotNameTable = {"Bullet50"};
+	public GameObject[] shotTable;
+	//string[] shotNameTable = {"Bullet50"};
 
 	void Start () {
+		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		currentClass = GameController.currentClass;
-		shotTable = new GameObject[shotNameTable.Length];
+
+
+	//	shotTable = new GameObject[shotNameTable.Length];
+		//LOAD BULLETS INTO ARRAY
+		/*
 		for(int i = 0;i<shotTable.Length;i++){
 			shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
 		}
-		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+		*/
 
-		////GetComponent<Draggable>().type = (Draggable.Slot)System.Enum.Parse( typeof( Draggable.Slot ), s[1]);
 		weaponText = new Text[weaponAmount];
+		//SET UI WEAPON TEXT
 		for(int i =0;i<weaponAmount;i++){
 			weaponText[i] = gc.weaponPanel.transform.GetChild(i).GetComponent<Text>();
 		}
@@ -87,7 +92,7 @@ public class Gun : NetworkBehaviour {
 				{
 				case 0:
 					//void CmdFireStandard(GameObject shot,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
-					CmdFireStandard(shotTable[0],9000,9000,0,1);
+					CmdFireStandard(shotTable[0],8000,8000,0,1);
 					break;
 				case 1:
 					CmdFireStandard(shotTable[0],9000,9000,0,1);
