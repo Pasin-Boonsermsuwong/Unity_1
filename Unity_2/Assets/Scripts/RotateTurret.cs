@@ -1,17 +1,24 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class RotateTurret : MonoBehaviour {
+public class RotateTurret : NetworkBehaviour {
 
-	//public Transform turretTransform;
-	Transform cameraTransform;
+	[SyncVar] Quaternion syncPlayerRotation;
+	[SerializeField] Transform playerTransform;
+	[SerializeField] float lerpRate = 15;
+	Transform camTransform;
 
 	void Start () {
-	//	turretTransform = GetComponent<Transform>();
-		cameraTransform = transform.Find("Camera").transform;
+		camTransform = transform.Find("Camera").transform;
 	}
 
-	void Update () {
-		transform.rotation = cameraTransform.rotation;
+	void FixedUpdate () {
+		transform.rotation = camTransform.rotation;
 	}
+	void LerpRotation(){
+		if(!isLocalPlayer)playerTransform = Quaternion.Lerp(playerTransform.rotation,syncPlayerRotation,Time.deltaTime*lerpRate);
+	}
+
+
 }
