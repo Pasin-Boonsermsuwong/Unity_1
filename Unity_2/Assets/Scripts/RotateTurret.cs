@@ -3,7 +3,7 @@ using System.Collections;
 
 public class RotateTurret : MonoBehaviour {
 
-	public Transform turretTransform;
+	//public Transform turretTransform;
 	Transform cameraTransform;
 
 	void Start () {
@@ -12,6 +12,6 @@ public class RotateTurret : MonoBehaviour {
 	}
 
 	void Update () {
-		turretTransform.rotation = cameraTransform.rotation;
+		transform.rotation = cameraTransform.rotation;
 	}
 }

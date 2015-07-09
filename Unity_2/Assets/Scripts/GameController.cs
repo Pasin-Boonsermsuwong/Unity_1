@@ -69,7 +69,6 @@ public class GameController : MonoBehaviour {
 		}
 		deadPanel.SetActive(false);
 		respawn = true;
-		h.RpcRespawn();
 	}
 
 	public void nameInputChanged(string s){

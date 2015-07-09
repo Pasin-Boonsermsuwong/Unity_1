@@ -5,12 +5,13 @@ using System.Collections;
 public class Health : NetworkBehaviour {
 	
 	public string ownerName;
-	public float maxHP;
+	public int maxHP;
 	
-	[SyncVar (hook = "OnHealthChanged")]float curHP;
+	[SyncVar (hook = "OnHealthChanged")]int curHP;
 
 	Slider localSlider;
 	public Slider slider;
+	public GameObject playerCanvas;
 	public GameObject deathExplosion;
 	GameObject model;
 	CharacterController characterController;
@@ -35,50 +36,60 @@ public class Health : NetworkBehaviour {
 		gun = GetComponent<Gun>();
 	}
 
-	public void TakeDamage(float amount){
-		Debug.Log(ownerName+" TakeDamage");
+//	public void TakeDamage(float amount){
+	public void TakeDamage(int amount){
+		if(!isServer)return;
+
 		curHP -= amount;
-		if(curHP<=0)Death ();
+		if(curHP<=0){
+			curHP = maxHP;
+			StartCoroutine("ServerSideDeath");
+		}
 	}
 
-	void OnHealthChanged(float h){
+	void OnHealthChanged(int h){
 		Debug.Log("OnHealthChanged");
 		curHP = h;
 		if(isLocalPlayer){
-			localSlider.value = curHP/maxHP;
+			localSlider.value = curHP/(float)maxHP;
 		}else{
-			slider.value = curHP/maxHP;
+			slider.value = curHP/(float)maxHP;
 		}
 	}
 
-
-	void Death(){
+	IEnumerator ServerSideDeath(){
+		RpcDeath();
+		yield return new WaitForSeconds(6);
+		RpcRespawn();
+	}
+	[ClientRpc]
+	void RpcDeath(){
 		//TODO: death sound
 		Instantiate(deathExplosion, transform.position, transform.rotation);
-		model.SetActive(false);
 		if(isLocalPlayer){
 			isDead = true;
 			StartCoroutine(gc.DeadScreen(this));
-			curHP = maxHP;
-
+		//	curHP = maxHP;
 			characterController.enabled = false;
 			gun.enabled = false;
+		}else{
+			//SERVER ONLY
+			model.SetActive(false);
+			playerCanvas.SetActive(false);
 		}
-
 	}
-
 	[ClientRpc]
-	public void RpcRespawn(){
-		localSlider.value = curHP/maxHP;
-		slider.value = curHP/maxHP;
+	void RpcRespawn(){
+		OnHealthChanged(curHP);
 		if(isLocalPlayer){
 			spawnPositionScript.ChangeSpawnPosition();
 			myTransform.position = spawnPosition.position;
 			isDead = false;
-
-			model.SetActive(true);
 			characterController.enabled = true;
 			gun.enabled = true;
+		}else{
+			model.SetActive(true);
+			playerCanvas.SetActive(true);
 		}
 	}
 }

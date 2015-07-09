@@ -25,7 +25,7 @@ public class Gun : NetworkBehaviour {
 	int activeWeapon;
 
 	float[][] fireRateTable = {
-		new float[]{0.33f,10f,0,0,0,0},//fighter
+		new float[]{0.33f,0.5f,0,0,0,0},//fighter
 		new float[]{0,0,0,0,0,0},//healer
 		new float[]{0,0,0,0,0,0},//range
 		new float[]{0,0,0,0,0,0},//scout
@@ -62,9 +62,6 @@ public class Gun : NetworkBehaviour {
 	}
 
 	void Update () {
-	//	Debug.Log("GUN TIME: "+(Time.time > nextFire));
-	//	Debug.Log("GUN LOCL: "+(base.isLocalPlayer));
-	//	Debug.Log("GUN INPT: "+(Input.GetButton("Fire1")));
 		gc.localSliderReload.value = Mathf.Clamp(1-(nextFire - Time.time)/fireRate,0,1);
 
 		if(Input.GetButtonDown("Weapon0")){
@@ -91,11 +88,11 @@ public class Gun : NetworkBehaviour {
 				switch (activeWeapon)
 				{
 				case 0:
-					//void CmdFireStandard(GameObject shot,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
-					CmdFireStandard(shotTable[0],8000,8000,0,1);
+					//void CmdFireStandard(shotTable ID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
+					CmdFireStandard(1,8000,8000,0,1);
 					break;
 				case 1:
-					CmdFireStandard(shotTable[0],9000,9000,0,1);
+					CmdFireStandard(0,9000,9000,0,1);
 					break;
 				case 2:
 					
@@ -295,7 +292,7 @@ public class Gun : NetworkBehaviour {
 	}
 
 	[Command]
-	void CmdFireStandard(GameObject shot,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
+	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
 	//	Debug.Log("CmdFire");
 	//	if(audio!=null)audio.Play();
 		for(int i = 0;i<shotAmount;i++){
@@ -304,11 +301,11 @@ public class Gun : NetworkBehaviour {
 			GameObject instantiated;
 		//SET UP BULLET PROPERTIES
 			if(shotDeviation<double.Epsilon){
-				instantiated = Instantiate(shot, gunHardpoint.position, 
+				instantiated = Instantiate(shotTable[shotID], gunHardpoint.position, 
 				                           gunHardpoint.rotation) as GameObject;
 			}else{
 				Vector3 eulerAngle = gunHardpoint.rotation.eulerAngles;
-				instantiated = Instantiate(shot, gunHardpoint.position, 
+				instantiated = Instantiate(shotTable[shotID], gunHardpoint.position, 
 				                           Quaternion.Euler(new Vector3(
 					eulerAngle.x, 
 					eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
