@@ -8,9 +8,10 @@ public class RotateTurret : NetworkBehaviour {
 	[SerializeField] Transform turretTransform;
 	[SerializeField] float lerpRate = 15;
 	Transform camTransform;
-
+	Quaternion lastRot;
+	public float thresholdAngle = 1;
 	void Start () {
-	//	turretTransform = transform;
+
 		camTransform = transform.Find("Camera").transform;
 	}
 
@@ -25,10 +26,16 @@ public class RotateTurret : NetworkBehaviour {
 	[Command]
 	void CmdProvideRotation(Quaternion playerRot){
 		syncPlayerRotation = playerRot;
+	//	Debug.Log("CmdProvideRotation");
 	}
 
 	[Client]
 	void TransmitRotation(){
-		if(isLocalPlayer)CmdProvideRotation(turretTransform.rotation);
+		if(isLocalPlayer&&
+		   Quaternion.Angle(lastRot,turretTransform.rotation)>thresholdAngle){
+			CmdProvideRotation(turretTransform.rotation);
+			lastRot = turretTransform.rotation;
+		}
+			
 	}
 }

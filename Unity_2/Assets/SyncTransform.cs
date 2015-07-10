@@ -24,7 +24,7 @@ public class SyncTransform : NetworkBehaviour {
 	[Command]
 	void CmdProvidePos(Vector3 playerPos){
 		syncPos = playerPos;
-		Debug.Log("CmdProvidePos");
+//		Debug.Log("CmdProvidePos");
 	}
 	
 	[Client]

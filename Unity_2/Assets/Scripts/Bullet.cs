@@ -23,7 +23,9 @@ public class Bullet : NetworkBehaviour {
 		   ignoreTerrain&&otherTransform.tag=="Terrain" ||
 		   ignoreBullet&&otherTransform.tag=="Bullet"
 		   )return;
-		RpcExplosion();
+
+		Instantiate(explosion, transform.position, transform.rotation);
+//		RpcExplosion();
 	//	Debug.Log ("N: "+otherTransform.name);
 	//	Debug.Log ("T: "+otherTransform.tag);
 		if(isExplode){

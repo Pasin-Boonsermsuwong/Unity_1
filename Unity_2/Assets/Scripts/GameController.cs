@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour {
 	public Slider localSliderCharge;
 	public GameObject weaponPanel;
 	public static int currentClass = 0;
-	public string nameInput;
+	public string displayName;
 
 	GameObject player;
 
@@ -73,7 +73,7 @@ public class GameController : MonoBehaviour {
 
 	public void nameInputChanged(string s){
 	//	Debug.Log ("nameInputChanged");
-		nameInput = s;
+		displayName = s;
 	}
 
 
