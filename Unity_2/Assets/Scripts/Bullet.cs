@@ -17,14 +17,15 @@ public class Bullet : NetworkBehaviour {
 //		myTransform = transform;
 	}
 	void OnCollisionEnter(Collision other){
+		if(!isServer)return;
 		Transform otherTransform = other.transform;
 		if(otherTransform.tag == "Untagged"	||
 		   ignoreTerrain&&otherTransform.tag=="Terrain" ||
 		   ignoreBullet&&otherTransform.tag=="Bullet"
 		   )return;
-		Instantiate(explosion, transform.position, transform.rotation);
-		Debug.Log ("N: "+otherTransform.name);
-		Debug.Log ("T: "+otherTransform.tag);
+		RpcExplosion();
+	//	Debug.Log ("N: "+otherTransform.name);
+	//	Debug.Log ("T: "+otherTransform.tag);
 		if(isExplode){
 			//EXPLOSIVE BULLET CALCULATION
 			Collider[] objectsInRange = Physics.OverlapSphere(transform.position, explodeRadius); 
@@ -43,5 +44,9 @@ public class Bullet : NetworkBehaviour {
 			}
 		}
 		Destroy (gameObject);
+	}
+	[ClientRpc]
+	void RpcExplosion(){
+		Instantiate(explosion, transform.position, transform.rotation);
 	}
 }

@@ -48,9 +48,13 @@ public class Health : NetworkBehaviour {
 	}
 
 	void OnHealthChanged(int h){
-		Debug.Log("OnHealthChanged");
+	//	Debug.Log("OnHealthChanged");
 		curHP = h;
 		if(isLocalPlayer){
+			if(localSlider==null){
+				Debug.Log("OnHealthChanged: localSlider is null");
+				return;
+			}
 			localSlider.value = curHP/(float)maxHP;
 		}else{
 			slider.value = curHP/(float)maxHP;
@@ -61,16 +65,19 @@ public class Health : NetworkBehaviour {
 		RpcDeath();
 		yield return new WaitForSeconds(6);
 		RpcRespawn();
+		yield return new WaitForSeconds(0.5f);
+		RpcRespawnServer();
 	}
 	[ClientRpc]
 	void RpcDeath(){
 		//TODO: death sound
 		Instantiate(deathExplosion, transform.position, transform.rotation);
+		characterController.enabled = false;
 		if(isLocalPlayer){
 			isDead = true;
 			StartCoroutine(gc.DeadScreen(this));
 		//	curHP = maxHP;
-			characterController.enabled = false;
+
 			gun.enabled = false;
 		}else{
 			//SERVER ONLY
@@ -81,13 +88,17 @@ public class Health : NetworkBehaviour {
 	[ClientRpc]
 	void RpcRespawn(){
 		OnHealthChanged(curHP);
+		characterController.enabled = true;
 		if(isLocalPlayer){
 			spawnPositionScript.ChangeSpawnPosition();
 			myTransform.position = spawnPosition.position;
 			isDead = false;
-			characterController.enabled = true;
 			gun.enabled = true;
-		}else{
+		}
+	}
+	[ClientRpc]
+	void RpcRespawnServer(){
+		if(!isLocalPlayer){
 			model.SetActive(true);
 			playerCanvas.SetActive(true);
 		}

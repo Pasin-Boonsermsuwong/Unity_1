@@ -34,21 +34,21 @@ public class Gun : NetworkBehaviour {
 		new float[]{0,0,0,0,0,0},//juggernaut
 	};
 
-	public GameObject[] shotTable;
-	//string[] shotNameTable = {"Bullet50"};
+	GameObject[] shotTable;
+	string[] shotNameTable = {"B50","BB50"};
 
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		currentClass = GameController.currentClass;
 
 
-	//	shotTable = new GameObject[shotNameTable.Length];
+		shotTable = new GameObject[shotNameTable.Length];
 		//LOAD BULLETS INTO ARRAY
-		/*
+
 		for(int i = 0;i<shotTable.Length;i++){
 			shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
 		}
-		*/
+
 
 		weaponText = new Text[weaponAmount];
 		//SET UI WEAPON TEXT
@@ -62,7 +62,7 @@ public class Gun : NetworkBehaviour {
 	}
 
 	void Update () {
-		gc.localSliderReload.value = Mathf.Clamp(1-(nextFire - Time.time)/fireRate,0,1);
+		gc.localSliderReload.value = Mathf.Clamp(1.0f-(nextFire - Time.time)/fireRate,0,1);
 
 		if(Input.GetButtonDown("Weapon0")){
 			setActiveWeapon(0);
