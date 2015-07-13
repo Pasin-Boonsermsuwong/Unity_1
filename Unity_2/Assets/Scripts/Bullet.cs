@@ -19,8 +19,8 @@ public class Bullet : NetworkBehaviour {
 	void OnCollisionEnter(Collision other){
 		if(!isServer)return;
 		Transform otherTransform = other.transform;
-		if(otherTransform.tag == "Untagged"	||
-		   ignoreTerrain&&otherTransform.tag=="Terrain" ||
+		if(otherTransform.tag == "Bouncy"	||
+		   ignoreTerrain&&otherTransform.tag=="Untagged" ||
 		   ignoreBullet&&otherTransform.tag=="Bullet"
 		   )return;
 
