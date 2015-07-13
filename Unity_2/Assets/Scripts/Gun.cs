@@ -37,6 +37,8 @@ public class Gun : NetworkBehaviour {
 	GameObject[] shotTable;
 	string[] shotNameTable = {"B50","BB50"};
 
+	Collider collider;
+
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		currentClass = GameController.currentClass;
@@ -58,7 +60,8 @@ public class Gun : NetworkBehaviour {
 		setActiveWeapon(0,true);
 		rb = GetComponentInParent<Rigidbody>();
 		audio = GetComponent<AudioSource>();
-		ownerName = GetComponentInParent<Health>().ownerName;
+		ownerName = transform.root.name;
+		collider = transform.root.GetComponent<Collider>();
 	}
 
 	void Update () {
@@ -314,6 +317,7 @@ public class Gun : NetworkBehaviour {
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
 			instantiated.GetComponent<Bullet>().ownerName = ownerName;
+			Physics.IgnoreCollision(instantiated.GetComponent<Collider>(),collider);
 		//SPAWN IN CLIENTS
 			NetworkServer.Spawn(instantiated);
 		}

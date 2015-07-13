@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BoundaryCollision : MonoBehaviour {
 
-	void OnTriggerExit(Collider other){
+	void OnTriggerEnter(Collider other){
 
 		if(other.tag == "Player"){
 			Debug.Log ("Player hit boundary");

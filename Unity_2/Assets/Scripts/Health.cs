@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 using System.Collections;
 public class Health : NetworkBehaviour {
 	
-	public string ownerName;
+//	public string ownerName;
 	public int maxHP;
 	
 	[SyncVar (hook = "OnHealthChanged")]int curHP;
@@ -39,7 +39,7 @@ public class Health : NetworkBehaviour {
 //	public void TakeDamage(float amount){
 	public void TakeDamage(int amount){
 		if(!isServer)return;
-
+		Debug.Log("TakeDamage: "+amount);
 		curHP -= amount;
 		if(curHP<=0){
 			curHP = maxHP;
