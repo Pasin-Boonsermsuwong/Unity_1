@@ -36,7 +36,6 @@ public class Health : NetworkBehaviour {
 		gun = GetComponent<Gun>();
 	}
 
-//	public void TakeDamage(float amount){
 	public void TakeDamage(int amount){
 		if(!isServer)return;
 		Debug.Log("TakeDamage: "+amount);
