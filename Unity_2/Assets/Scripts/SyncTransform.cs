@@ -21,7 +21,7 @@ public class SyncTransform : NetworkBehaviour {
 		if(!isLocalPlayer)myTransform.position = Vector3.Lerp(myTransform.position,syncPos,Time.deltaTime*lerpRate);
 	}
 
-	[Command]
+	[Command (channel=1)]
 	void CmdProvidePos(Vector3 playerPos){
 		syncPos = playerPos;
 //		Debug.Log("CmdProvidePos");

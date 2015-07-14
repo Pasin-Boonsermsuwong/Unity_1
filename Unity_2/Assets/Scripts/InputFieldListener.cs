@@ -6,12 +6,12 @@ public class InputFieldListener : MonoBehaviour {
 
 	InputField mainInputField;
 	Text text;
-	GameController gc;
+	PlayerData Pd;
 	public void Start()
 	{
-		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+		Pd = GameObject.Find("PlayerData").GetComponent<PlayerData>();
 		mainInputField = GetComponent<InputField>();
-		text = mainInputField.GetComponentInChildren<Text>();
+		text = mainInputField.transform.Find("Text").GetComponent<Text>();
 		//Adds a listener to the main input field and invokes a method when the value changes.
 		mainInputField.onValueChange.AddListener (delegate {ValueChangeCheck ();});
 	}
@@ -19,6 +19,6 @@ public class InputFieldListener : MonoBehaviour {
 	// Invoked when the value of the text field changes.
 	public void ValueChangeCheck()
 	{
-		gc.nameInputChanged(text.text);
+		Pd.playerName = text.text;
 	}
 }

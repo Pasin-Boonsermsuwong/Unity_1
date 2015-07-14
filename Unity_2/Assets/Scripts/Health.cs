@@ -17,7 +17,7 @@ public class Health : NetworkBehaviour {
 	CharacterController characterController;
 	Gun gun;
 
-	public bool isDead;
+//	public bool isDead;
 	Transform spawnPosition;
 	SpawnPosition spawnPositionScript;
 	Transform myTransform;
@@ -63,8 +63,8 @@ public class Health : NetworkBehaviour {
 	IEnumerator ServerSideDeath(){
 		RpcDeath();
 		yield return new WaitForSeconds(6);
-		RpcRespawn();
-		yield return new WaitForSeconds(0.5f);
+		RpcRespawnPos();
+		yield return new WaitForSeconds(0.4f);
 		RpcRespawnServer();
 	}
 	[ClientRpc]
@@ -73,7 +73,7 @@ public class Health : NetworkBehaviour {
 		Instantiate(deathExplosion, transform.position, transform.rotation);
 		characterController.enabled = false;
 		if(isLocalPlayer){
-			isDead = true;
+	//		isDead = true;
 			StartCoroutine(gc.DeadScreen(this));
 		//	curHP = maxHP;
 
@@ -85,21 +85,23 @@ public class Health : NetworkBehaviour {
 		}
 	}
 	[ClientRpc]
-	void RpcRespawn(){
-		OnHealthChanged(curHP);
-		characterController.enabled = true;
+	void RpcRespawnPos(){
 		if(isLocalPlayer){
 			spawnPositionScript.ChangeSpawnPosition();
 			myTransform.position = spawnPosition.position;
-			isDead = false;
-			gun.enabled = true;
+//			isDead = false;
 		}
 	}
+
 	[ClientRpc]
 	void RpcRespawnServer(){
+		OnHealthChanged(curHP);
 		if(!isLocalPlayer){
 			model.SetActive(true);
 			playerCanvas.SetActive(true);
 		}
+		characterController.enabled = true;
+		gun.enabled = true;
 	}
+
 }

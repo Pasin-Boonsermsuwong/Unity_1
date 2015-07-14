@@ -7,21 +7,24 @@ public class GameController : MonoBehaviour {
 	public bool pause;
 	public GameObject deadPanel;
 	public Text respawnCountDown;
-	public bool respawn;
+//	public bool respawn;
 	public GameObject pauseObject;
 	public Slider localSliderHealth;
 	public Slider localSliderReload;
 	public Slider localSliderCharge;
 	public GameObject weaponPanel;
 	public static int currentClass = 0;
-	public string displayName;
 
-	GameObject player;
+
+	//public string playerName;
+	//GameObject player;
+	PlayerData pd;
 
 	void Start () {
-
+	//	pd = GameObject.Find("PlayerData").GetComponent<PlayerData>();
+	//playerName = pd.playerName;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		if(Input.GetButtonDown("Pause")||Input.GetButtonDown("Cancel")){
@@ -61,20 +64,20 @@ public class GameController : MonoBehaviour {
 	}
 	*/
 	public IEnumerator DeadScreen(Health h) {
-		respawn = false;
+	//	respawn = false;
 		deadPanel.SetActive(true);
 		for(int i = 6;i>0;i--){
 			respawnCountDown.text = i+"";
 			yield return new WaitForSeconds(1);
 		}
 		deadPanel.SetActive(false);
-		respawn = true;
+	//	respawn = true;
 	}
-
+	/*
 	public void nameInputChanged(string s){
 	//	Debug.Log ("nameInputChanged");
 		displayName = s;
 	}
-
+*/
 
 }
