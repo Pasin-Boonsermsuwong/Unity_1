@@ -17,8 +17,8 @@ public class Bullet : NetworkBehaviour {
 //		myTransform = transform;
 	}
 	void OnCollisionEnter(Collision other){
-		if(!isServer)return;
-		Debug.Log("Bullet hit: "+other.transform.name);
+
+		//Debug.Log("Bullet hit: "+other.transform.name);
 		Transform otherTransform = other.transform;
 		if(otherTransform.tag == "Bouncy"	||
 		   ignoreTerrain&&otherTransform.tag=="Untagged" ||
@@ -26,6 +26,8 @@ public class Bullet : NetworkBehaviour {
 		   )return;
 
 		Instantiate(explosion, transform.position, transform.rotation);
+		Destroy (gameObject);
+		if(!isServer)return;
 //		RpcExplosion();
 	//	Debug.Log ("N: "+otherTransform.name);
 	//	Debug.Log ("T: "+otherTransform.tag);
@@ -46,7 +48,7 @@ public class Bullet : NetworkBehaviour {
 				otherTransform.GetComponent<Health>().TakeDamage(damage);
 			}
 		}
-		Destroy (gameObject);
+
 	}
 	[ClientRpc]
 	void RpcExplosion(){

@@ -14,7 +14,9 @@ public class Health : NetworkBehaviour {
 	public GameObject playerCanvas;
 	public GameObject deathExplosion;
 	GameObject model;
-	CharacterController characterController;
+	CharacterController characterController;//NRB
+	Collider characterCollider;//RB
+	Rigidbody rb;//RB
 	Gun gun;
 
 //	public bool isDead;
@@ -33,6 +35,8 @@ public class Health : NetworkBehaviour {
 
 		model = myTransform.FindChild("Model").gameObject;
 		characterController = GetComponent<CharacterController>();
+		characterCollider = GetComponent<Collider>();
+		rb = GetComponent<Rigidbody>();
 		gun = GetComponent<Gun>();
 	}
 
@@ -71,7 +75,10 @@ public class Health : NetworkBehaviour {
 	void RpcDeath(){
 		//TODO: death sound
 		Instantiate(deathExplosion, transform.position, transform.rotation);
-		characterController.enabled = false;
+		//characterController.enabled = false;//NRB
+		rb.useGravity = false;
+		rb.velocity = new Vector3(0,0,0);
+		characterCollider.enabled = false;//RB
 		if(isLocalPlayer){
 	//		isDead = true;
 			StartCoroutine(gc.DeadScreen(this));
@@ -100,7 +107,9 @@ public class Health : NetworkBehaviour {
 			model.SetActive(true);
 			playerCanvas.SetActive(true);
 		}
-		characterController.enabled = true;
+	//	characterController.enabled = true;//NRB
+		rb.useGravity = true;
+		characterCollider.enabled = true;
 		gun.enabled = true;
 	}
 

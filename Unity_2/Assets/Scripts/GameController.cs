@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 using UnityEngine.UI;
 public class GameController : MonoBehaviour {
 	
@@ -15,24 +16,46 @@ public class GameController : MonoBehaviour {
 	public GameObject weaponPanel;
 	public static int currentClass = 0;
 
+//	public GameObject chatInput;
+	public GameObject chatPanel;
+	public InputField chatInputField;
+	public Text chatInputText;	//INPUT FIELD TEXT
+	public Text chatText;
+	public Scrollbar chatScrollbar;
+	StringBuilder chatSb = new StringBuilder();
 
-	//public string playerName;
-	//GameObject player;
+	public bool chatState = false;
 	PlayerData pd;
-
-	void Start () {
-	//	pd = GameObject.Find("PlayerData").GetComponent<PlayerData>();
-	//playerName = pd.playerName;
+	/*
+	void Start(){
+		Debug.Log("GameController start");
 	}
-
-	// Update is called once per frame
+*/
 	void Update () {
 		if(Input.GetButtonDown("Pause")||Input.GetButtonDown("Cancel")){
 			pause = !pause;
 			CheckPauseState();
-	//		gainFocus = false;
+		}
+
+	}
+	public void ChangeChatState(){
+		chatState = !chatState;
+		if(chatState){
+			chatInputField.Select();
+			chatInputField.ActivateInputField();
+		}else{	//SUBMIT CHAT
+			chatInputField.text = string.Empty;
+			chatInputField.DeactivateInputField();
 		}
 	}
+
+	public void AddChatMessage(string s){
+		chatSb.Append(s);
+		chatText.text = chatSb.ToString();
+		chatSb.AppendLine();
+		chatScrollbar.value = 0;
+	}
+
 	void CheckPauseState(){
 		if(pause){
 			pauseObject.SetActive(true);
@@ -44,12 +67,12 @@ public class GameController : MonoBehaviour {
 		}
 	}
 	public void LockCursor(){
-		Cursor.visible = false;
+	//	Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
 	}
 
 	public void UnlockCursor(){
-		Cursor.visible = true;
+	//	Cursor.visible = true;
 		Cursor.lockState = CursorLockMode.None;
 	}
 	void OnApplicationFocus(bool focus){
@@ -58,11 +81,7 @@ public class GameController : MonoBehaviour {
 		CheckPauseState();
 	//	gainFocus = focus;
 	}
-	/*
-	public void DeadScreenInit(){
-		yield return StartCoroutine(DeadScreen);
-	}
-	*/
+
 	public IEnumerator DeadScreen(Health h) {
 	//	respawn = false;
 		deadPanel.SetActive(true);

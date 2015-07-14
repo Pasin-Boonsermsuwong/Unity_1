@@ -5,15 +5,13 @@ using UnityEngine.Networking;
 
 public class PlayerID : NetworkBehaviour
 {
-	GameController gc;
 	PlayerData pd;
 
-	[SyncVar] public string playerUniqueName;
-	public Text displayerNameText;
+	//[SyncVar] public string playerUniqueName;
+	public Text displayNameText;
 	//NAME ON CANVAS
-	[SyncVar (hook = "OnDisplayNameChanged")]string displayName;
+	[SyncVar (hook = "OnDisplayNameChanged")]public string displayName;
 	NetworkInstanceId playerNetID;
-	Transform myTransform;
 
 	public override void OnStartLocalPlayer (){
 		/*
@@ -21,19 +19,14 @@ public class PlayerID : NetworkBehaviour
 		SetIdentity ();
 		*/
 	}
-	void Awake (){
-		myTransform = transform;
-	}
-
 	void Start(){
 
-		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
 
 		if(isLocalPlayer){
 			SetPlayerName();
 		}else{
-			displayerNameText.text = displayName;
+			displayNameText.text = displayName;
 		}
 	}
 	void SetPlayerName(){
@@ -43,14 +36,14 @@ public class PlayerID : NetworkBehaviour
 			s = "Player"+GetComponent<NetworkIdentity>().netId;;
 		}
 		
-		Debug.Log("DisplayName = "+s);
+	//	Debug.Log("DisplayName = "+s);
 		CmdUpdatePlayerName(s);
 	}
 
 	void OnDisplayNameChanged(string s){
-		Debug.Log ("OnDisplayNameChanged: "+s);
+	//	Debug.Log ("OnDisplayNameChanged: "+s);
 		displayName = s;
-		displayerNameText.text = displayName;
+		displayNameText.text = displayName;
 	}
 	/*
 	void Update (){
@@ -88,7 +81,7 @@ public class PlayerID : NetworkBehaviour
 */
 	[Command]
 	void CmdUpdatePlayerName(string dName){
-		Debug.Log("CmdUpdatePlayerName");
+	//	Debug.Log("CmdUpdatePlayerName");
 		displayName = dName;
 	}
 	/*

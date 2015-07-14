@@ -33,6 +33,16 @@ public class Gun : NetworkBehaviour {
 		new float[]{0,0,0,0,0,0},//spartan
 		new float[]{0,0,0,0,0,0},//juggernaut
 	};
+	string[][] weaponNameTable =  {
+		new string[]{"Machine Gun","Shotgun","[C] Grenade","[C] Artillery","ROF Buff","null"},//fighter
+		new string[]{"","","","","",""},//healer
+		new string[]{"","","","","",""},//range
+		new string[]{"","","","","",""},//scout
+		new string[]{"","","","","",""},//tank
+		new string[]{"","","","","",""},//spartan
+		new string[]{"","","","","",""},//juggernaut
+	};
+
 
 	GameObject[] shotTable;
 	string[] shotNameTable = {"B50","BB50"};
@@ -56,6 +66,7 @@ public class Gun : NetworkBehaviour {
 		//SET UI WEAPON TEXT
 		for(int i =0;i<weaponAmount;i++){
 			weaponText[i] = gc.weaponPanel.transform.GetChild(i).GetComponent<Text>();
+			weaponText[i].text = weaponNameTable[currentClass][i];
 		}
 		setActiveWeapon(0,true);
 		rb = GetComponentInParent<Rigidbody>();

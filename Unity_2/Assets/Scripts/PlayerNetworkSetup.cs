@@ -13,7 +13,10 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 			gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 			transform.Find("Camera").gameObject.SetActive(true);
 	//		GetComponent<Gun>().enabled = true;
-			GetComponent<UnityStandardAssets.Characters.FirstPerson.FirstPersonController>().enabled = true;
+
+
+	//	GetComponent<UnityStandardAssets.Characters.FirstPerson.FirstPersonController>().enabled = true;	//NRB
+			GetComponent<UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController>().enabled = true;	//RB
 			ChangeLayersRecursively(transform,"PlayerLocal");
 			gc.playerSpawned = true;
 			gc.LockCursor();
