@@ -13,7 +13,7 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 			gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 			transform.Find("Camera").gameObject.SetActive(true);
 	//		GetComponent<Gun>().enabled = true;
-
+		//	GetComponent<Gun>().enabled = true;
 
 	//	GetComponent<UnityStandardAssets.Characters.FirstPerson.FirstPersonController>().enabled = true;	//NRB
 	//		GetComponent<UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController>().enabled = true;	//RB
@@ -27,9 +27,8 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 	}
 	public void ChangeLayersRecursively(Transform trans, string name)
 	{
-		trans.gameObject.layer = LayerMask.NameToLayer(name);
-		foreach(Transform child in trans)
-		{            
+		if(trans.gameObject.layer == LayerMask.NameToLayer("Default"))trans.gameObject.layer = LayerMask.NameToLayer(name);
+		foreach(Transform child in trans){            
 			ChangeLayersRecursively(child,name);
 		}
 	}

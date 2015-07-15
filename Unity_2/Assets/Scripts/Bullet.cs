@@ -7,15 +7,30 @@ public class Bullet : NetworkBehaviour {
 	public ParticleSystem explosion;
 	public int damage;
 	public string ownerName;
+	//public NetworkInstanceId ownerID;
 	//explosion
 
 	public bool ignoreTerrain;
 	public bool ignoreBullet;
 	public bool isExplode;
 	public float explodeRadius;
+	/*
 	void Start(){
-//		myTransform = transform;
+		if(isLocalPlayer){
+			GameObject obj = NetworkServer.FindLocalObject(ownerID);
+			Physics.IgnoreCollision(GetComponent<Collider>(), obj.GetComponent<Collider>());
+		}
 	}
+	*/
+	//public override void OnStartClient() {
+	void Awake(){
+
+	}
+	/*
+	void OnTriggerExit(Collider other) {
+		Debug.Log(other.name);
+	}
+	*/
 	void OnCollisionEnter(Collision other){
 		if(!isServer)return;
 		Debug.Log("Bullet hit: "+other.transform.name);
@@ -26,6 +41,7 @@ public class Bullet : NetworkBehaviour {
 		   )return;
 		Instantiate(explosion, transform.position, transform.rotation);
 		Destroy(gameObject);
+	//	RpcDestroy();
 //		RpcExplosion();
 	//	Debug.Log ("N: "+otherTransform.name);
 	//	Debug.Log ("T: "+otherTransform.tag);
@@ -48,8 +64,19 @@ public class Bullet : NetworkBehaviour {
 		}
 
 	}
+	/*
 	[ClientRpc]
 	void RpcExplosion(){
 		Instantiate(explosion, transform.position, transform.rotation);
 	}
+	*/
+
+
+	/*
+	[ClientRpc]
+	void RpcDestroy(){
+		Destroy(gameObject);
+	}
+	*/
+
 }

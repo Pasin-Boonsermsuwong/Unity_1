@@ -17,6 +17,8 @@ public class Gun : NetworkBehaviour {
 	Rigidbody rb;
 //	AudioSource audio;
 	string ownerName;
+	NetworkInstanceId ownerID;		//OF ROOT TRANSOFRM
+
 	float fireRate;
 	float nextFire;
 
@@ -48,9 +50,10 @@ public class Gun : NetworkBehaviour {
 	GameObject[] shotTable;
 	string[] shotNameTable = {"B50","BB50"};
 
-	new Collider collider;
+	Collider collider;
 
 	void Start () {
+
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		currentClass = GameController.currentClass;
 
@@ -69,14 +72,21 @@ public class Gun : NetworkBehaviour {
 			weaponText[i] = gc.weaponPanel.transform.GetChild(i).GetComponent<Text>();
 			weaponText[i].text = weaponNameTable[currentClass][i];
 		}
-		setActiveWeapon(0,true);
+
+
 		rb = GetComponentInParent<Rigidbody>();
 	//	audio = GetComponent<AudioSource>();
-		ownerName = transform.root.name;
+		if(!isLocalPlayer)return;
+		setActiveWeapon(0,true);
+		ownerName = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>().playerName;
+		ownerID = GetComponent<NetworkIdentity>().netId;
+		Debug.Log("Gun start ownerID: "+ownerID);
+
 		collider = transform.root.GetComponent<Collider>();
 	}
 
 	void Update () {
+		if(!isLocalPlayer)return;
 		if(!gc.chatState){
 			if(Input.GetButtonDown("Weapon0")){
 				setActiveWeapon(0);
@@ -99,7 +109,7 @@ public class Gun : NetworkBehaviour {
 		};
 		if(!gunIsActive)return;
 		gc.localSliderReload.value = Mathf.Clamp(1.0f-(nextFire - Time.time)/fireRate,0,1);
-		if (base.isLocalPlayer && Input.GetButton("Fire1") && Time.time > nextFire && !gc.pause) {
+		if (Input.GetButton("Fire1") && Time.time > nextFire && !gc.pause) {
 			switch (currentClass)
 			{
 			case 0:
@@ -107,10 +117,10 @@ public class Gun : NetworkBehaviour {
 				{
 				case 0:
 					//void CmdFireStandard(shotTable ID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
-					CmdFireStandard(1,8000,8000,0,1);
+					CmdFireStandard(1,8000,8000,0,1,ownerID);
 					break;
 				case 1:
-					CmdFireStandard(0,9000,9000,0,1);
+					CmdFireStandard(0,9000,9000,0,1,ownerID);
 					break;
 				case 2:
 					
@@ -314,15 +324,15 @@ public class Gun : NetworkBehaviour {
 	void setActiveWeapon(int n){
 		setActiveWeapon(n,false);
 	}
-
 	[Command]
-	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
+	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount,NetworkInstanceId netID){
 	//	Debug.Log("CmdFire");
 	//	if(audio!=null)audio.Play();
 		for(int i = 0;i<shotAmount;i++){
 			
 		// CREATE SERVER SIDE INSTANCE
 			GameObject instantiated;
+
 		//SET UP BULLET PROPERTIES
 			if(shotDeviation<double.Epsilon){
 				instantiated = Instantiate(shotTable[shotID], gunHardpoint.position, 
@@ -335,13 +345,34 @@ public class Gun : NetworkBehaviour {
 					eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
 					eulerAngle.z))) as GameObject;
 			}
+	//		Physics.IgnoreCollision(instantiated.GetComponent<Collider>(),collider);
+
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
 			instantiated.GetComponent<Bullet>().ownerName = ownerName;
-			Physics.IgnoreCollision(instantiated.GetComponent<Collider>(),collider);
+	//		instantiated.GetComponent<Bullet>().ownerID = netID;
+	//		Debug.Log ("CmdFire setID: "+instantiated.GetComponent<Bullet>().ownerID);
+			/*
+			if(ownerIDset){
+				instantiated.GetComponent<Bullet>().ownerID = ownerID;
+			}else{
+				ownerID = transform.root.name;
+				instantiated.GetComponent<Bullet>().ownerID = ownerID;
+				ownerIDset = true;
+			}
+			*/
+		//	Physics.IgnoreCollision(instantiated.GetComponent<Collider>(),collider);
 		//SPAWN IN CLIENTS
 			NetworkServer.Spawn(instantiated);
+	//		RpcSetIgnoreCollision(instantiated.GetComponent<Collider>(),collider);
 		}
 
 	}
+	/*
+	[ClientRpc]
+	void RpcSetIgnoreCollision(Collider a,Collider b){
+		Debug.Log("SetIgnoreCollision a:"+a.name+" b:"+b.name);
+		Physics.IgnoreCollision(a,b);
+	}
+	*/
 }

@@ -24,14 +24,18 @@ public class GameController : MonoBehaviour {
 	public Scrollbar chatScrollbar;
 	StringBuilder chatSb = new StringBuilder();
 
+	//PlayerData pd;
+
 	public bool chatState = false;
 	bool chatMoveScrollbar = false;	//move scrollbar to lowest position
-	PlayerData pd;
 	/*
 	void Start(){
 		Debug.Log("GameController start");
 	}
 */
+	void Awake(){
+	//	pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>().playerName;
+	}
 	void Update () {
 		if(chatState)return;
 		if(Input.GetButtonDown("Pause")||Input.GetButtonDown("Cancel")){

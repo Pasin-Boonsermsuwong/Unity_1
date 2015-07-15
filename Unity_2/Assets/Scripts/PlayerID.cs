@@ -6,21 +6,24 @@ using UnityEngine.Networking;
 public class PlayerID : NetworkBehaviour
 {
 	PlayerData pd;
-
-	//[SyncVar] public string playerUniqueName;
+	//GameController gc;
+	[SyncVar] public string playerUniqueName;
 	public Text displayNameText;
 	//NAME ON CANVAS
 	[SyncVar (hook = "OnDisplayNameChanged")]public string displayName;
 	NetworkInstanceId playerNetID;
-
+	//bool firstNameCheck;
+	/*
 	public override void OnStartLocalPlayer (){
-		/*
+
 		GetNetIdentity ();
 		SetIdentity ();
-		*/
-	}
-	void Start(){
 
+	}
+	*/
+	void Start(){
+	//	firstNameCheck = false;
+	//	gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
 
 		if(isLocalPlayer){
@@ -47,20 +50,14 @@ public class PlayerID : NetworkBehaviour
 	}
 	/*
 	void Update (){
-	
-		if (myTransform.name == "" || myTransform.name == "Player(Clone)") { 
+		if (transform.name == "" || transform.name == "CharFighterRB(Clone)") { 
 			{
 				SetIdentity();
+		//		firstNameCheck = true;
 			}  
 		}   
-
-		if (displayName==""){
-			SetPlayerName();
-		}
-//		displayName = "PARTY: "+Random.value;
 	}
 */
-
 	/*
 	[Client]
 	void GetNetIdentity (){
@@ -71,7 +68,10 @@ public class PlayerID : NetworkBehaviour
 	}
 
 	void SetIdentity (){
-		myTransform.name = MakeUniqueIdentity ();
+		if(!isLocalPlayer){
+			transform.name = playerUniqueName;
+		}
+		else transform.name = MakeUniqueIdentity ();
 	}
 
 	string MakeUniqueIdentity (){
