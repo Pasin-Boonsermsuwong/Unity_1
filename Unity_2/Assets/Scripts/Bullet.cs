@@ -17,17 +17,15 @@ public class Bullet : NetworkBehaviour {
 //		myTransform = transform;
 	}
 	void OnCollisionEnter(Collision other){
-
-		//Debug.Log("Bullet hit: "+other.transform.name);
+		if(!isServer)return;
+		Debug.Log("Bullet hit: "+other.transform.name);
 		Transform otherTransform = other.transform;
 		if(otherTransform.tag == "Bouncy"	||
 		   ignoreTerrain&&otherTransform.tag=="Untagged" ||
 		   ignoreBullet&&otherTransform.tag=="Bullet"
 		   )return;
-
 		Instantiate(explosion, transform.position, transform.rotation);
-		Destroy (gameObject);
-		if(!isServer)return;
+		Destroy(gameObject);
 //		RpcExplosion();
 	//	Debug.Log ("N: "+otherTransform.name);
 	//	Debug.Log ("T: "+otherTransform.tag);

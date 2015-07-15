@@ -14,7 +14,8 @@ public class Health : NetworkBehaviour {
 	public GameObject playerCanvas;
 	public GameObject deathExplosion;
 	GameObject model;
-	CharacterController characterController;//NRB
+	//CharacterController characterController;//NRB
+//	RbFPC_Custom characterController;
 	Collider characterCollider;//RB
 	Rigidbody rb;//RB
 	Gun gun;
@@ -34,7 +35,7 @@ public class Health : NetworkBehaviour {
 		curHP = maxHP;
 
 		model = myTransform.FindChild("Model").gameObject;
-		characterController = GetComponent<CharacterController>();
+	//	characterController = GetComponent<CharacterController>();
 		characterCollider = GetComponent<Collider>();
 		rb = GetComponent<Rigidbody>();
 		gun = GetComponent<Gun>();

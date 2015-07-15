@@ -15,7 +15,7 @@ public class Gun : NetworkBehaviour {
 	GameController gc;
 	public Transform gunHardpoint;
 	Rigidbody rb;
-	AudioSource audio;
+//	AudioSource audio;
 	string ownerName;
 	float fireRate;
 	float nextFire;
@@ -23,6 +23,7 @@ public class Gun : NetworkBehaviour {
 	int weaponAmount = 6;
 	Text[] weaponText;
 	int activeWeapon;
+	bool gunIsActive;
 
 	float[][] fireRateTable = {
 		new float[]{0.33f,0.5f,0,0,0,0},//fighter
@@ -34,7 +35,7 @@ public class Gun : NetworkBehaviour {
 		new float[]{0,0,0,0,0,0},//juggernaut
 	};
 	string[][] weaponNameTable =  {
-		new string[]{"Machine Gun","Shotgun","[C] Grenade","[C] Artillery","ROF Buff","null"},//fighter
+		new string[]{"Machine Gun","Shotgun","[C] Grenade","[C] Artillery","ROF Buff",""},//fighter
 		new string[]{"","","","","",""},//healer
 		new string[]{"","","","","",""},//range
 		new string[]{"","","","","",""},//scout
@@ -47,7 +48,7 @@ public class Gun : NetworkBehaviour {
 	GameObject[] shotTable;
 	string[] shotNameTable = {"B50","BB50"};
 
-	Collider collider;
+	new Collider collider;
 
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
@@ -70,32 +71,35 @@ public class Gun : NetworkBehaviour {
 		}
 		setActiveWeapon(0,true);
 		rb = GetComponentInParent<Rigidbody>();
-		audio = GetComponent<AudioSource>();
+	//	audio = GetComponent<AudioSource>();
 		ownerName = transform.root.name;
 		collider = transform.root.GetComponent<Collider>();
 	}
 
 	void Update () {
-		gc.localSliderReload.value = Mathf.Clamp(1.0f-(nextFire - Time.time)/fireRate,0,1);
-
-		if(Input.GetButtonDown("Weapon0")){
-			setActiveWeapon(0);
-		}else if(Input.GetButtonDown("Weapon1")){
-			setActiveWeapon(1);
-		}else if(Input.GetButtonDown("Weapon2")){
-			setActiveWeapon(2);
-		}else if(Input.GetButtonDown("Weapon3")){
-			setActiveWeapon(3);
-		}else if(Input.GetButtonDown("Weapon4")){
-			setActiveWeapon(4);
-		}else if(Input.GetButtonDown("Weapon5")){
-			setActiveWeapon(5);
-		}else if(Input.GetButtonDown("WeaponNext")){
-			setActiveWeapon(Mathf.Clamp(activeWeapon+1,0,weaponAmount-1));
-		}else if(Input.GetButtonDown("WeaponPrevious")){
-			setActiveWeapon(Mathf.Clamp(activeWeapon-1,0,weaponAmount-1));
+		if(!gc.chatState){
+			if(Input.GetButtonDown("Weapon0")){
+				setActiveWeapon(0);
+			}else if(Input.GetButtonDown("Weapon1")){
+				setActiveWeapon(1);
+			}else if(Input.GetButtonDown("Weapon2")){
+				setActiveWeapon(2);
+			}else if(Input.GetButtonDown("Weapon3")){
+				setActiveWeapon(3);
+			}else if(Input.GetButtonDown("Weapon4")){
+				setActiveWeapon(4);
+			}else if(Input.GetButtonDown("Weapon5")){
+				setActiveWeapon(5);
+			}else if(Input.GetButtonDown("WeaponNext")){
+				setActiveWeapon(Mathf.Clamp(activeWeapon+1,0,weaponAmount-1));
+			}else if(Input.GetButtonDown("WeaponPrevious")){
+				setActiveWeapon(Mathf.Clamp(activeWeapon-1,0,weaponAmount-1));
+		}
+		
 		};
-		if (base.isLocalPlayer && Input.GetButton("Fire1") && Time.time > nextFire) {
+		if(!gunIsActive)return;
+		gc.localSliderReload.value = Mathf.Clamp(1.0f-(nextFire - Time.time)/fireRate,0,1);
+		if (base.isLocalPlayer && Input.GetButton("Fire1") && Time.time > nextFire && !gc.pause) {
 			switch (currentClass)
 			{
 			case 0:
@@ -298,8 +302,14 @@ public class Gun : NetworkBehaviour {
 		weaponText[lastActiveWeapon].color = Color.black;
 		weaponText[activeWeapon].color = Color.magenta;
 
-		fireRate = fireRateTable[currentClass][n];
-		nextFire = Time.time + fireRate;
+		if(weaponText[activeWeapon].text==""){
+			gunIsActive = false;
+			gc.localSliderReload.value = 0;
+		}else{
+			gunIsActive = true;
+			fireRate = fireRateTable[currentClass][n];
+			nextFire = Time.time + fireRate;
+		}
 	}
 	void setActiveWeapon(int n){
 		setActiveWeapon(n,false);

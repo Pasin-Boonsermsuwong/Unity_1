@@ -16,7 +16,8 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 
 
 	//	GetComponent<UnityStandardAssets.Characters.FirstPerson.FirstPersonController>().enabled = true;	//NRB
-			GetComponent<UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController>().enabled = true;	//RB
+	//		GetComponent<UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController>().enabled = true;	//RB
+			GetComponent<RbFPC_Custom>().enabled = true;
 			ChangeLayersRecursively(transform,"PlayerLocal");
 			gc.playerSpawned = true;
 			gc.LockCursor();

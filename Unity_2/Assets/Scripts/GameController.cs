@@ -25,6 +25,7 @@ public class GameController : MonoBehaviour {
 	StringBuilder chatSb = new StringBuilder();
 
 	public bool chatState = false;
+	bool chatMoveScrollbar = false;	//move scrollbar to lowest position
 	PlayerData pd;
 	/*
 	void Start(){
@@ -32,20 +33,27 @@ public class GameController : MonoBehaviour {
 	}
 */
 	void Update () {
+		if(chatState)return;
 		if(Input.GetButtonDown("Pause")||Input.GetButtonDown("Cancel")){
 			pause = !pause;
 			CheckPauseState();
 		}
-
+		if(chatMoveScrollbar&&chatScrollbar.value>0){
+			chatMoveScrollbar = false;
+			chatScrollbar.value = 0;
+		}
 	}
 	public void ChangeChatState(){
 		chatState = !chatState;
 		if(chatState){
 			chatInputField.Select();
 			chatInputField.ActivateInputField();
+			chatInputField.GetComponent<Image>().color = new Color32(0, 0, 255,190);
 		}else{	//SUBMIT CHAT
 			chatInputField.text = string.Empty;
 			chatInputField.DeactivateInputField();
+
+			chatInputField.GetComponent<Image>().color = new Color32(50,50,50,190);
 		}
 	}
 
@@ -53,7 +61,8 @@ public class GameController : MonoBehaviour {
 		chatSb.Append(s);
 		chatText.text = chatSb.ToString();
 		chatSb.AppendLine();
-		chatScrollbar.value = 0;
+	//	chatScrollbar.value = 0;
+		chatMoveScrollbar = true;
 	}
 
 	void CheckPauseState(){
