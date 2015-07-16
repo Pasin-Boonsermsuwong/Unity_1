@@ -16,35 +16,37 @@ public class Bullet : NetworkBehaviour {
 	public float explodeRadius;
 	/*
 	void Start(){
-		if(isLocalPlayer){
-			GameObject obj = NetworkServer.FindLocalObject(ownerID);
-			Physics.IgnoreCollision(GetComponent<Collider>(), obj.GetComponent<Collider>());
-		}
-	}
-	*/
-	//public override void OnStartClient() {
-	void Awake(){
 
-	}
-	/*
-	void OnTriggerExit(Collider other) {
-		Debug.Log(other.name);
+		SphereCollider sph = GetComponent<SphereCollider>();
+		if(sph == null){
+			Debug.Log("Bullet collider is not sphere");
+			return;
+		}
+		float radius = sph.radius;
+		Debug.Log("Bullet start overlapLength: "+Physics.OverlapSphere(transform.position,radius).Length);
+		//~(1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("PlayerLocal"))
+		if(Physics.OverlapSphere(transform.position,radius).Length>2){	
+			//IGNORE PLAYER/PLAYERLOCAL
+			//BY DEFAULT WILL HIT TURRETCOLLIDER AND BULLET ITSELF, SO LENGTH = 2;
+			Debug.Log("SpawnCollide");
+			if(isServer)BulletHit(null);
+		}
 	}
 	*/
 	void OnCollisionEnter(Collision other){
 		if(!isServer)return;
-		Debug.Log("Bullet hit: "+other.transform.name);
+	//	Debug.Log("Bullet hit: "+other.transform.name);
 		Transform otherTransform = other.transform;
 		if(otherTransform.tag == "Bouncy"	||
 		   ignoreTerrain&&otherTransform.tag=="Untagged" ||
 		   ignoreBullet&&otherTransform.tag=="Bullet"
 		   )return;
+		BulletHit(otherTransform);
+	}
+	void BulletHit(Transform otherTransform){
 		Instantiate(explosion, transform.position, transform.rotation);
-		Destroy(gameObject);
-	//	RpcDestroy();
-//		RpcExplosion();
-	//	Debug.Log ("N: "+otherTransform.name);
-	//	Debug.Log ("T: "+otherTransform.tag);
+		RpcExplosion();
+		Destroy(gameObject);//TODO:
 		if(isExplode){
 			//EXPLOSIVE BULLET CALCULATION
 			Collider[] objectsInRange = Physics.OverlapSphere(transform.position, explodeRadius); 
@@ -58,18 +60,17 @@ public class Bullet : NetworkBehaviour {
 			}
 		}else{
 			//NORMAL BULLET HIT
-			if(otherTransform.tag=="Player"){
+			if(otherTransform!=null && otherTransform.tag=="Player"){
 				otherTransform.GetComponent<Health>().TakeDamage(damage);
 			}
 		}
-
 	}
-	/*
+
 	[ClientRpc]
 	void RpcExplosion(){
 		Instantiate(explosion, transform.position, transform.rotation);
 	}
-	*/
+
 
 
 	/*

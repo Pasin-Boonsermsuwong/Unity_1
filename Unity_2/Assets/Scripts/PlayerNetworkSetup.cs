@@ -9,7 +9,7 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		if(base.isLocalPlayer){
+		if(isLocalPlayer){
 			gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 			transform.Find("Camera").gameObject.SetActive(true);
 	//		GetComponent<Gun>().enabled = true;
@@ -27,7 +27,7 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 	}
 	public void ChangeLayersRecursively(Transform trans, string name)
 	{
-		if(trans.gameObject.layer == LayerMask.NameToLayer("Default"))trans.gameObject.layer = LayerMask.NameToLayer(name);
+		if(trans.gameObject.layer == LayerMask.NameToLayer("Player"))trans.gameObject.layer = LayerMask.NameToLayer(name);
 		foreach(Transform child in trans){            
 			ChangeLayersRecursively(child,name);
 		}

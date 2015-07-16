@@ -10,9 +10,11 @@ public class PlayerChatControl : NetworkBehaviour {
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		playerID = GetComponent<PlayerID>();
+		if(isLocalPlayer)Invoke("JoinedMessage", 1);
 	}
-	
-	// Update is called once per frame
+	void JoinedMessage(){
+		CmdSendChatMsg(playerID.displayName+" has joined");
+	}
 	void Update () {
 		if(!isLocalPlayer)return;
 		if(Input.GetButtonDown("Submit")){

@@ -26,6 +26,7 @@ public class Gun : NetworkBehaviour {
 	Text[] weaponText;
 	int activeWeapon;
 	bool gunIsActive;
+	bool shootSuccess;
 
 	float[][] fireRateTable = {
 		new float[]{0.33f,0.5f,0,0,0,0},//fighter
@@ -50,7 +51,7 @@ public class Gun : NetworkBehaviour {
 	GameObject[] shotTable;
 	string[] shotNameTable = {"B50","BB50"};
 
-	Collider collider;
+	//Collider collider;
 
 	void Start () {
 
@@ -82,7 +83,7 @@ public class Gun : NetworkBehaviour {
 		ownerID = GetComponent<NetworkIdentity>().netId;
 		Debug.Log("Gun start ownerID: "+ownerID);
 
-		collider = transform.root.GetComponent<Collider>();
+	//	collider = transform.root.GetComponent<Collider>();
 	}
 
 	void Update () {
@@ -110,6 +111,7 @@ public class Gun : NetworkBehaviour {
 		if(!gunIsActive)return;
 		gc.localSliderReload.value = Mathf.Clamp(1.0f-(nextFire - Time.time)/fireRate,0,1);
 		if (Input.GetButton("Fire1") && Time.time > nextFire && !gc.pause) {
+			shootSuccess = false;
 			switch (currentClass)
 			{
 			case 0:
@@ -143,7 +145,6 @@ public class Gun : NetworkBehaviour {
 				switch (activeWeapon)
 				{
 				case 0:
-					
 					break;
 				case 1:
 					
@@ -299,10 +300,9 @@ public class Gun : NetworkBehaviour {
 				Debug.LogError("WTF!?");
 				break;
 			}
-		//	if(audio!=null)audio.Play();
-
-			nextFire = Time.time + fireRate;
+			if(shootSuccess)nextFire = Time.time + fireRate;
 		};
+
 	}
 	void setActiveWeapon(int n,bool skipCheck){
 		if(n<0||n>=weaponAmount)Debug.LogError("setActiveWeapon out of range");
@@ -327,7 +327,20 @@ public class Gun : NetworkBehaviour {
 	[Command]
 	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount,NetworkInstanceId netID){
 	//	Debug.Log("CmdFire");
-	//	if(audio!=null)audio.Play();
+		SphereCollider sph = shotTable[shotID].GetComponent<SphereCollider>();
+		if(sph == null){
+			Debug.Log("Bullet collider is not sphere");
+			return;
+		}
+		float radius = sph.radius;
+		Debug.Log("Bullet start overlapLength: "+Physics.OverlapSphere(transform.position,radius).Length);
+		//~(1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("PlayerLocal"))
+		if(Physics.OverlapSphere(transform.position,radius).Length>1){
+			//BY DEFAULT WILL HIT TURRETCOLLIDER , SO LENGTH = 1;
+			Debug.Log("SpawnCollide");
+			return;
+		}
+
 		for(int i = 0;i<shotAmount;i++){
 			
 		// CREATE SERVER SIDE INSTANCE
@@ -345,8 +358,6 @@ public class Gun : NetworkBehaviour {
 					eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
 					eulerAngle.z))) as GameObject;
 			}
-	//		Physics.IgnoreCollision(instantiated.GetComponent<Collider>(),collider);
-
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
 			instantiated.GetComponent<Bullet>().ownerName = ownerName;
@@ -366,8 +377,10 @@ public class Gun : NetworkBehaviour {
 			NetworkServer.Spawn(instantiated);
 	//		RpcSetIgnoreCollision(instantiated.GetComponent<Collider>(),collider);
 		}
-
+	//	shootSuccess = true;
+		return;
 	}
+//	[ClientCallback]
 	/*
 	[ClientRpc]
 	void RpcSetIgnoreCollision(Collider a,Collider b){

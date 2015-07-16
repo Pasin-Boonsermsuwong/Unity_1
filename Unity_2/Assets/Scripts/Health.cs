@@ -15,7 +15,7 @@ public class Health : NetworkBehaviour {
 	public GameObject deathExplosion;
 	GameObject model;
 	//CharacterController characterController;//NRB
-//	RbFPC_Custom characterController;
+	RbFPC_Custom characterController;
 	Collider characterCollider;//RB
 	Rigidbody rb;//RB
 	Gun gun;
@@ -25,6 +25,7 @@ public class Health : NetworkBehaviour {
 	SpawnPosition spawnPositionScript;
 	Transform myTransform;
 	GameController gc;
+
 	void Start () {
 		gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
 		localSlider = gc.localSliderHealth;
@@ -35,7 +36,7 @@ public class Health : NetworkBehaviour {
 		curHP = maxHP;
 
 		model = myTransform.FindChild("Model").gameObject;
-	//	characterController = GetComponent<CharacterController>();
+		characterController = GetComponent<RbFPC_Custom>();
 		characterCollider = GetComponent<Collider>();
 		rb = GetComponent<Rigidbody>();
 		gun = GetComponent<Gun>();
@@ -72,6 +73,7 @@ public class Health : NetworkBehaviour {
 		yield return new WaitForSeconds(0.4f);
 		RpcRespawnServer();
 	}
+
 	[ClientRpc]
 	void RpcDeath(){
 		//TODO: death sound
@@ -84,7 +86,7 @@ public class Health : NetworkBehaviour {
 	//		isDead = true;
 			StartCoroutine(gc.DeadScreen(this));
 		//	curHP = maxHP;
-
+			characterController.isDead = true;
 			gun.enabled = false;
 		}else{
 			//SERVER ONLY
@@ -92,11 +94,13 @@ public class Health : NetworkBehaviour {
 			playerCanvas.SetActive(false);
 		}
 	}
+
 	[ClientRpc]
 	void RpcRespawnPos(){
 		if(isLocalPlayer){
 			spawnPositionScript.ChangeSpawnPosition();
 			myTransform.position = spawnPosition.position;
+			characterController.isDead = false;
 //			isDead = false;
 		}
 	}

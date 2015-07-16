@@ -16,26 +16,19 @@ public class GameController : MonoBehaviour {
 	public GameObject weaponPanel;
 	public static int currentClass = 0;
 
-//	public GameObject chatInput;
+	//CHAT
 	public GameObject chatPanel;
 	public InputField chatInputField;
 	public Text chatInputText;	//INPUT FIELD TEXT
 	public Text chatText;
 	public Scrollbar chatScrollbar;
 	StringBuilder chatSb = new StringBuilder();
-
-	//PlayerData pd;
-
-	public bool chatState = false;
-	bool chatMoveScrollbar = false;	//move scrollbar to lowest position
-	/*
-	void Start(){
-		Debug.Log("GameController start");
-	}
-*/
-	void Awake(){
-	//	pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>().playerName;
-	}
+	int chatLineCount;
+	int chatLineLimit = 25;
+	bool deleteTopLine; //Will be true once amount of chat lines reached limit, trigger delete topmost line everytime
+	public bool chatState;
+	bool chatMoveScrollbar;	//move scrollbar to lowest position
+	
 	void Update () {
 		if(chatState)return;
 		if(Input.GetButtonDown("Pause")||Input.GetButtonDown("Cancel")){
@@ -65,10 +58,16 @@ public class GameController : MonoBehaviour {
 		chatSb.Append(s);
 		chatText.text = chatSb.ToString();
 		chatSb.AppendLine();
-	//	chatScrollbar.value = 0;
+		chatLineCount++;
+		if(!deleteTopLine&&chatLineCount>chatLineLimit){
+			deleteTopLine = true;
+		}
+		if(deleteTopLine){	//DELETE TOPMOST LINE
+			chatSb.Remove(0, chatSb.ToString().IndexOf('\n')+1);
+		}
 		chatMoveScrollbar = true;
 	}
-
+	
 	void CheckPauseState(){
 		if(pause){
 			pauseObject.SetActive(true);

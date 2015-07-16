@@ -13,7 +13,7 @@ public class RbFPC_Custom : MonoBehaviour{
 		public float JumpForce = 30f;
 		public AnimationCurve SlopeCurveModifier = new AnimationCurve(new Keyframe(-90.0f, 1.0f), new Keyframe(0.0f, 1.0f), new Keyframe(90.0f, 0.0f));
 		[HideInInspector] public float CurrentTargetSpeed = 8f;
-		
+
 		#if !MOBILE_INPUT
 		bool m_Running;
 		#endif
@@ -81,7 +81,8 @@ public class RbFPC_Custom : MonoBehaviour{
 	Vector3 m_GroundContactNormal;
 	bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
 	GameController gc;
-	
+	public bool isDead;
+
 	public Vector3 Velocity
 	{
 		get { return m_RigidBody.velocity; }
@@ -204,7 +205,7 @@ public class RbFPC_Custom : MonoBehaviour{
 	
 	Vector2 GetInput()
 	{
-		if(gc.chatState)return new Vector2(0,0);
+		if(gc.chatState||isDead)return new Vector2(0,0);
 		Vector2 input = new Vector2
 		{
 			x = Input.GetAxis("Horizontal"),
