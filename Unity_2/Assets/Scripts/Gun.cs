@@ -32,7 +32,7 @@ public class Gun : NetworkBehaviour {
 	public Transform gunHardpoint;
 	Rigidbody rb;
 //	AudioSource audio;
-	string ownerName;
+	string playerName;
 //	NetworkInstanceId ownerID;		//OF ROOT TRANSOFRM
 
 	float fireRate;
@@ -54,7 +54,7 @@ public class Gun : NetworkBehaviour {
 		new float[]{0,0,0,0,0,0},//juggernaut
 	};
 	string[][] weaponNameTable =  {
-		new string[]{"Machine Gun","Shotgun","[C] Grenade","[C] Artillery","ROF Buff",""},//fighter
+		new string[]{"Machine Gun","Shotgun","[C]Grenade","[C]Artillery","ROF Buff",""},//fighter
 		new string[]{"","","","","",""},//healer
 		new string[]{"","","","","",""},//range
 		new string[]{"","","","","",""},//scout
@@ -89,15 +89,15 @@ public class Gun : NetworkBehaviour {
 			weaponText[i] = gc.weaponPanel.transform.GetChild(i).GetComponent<Text>();
 			weaponText[i].text = weaponNameTable[currentClass][i];
 		}
-
-
 		rb = GetComponentInParent<Rigidbody>();
-	//	audio = GetComponent<AudioSource>();
+		Invoke("GetOwnerName", 1);
 		if(!isLocalPlayer)return;
 		setActiveWeapon(0,true);
-		ownerName = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>().playerName;
-	}
 
+	}
+	void GetOwnerName(){
+		playerName = GetComponent<PlayerID>().displayName;
+	}
 	void Update () {
 		if(!isLocalPlayer)return;
 		if(!gc.chatState){
@@ -351,15 +351,16 @@ public class Gun : NetworkBehaviour {
 			Debug.Log("SpawnCollide");
 			return false;
 		}
-		CmdFireStandard(shotID, launchForceMin, launchForceMax, shotDeviation, shotAmount);
+		CmdFireStandard(shotID, launchForceMin, launchForceMax, shotDeviation, shotAmount,playerName,weaponNameTable[currentClass][activeWeapon]);
 		return true;
 	}
 
 	[Command]
-	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
+	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount,string ownerName1,string ownerGun1){
 		for(int i = 0;i<shotAmount;i++){
 
 			GameObject instantiated;
+
 			//SET UP BULLET PROPERTIES
 			if(shotDeviation<double.Epsilon){
 				instantiated = Instantiate(shotTable[shotID], gunHardpoint.position, 
@@ -374,18 +375,10 @@ public class Gun : NetworkBehaviour {
 			}
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
-			instantiated.GetComponent<Bullet>().ownerName = ownerName;
-			//		instantiated.GetComponent<Bullet>().ownerID = netID;
-			//		Debug.Log ("CmdFire setID: "+instantiated.GetComponent<Bullet>().ownerID);
-			/*
-
-			*/
-			//	Physics.IgnoreCollision(instantiated.GetComponent<Collider>(),collider);
-			//SPAWN IN CLIENTS
+			instantiated.GetComponent<Bullet>().ownerName = ownerName1;
+			instantiated.GetComponent<Bullet>().ownerGun = ownerGun1;
 			NetworkServer.Spawn(instantiated);
 		}
-		//	shootSuccess = true;
-	//	return;
 	}
 
 }

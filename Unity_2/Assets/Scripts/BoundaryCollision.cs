@@ -7,7 +7,7 @@ public class BoundaryCollision : MonoBehaviour {
 
 		if(other.tag == "Player"){
 			Debug.Log ("Player hit boundary");
-			other.transform.GetComponent<Health>().TakeDamage(50000);
+			other.transform.GetComponent<Health>().TakeDamage(int.MaxValue,"Game Boundary","");
 		}else{
 			Debug.Log (other.name+" hit boundary");
 			Destroy(other.gameObject);

@@ -3,8 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Collections;
 public class Health : NetworkBehaviour {
-	
-//	public string ownerName;
+
 	public int maxHP;
 	
 	[SyncVar (hook = "OnHealthChanged")]int curHP;
@@ -20,7 +19,7 @@ public class Health : NetworkBehaviour {
 	Rigidbody rb;//RB
 	Gun gun;
 
-//	public bool isDead;
+	string playerName;
 	Transform spawnPosition;
 	SpawnPosition spawnPositionScript;
 	Transform myTransform;
@@ -40,16 +39,41 @@ public class Health : NetworkBehaviour {
 		characterCollider = GetComponent<Collider>();
 		rb = GetComponent<Rigidbody>();
 		gun = GetComponent<Gun>();
+		Invoke("GetOwnerName", 0.5f);
 	}
 
-	public void TakeDamage(int amount){
+	void GetOwnerName(){
+		playerName = GetComponent<PlayerID>().displayName;
+	}
+	/*
+	[Command]
+	void CmdTellServerPlayerName(string playerName){
+		if(!isServer)return;
+		RpcTellPlayerName(playerName);
+	}
+	[ClientRpc]
+	void RpcTellPlayerName(string playerName){
+		if(!isLocalPlayer)this.playerName = playerName;
+	}
+	*/
+	public void TakeDamage(int amount,string sourceName,string sourceWeapon){
 		if(!isServer)return;
 		Debug.Log("TakeDamage: "+amount);
 		curHP -= amount;
 		if(curHP<=0){
 			curHP = maxHP;
-			StartCoroutine("ServerSideDeath");
+			StartCoroutine(ServerSideDeath(sourceName,sourceWeapon));
 		}
+	}
+
+	[Command]
+	void CmdSendKillMsg(string s){
+		if(!isServer)return;
+		RpcKillMsg(s);
+	}
+	[ClientRpc]
+	void RpcKillMsg(string s){
+		gc.AddKillMsg(s);
 	}
 
 	void OnHealthChanged(int h){
@@ -65,8 +89,8 @@ public class Health : NetworkBehaviour {
 		}
 	}
 
-	IEnumerator ServerSideDeath(){
-		RpcDeath();
+	IEnumerator ServerSideDeath(string sourceName,string sourceWeapon){
+		RpcDeath(sourceName,sourceWeapon);
 		yield return new WaitForSeconds(6);
 		RpcRespawnPos();
 		yield return new WaitForSeconds(0.4f);
@@ -74,7 +98,7 @@ public class Health : NetworkBehaviour {
 	}
 
 	[ClientRpc]
-	void RpcDeath(){
+	void RpcDeath(string sourceName,string sourceWeapon){
 		//TODO: death sound
 		Instantiate(deathExplosion, transform.position, transform.rotation);
 		//characterController.enabled = false;//NRB
@@ -83,6 +107,7 @@ public class Health : NetworkBehaviour {
 		characterCollider.enabled = false;//RB
 		if(isLocalPlayer){
 	//		isDead = true;
+			CmdSendKillMsg(sourceName+" > "+playerName+"("+sourceWeapon+")");
 			StartCoroutine(gc.DeadScreen(this));
 		//	curHP = maxHP;
 			characterController.isDead = true;

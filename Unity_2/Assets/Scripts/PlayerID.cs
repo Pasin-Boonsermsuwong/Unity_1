@@ -10,20 +10,10 @@ public class PlayerID : NetworkBehaviour
 	[SyncVar] public string playerUniqueName;
 	public Text displayNameText;
 	//NAME ON CANVAS
-	[SyncVar (hook = "OnDisplayNameChanged")]public string displayName;
+	[SyncVar (hook = "OnDisplayNameChanged")]public string displayName;	//USE THIS TO SYNC PLAYER NAME
 	NetworkInstanceId playerNetID;
-	//bool firstNameCheck;
-	/*
-	public override void OnStartLocalPlayer (){
 
-		GetNetIdentity ();
-		SetIdentity ();
-
-	}
-	*/
 	void Start(){
-	//	firstNameCheck = false;
-	//	gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
 
 		if(isLocalPlayer){
@@ -31,12 +21,16 @@ public class PlayerID : NetworkBehaviour
 		}else{
 			displayNameText.text = displayName;
 		}
+
+
+
 	}
 	void SetPlayerName(){
 		string s = pd.playerName;
 		
 		if(s==""){
 			s = "Player"+GetComponent<NetworkIdentity>().netId;;
+			displayName = s;
 		}
 		
 	//	Debug.Log("DisplayName = "+s);

@@ -29,7 +29,15 @@ public class GameController : MonoBehaviour {
 	bool deleteTopLine; //Will be true once amount of chat lines reached limit, trigger delete topmost line everytime
 	public bool chatState;
 	bool chatMoveScrollbar;	//move scrollbar to lowest position
-	
+
+	//KILLMSG
+	GameObject KillText;
+	public GameObject PanelKill;
+
+	void Start(){
+		KillText = (GameObject)Resources.Load("KillText");
+	}
+
 	void Update () {
 		if(chatState)return;
 		if(Input.GetButtonDown("Pause")||Input.GetButtonDown("Cancel")){
@@ -68,7 +76,14 @@ public class GameController : MonoBehaviour {
 		}
 		chatMoveScrollbar = true;
 	}
-	
+
+	public void AddKillMsg(string s){
+		GameObject instantiated  = (GameObject)Instantiate(KillText, Vector3.zero, 
+			                           Quaternion.identity) as GameObject;
+		instantiated.GetComponent<Text>().text = s;
+		instantiated.transform.SetParent(PanelKill.transform);
+	}
+
 	void CheckPauseState(){
 		if(pause){
 			pauseObject.SetActive(true);

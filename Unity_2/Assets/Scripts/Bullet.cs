@@ -8,7 +8,10 @@ public class Bullet : NetworkBehaviour {
 	public int damage;
 
 	public string descriptiveName;
-	public string ownerName;
+	[SyncVar]public string ownerName;//FIERER'S NAME
+	[SyncVar]public string ownerGun;	//FIERER'S WEAPON
+
+
 	//public NetworkInstanceId ownerID;
 	//explosion
 
@@ -37,13 +40,14 @@ public class Bullet : NetworkBehaviour {
 					float proximity = (transform.position - col.transform.position).magnitude; 
 					float effect = 1 - (proximity / explodeRadius);
 					int calculatedDamage = Mathf.RoundToInt(damage * effect);
-					col.GetComponent<Health>().TakeDamage(calculatedDamage);
+					col.GetComponent<Health>().TakeDamage(calculatedDamage,ownerName,ownerGun);
 				}
 			}
 		}else{
 			//NORMAL BULLET HIT
 			if(otherTransform.tag=="Player"){
-				otherTransform.GetComponent<Health>().TakeDamage(damage);
+		//		Debug.Log("Bullet hit dmg: "+damage+" ownerName: "+ownerName+" ownerGun: "+ownerGun);
+				otherTransform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun);
 			}
 		}
 	}
