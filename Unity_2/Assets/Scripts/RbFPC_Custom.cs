@@ -5,19 +5,31 @@ public class RbFPC_Custom : MonoBehaviour{
 	[System.Serializable]
 	public class MovementSettings
 	{
+		GameController gc;
 		public float ForwardSpeed = 8.0f;   // Speed when walking forward
 		public float BackwardSpeed = 4.0f;  // Speed when walking backwards
 		public float StrafeSpeed = 4.0f;    // Speed when walking sideways
 		public float RunMultiplier = 2.0f;   // Speed when sprinting
-		public KeyCode RunKey = KeyCode.LeftShift;
+	//	public KeyCode RunKey = KeyCode.LeftShift;
 		public float JumpForce = 30f;
 		public AnimationCurve SlopeCurveModifier = new AnimationCurve(new Keyframe(-90.0f, 1.0f), new Keyframe(0.0f, 1.0f), new Keyframe(90.0f, 0.0f));
 		[HideInInspector] public float CurrentTargetSpeed = 8f;
 
+		public float RunMax = 50f;
+		float RunCurrent;
+		public float RunRegen = 0.125f;
+
 		#if !MOBILE_INPUT
 		bool m_Running;
 		#endif
-		
+		public void SetRunData(){
+			RunCurrent = RunMax;
+			gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+		}
+		public void UpdateRunData(){
+			RunCurrent = Mathf.Min(RunCurrent + RunRegen,RunMax);
+			gc.localSliderRun.value = RunCurrent/RunMax;
+		}
 		public void UpdateDesiredTargetSpeed(Vector2 input)
 		{
 			if (input == Vector2.zero) return;
@@ -38,10 +50,12 @@ public class RbFPC_Custom : MonoBehaviour{
 				CurrentTargetSpeed = ForwardSpeed;
 			}
 			#if !MOBILE_INPUT
-			if (Input.GetKey(RunKey))
+			if (Input.GetButton("Run")&&RunCurrent>0)
 			{
 				CurrentTargetSpeed *= RunMultiplier;
+
 				m_Running = true;
+				RunCurrent--;
 			}
 			else
 			{
@@ -73,7 +87,8 @@ public class RbFPC_Custom : MonoBehaviour{
 	public MovementSettings movementSettings = new MovementSettings();
 	public MouseLook mouseLook = new MouseLook();
 	public AdvancedSettings advancedSettings = new AdvancedSettings();
-	
+
+
 	
 	Rigidbody m_RigidBody;
 	CapsuleCollider m_Capsule;
@@ -114,6 +129,7 @@ public class RbFPC_Custom : MonoBehaviour{
 	void Start()
 	{
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+		movementSettings.SetRunData();
 		m_RigidBody = GetComponent<Rigidbody>();
 		m_Capsule = GetComponent<CapsuleCollider>();
 		mouseLook.Init (transform, cam.transform);
@@ -133,6 +149,7 @@ public class RbFPC_Custom : MonoBehaviour{
 	
 	void FixedUpdate()
 	{
+		movementSettings.UpdateRunData();
 		GroundCheck();
 		Vector2 input = GetInput();
 		

@@ -2,7 +2,23 @@
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Collections;
-
+/*
+[System.Serializable]
+public class StandardFireData{
+	public int shotID;
+	public float launchForceMin;
+	public float launchForceMax;
+	public float shotDeviation;
+	public float shotAmount;
+	public StandardFireData(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
+		this.shotID = shotID;
+		this.launchForceMin = launchForceMin;
+		this.launchForceMax = launchForceMax;
+		this.shotDeviation = shotDeviation;
+		this.shotAmount = shotAmount;
+	}
+}
+*/
 public class Gun : NetworkBehaviour {
 	int currentClass;
 	// 0 = fighter
@@ -17,7 +33,7 @@ public class Gun : NetworkBehaviour {
 	Rigidbody rb;
 //	AudioSource audio;
 	string ownerName;
-	NetworkInstanceId ownerID;		//OF ROOT TRANSOFRM
+//	NetworkInstanceId ownerID;		//OF ROOT TRANSOFRM
 
 	float fireRate;
 	float nextFire;
@@ -26,7 +42,7 @@ public class Gun : NetworkBehaviour {
 	Text[] weaponText;
 	int activeWeapon;
 	bool gunIsActive;
-	bool shootSuccess;
+//	bool shootSuccess;
 
 	float[][] fireRateTable = {
 		new float[]{0.33f,0.5f,0,0,0,0},//fighter
@@ -80,10 +96,6 @@ public class Gun : NetworkBehaviour {
 		if(!isLocalPlayer)return;
 		setActiveWeapon(0,true);
 		ownerName = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>().playerName;
-		ownerID = GetComponent<NetworkIdentity>().netId;
-		Debug.Log("Gun start ownerID: "+ownerID);
-
-	//	collider = transform.root.GetComponent<Collider>();
 	}
 
 	void Update () {
@@ -111,18 +123,17 @@ public class Gun : NetworkBehaviour {
 		if(!gunIsActive)return;
 		gc.localSliderReload.value = Mathf.Clamp(1.0f-(nextFire - Time.time)/fireRate,0,1);
 		if (Input.GetButton("Fire1") && Time.time > nextFire && !gc.pause) {
-			shootSuccess = false;
+			bool shootSuccess = false;
 			switch (currentClass)
 			{
 			case 0:
 				switch (activeWeapon)
 				{
 				case 0:
-					//void CmdFireStandard(shotTable ID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
-					CmdFireStandard(1,8000,8000,0,1,ownerID);
+					shootSuccess = FireCheck(1,8000,8000,0,1);
 					break;
 				case 1:
-					CmdFireStandard(0,9000,9000,0,1,ownerID);
+					shootSuccess = FireCheck(0,9000,9000,0,1);
 					break;
 				case 2:
 					
@@ -301,6 +312,7 @@ public class Gun : NetworkBehaviour {
 				break;
 			}
 			if(shootSuccess)nextFire = Time.time + fireRate;
+		//	nextFire = Time.time + fireRate;
 		};
 
 	}
@@ -324,29 +336,31 @@ public class Gun : NetworkBehaviour {
 	void setActiveWeapon(int n){
 		setActiveWeapon(n,false);
 	}
-	[Command]
-	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount,NetworkInstanceId netID){
-	//	Debug.Log("CmdFire");
+
+	bool FireCheck(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
 		SphereCollider sph = shotTable[shotID].GetComponent<SphereCollider>();
 		if(sph == null){
 			Debug.Log("Bullet collider is not sphere");
-			return;
+			return false;
 		}
 		float radius = sph.radius;
-		Debug.Log("Bullet start overlapLength: "+Physics.OverlapSphere(transform.position,radius).Length);
+	//	Debug.Log("Bullet start overlapLength: "+Physics.OverlapSphere(transform.position,radius).Length);
 		//~(1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("PlayerLocal"))
 		if(Physics.OverlapSphere(transform.position,radius).Length>1){
 			//BY DEFAULT WILL HIT TURRETCOLLIDER , SO LENGTH = 1;
 			Debug.Log("SpawnCollide");
-			return;
+			return false;
 		}
+		CmdFireStandard(shotID, launchForceMin, launchForceMax, shotDeviation, shotAmount);
+		return true;
+	}
 
+	[Command]
+	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
 		for(int i = 0;i<shotAmount;i++){
-			
-		// CREATE SERVER SIDE INSTANCE
-			GameObject instantiated;
 
-		//SET UP BULLET PROPERTIES
+			GameObject instantiated;
+			//SET UP BULLET PROPERTIES
 			if(shotDeviation<double.Epsilon){
 				instantiated = Instantiate(shotTable[shotID], gunHardpoint.position, 
 				                           gunHardpoint.rotation) as GameObject;
@@ -361,31 +375,17 @@ public class Gun : NetworkBehaviour {
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
 			instantiated.GetComponent<Bullet>().ownerName = ownerName;
-	//		instantiated.GetComponent<Bullet>().ownerID = netID;
-	//		Debug.Log ("CmdFire setID: "+instantiated.GetComponent<Bullet>().ownerID);
+			//		instantiated.GetComponent<Bullet>().ownerID = netID;
+			//		Debug.Log ("CmdFire setID: "+instantiated.GetComponent<Bullet>().ownerID);
 			/*
-			if(ownerIDset){
-				instantiated.GetComponent<Bullet>().ownerID = ownerID;
-			}else{
-				ownerID = transform.root.name;
-				instantiated.GetComponent<Bullet>().ownerID = ownerID;
-				ownerIDset = true;
-			}
+
 			*/
-		//	Physics.IgnoreCollision(instantiated.GetComponent<Collider>(),collider);
-		//SPAWN IN CLIENTS
+			//	Physics.IgnoreCollision(instantiated.GetComponent<Collider>(),collider);
+			//SPAWN IN CLIENTS
 			NetworkServer.Spawn(instantiated);
-	//		RpcSetIgnoreCollision(instantiated.GetComponent<Collider>(),collider);
 		}
-	//	shootSuccess = true;
-		return;
+		//	shootSuccess = true;
+	//	return;
 	}
-//	[ClientCallback]
-	/*
-	[ClientRpc]
-	void RpcSetIgnoreCollision(Collider a,Collider b){
-		Debug.Log("SetIgnoreCollision a:"+a.name+" b:"+b.name);
-		Physics.IgnoreCollision(a,b);
-	}
-	*/
+
 }

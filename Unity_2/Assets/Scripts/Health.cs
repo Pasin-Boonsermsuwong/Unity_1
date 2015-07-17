@@ -53,7 +53,6 @@ public class Health : NetworkBehaviour {
 	}
 
 	void OnHealthChanged(int h){
-	//	Debug.Log("OnHealthChanged");
 		curHP = h;
 		if(isLocalPlayer){
 			if(localSlider==null){

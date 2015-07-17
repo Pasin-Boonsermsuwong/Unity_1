@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour {
 	public Slider localSliderHealth;
 	public Slider localSliderReload;
 	public Slider localSliderCharge;
+	public Slider localSliderRun;
 	public GameObject weaponPanel;
 	public static int currentClass = 0;
 
