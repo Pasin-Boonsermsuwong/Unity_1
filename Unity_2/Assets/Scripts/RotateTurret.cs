@@ -16,9 +16,11 @@ public class RotateTurret : NetworkBehaviour {
 	}
 
 	void FixedUpdate () {
-		if(isLocalPlayer)turretTransform.rotation = camTransform.rotation;
-		LerpRotation();
+		if(isLocalPlayer){
+			turretTransform.rotation = camTransform.rotation;
+		}
 		TransmitRotation();
+		LerpRotation();
 	}
 	void LerpRotation(){
 		if(!isLocalPlayer)turretTransform.rotation = Quaternion.Lerp(turretTransform.rotation,syncPlayerRotation,Time.deltaTime*lerpRate);

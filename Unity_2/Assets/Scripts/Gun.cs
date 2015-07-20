@@ -2,23 +2,6 @@
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Collections;
-/*
-[System.Serializable]
-public class StandardFireData{
-	public int shotID;
-	public float launchForceMin;
-	public float launchForceMax;
-	public float shotDeviation;
-	public float shotAmount;
-	public StandardFireData(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
-		this.shotID = shotID;
-		this.launchForceMin = launchForceMin;
-		this.launchForceMax = launchForceMax;
-		this.shotDeviation = shotDeviation;
-		this.shotAmount = shotAmount;
-	}
-}
-*/
 public class Gun : NetworkBehaviour {
 	int currentClass;
 	// 0 = fighter
@@ -42,10 +25,15 @@ public class Gun : NetworkBehaviour {
 	Text[] weaponText;
 	int activeWeapon;
 	bool gunIsActive;
-//	bool shootSuccess;
+
+	//CHARGING
+	bool isCharging;
+	bool isChargeRelease;
+	float chargeRate;
+	float chargeCurrent;
 
 	float[][] fireRateTable = {
-		new float[]{0.33f,0.5f,0,0,0,0},//fighter
+		new float[]{0.2f,0.5f,1,0.75f,0,0},//fighter
 		new float[]{0,0,0,0,0,0},//healer
 		new float[]{0,0,0,0,0,0},//range
 		new float[]{0,0,0,0,0,0},//scout
@@ -65,7 +53,7 @@ public class Gun : NetworkBehaviour {
 
 
 	GameObject[] shotTable;
-	string[] shotNameTable = {"B50","BB50"};
+	string[] shotNameTable = {"B50","BB50","BG150","BS50"};
 
 	//Collider collider;
 
@@ -98,9 +86,18 @@ public class Gun : NetworkBehaviour {
 	void GetOwnerName(){
 		playerName = GetComponent<PlayerID>().displayName;
 	}
+
+	void ActivateChargeUp(float chargeRate1){
+		isCharging = true;
+		chargeCurrent = 0;
+		isChargeRelease = false;
+		this.chargeRate = chargeRate1;
+	}
+
+
 	void Update () {
 		if(!isLocalPlayer)return;
-		if(!gc.chatState){
+		if(!gc.chatState&&!isCharging){
 			if(Input.GetButtonDown("Weapon0")){
 				setActiveWeapon(0);
 			}else if(Input.GetButtonDown("Weapon1")){
@@ -122,24 +119,55 @@ public class Gun : NetworkBehaviour {
 		};
 		if(!gunIsActive)return;
 		gc.localSliderReload.value = Mathf.Clamp(1.0f-(nextFire - Time.time)/fireRate,0,1);
-		if (Input.GetButton("Fire1") && Time.time > nextFire && !gc.pause) {
+
+		//WEAPON CHARGING
+		if(isCharging){
+		//	Debug.Log("Charging");
+			if(Input.GetButton("Fire1")){
+				chargeCurrent += chargeRate;
+				gc.localSliderCharge.value = chargeCurrent;
+				if(chargeCurrent>1){
+		//			Debug.Log("Charging end >1 ");
+					isCharging = false;
+					isChargeRelease = true;
+					gc.localSliderCharge.value = 0;
+				}
+			}else{
+		//		Debug.Log("Charging interrupted");
+				isCharging = false;
+				isChargeRelease = true;
+				gc.localSliderCharge.value = 0;
+			}
+		}
+
+
+
+
+		//WEAPON FIRE
+		if ((Input.GetButton("Fire1") && Time.time > nextFire && !gc.pause && !isCharging)
+		    || isChargeRelease) {
 			bool shootSuccess = false;
 			switch (currentClass)
 			{
 			case 0:
 				switch (activeWeapon)
-				{
+				{//int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount)
 				case 0:
 					shootSuccess = FireCheck(1,8000,8000,0,1);
 					break;
 				case 1:
-					shootSuccess = FireCheck(0,9000,9000,0,1);
+					shootSuccess = FireCheck(3,1800,2500,4,6);
 					break;
 				case 2:
-					
+					if(!isChargeRelease){
+						ActivateChargeUp(0.02f);
+					}else{
+						shootSuccess = FireCheck(2,27000*chargeCurrent,27000*chargeCurrent,0,1);
+						isChargeRelease = false;
+					}
 					break;
 				case 3:
-					
+
 					break;
 				case 4:
 					
@@ -348,7 +376,7 @@ public class Gun : NetworkBehaviour {
 		//~(1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("PlayerLocal"))
 		if(Physics.OverlapSphere(transform.position,radius).Length>1){
 			//BY DEFAULT WILL HIT TURRETCOLLIDER , SO LENGTH = 1;
-			Debug.Log("SpawnCollide");
+	//		Debug.Log("SpawnCollide");
 			return false;
 		}
 		CmdFireStandard(shotID, launchForceMin, launchForceMax, shotDeviation, shotAmount,playerName,weaponNameTable[currentClass][activeWeapon]);
@@ -369,7 +397,7 @@ public class Gun : NetworkBehaviour {
 				Vector3 eulerAngle = gunHardpoint.rotation.eulerAngles;
 				instantiated = Instantiate(shotTable[shotID], gunHardpoint.position, 
 				                           Quaternion.Euler(new Vector3(
-					eulerAngle.x, 
+					eulerAngle.x+Random.Range(-shotDeviation,shotDeviation), 
 					eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
 					eulerAngle.z))) as GameObject;
 			}

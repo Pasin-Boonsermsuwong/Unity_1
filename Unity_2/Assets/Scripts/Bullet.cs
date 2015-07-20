@@ -5,33 +5,51 @@ using System.Collections;
 public class Bullet : NetworkBehaviour {
 //	Transform myTransform;
 	public ParticleSystem explosion;
+	public ParticleSystem explosion2;
 	public int damage;
 
 	public string descriptiveName;
-	[SyncVar]public string ownerName;//FIERER'S NAME
+	[SyncVar]public string ownerName;	//FIERER'S NAME
 	[SyncVar]public string ownerGun;	//FIERER'S WEAPON
 
-
-	//public NetworkInstanceId ownerID;
-	//explosion
+	public bool explodeOnPlayerContact;	//GRENADE
+	public float lifeTime;		
 
 	public bool ignoreTerrain;
 	public bool ignoreBullet;
 	public bool isExplode;
 	public float explodeRadius;
-	
+
+	void Start(){
+		if(!isServer)return;
+		StartCoroutine(LifeTime(lifeTime));
+	}
+//	[Server]
 	void OnCollisionEnter(Collision other){
 		if(!isServer)return;
 	//	Debug.Log("Bullet hit: "+other.transform.name);
-		Transform otherTransform = other.transform;
-		if(otherTransform.tag == "Bouncy"	||
-		   ignoreTerrain&&otherTransform.tag=="Untagged" ||
-		   ignoreBullet&&otherTransform.tag=="Bullet"
+	//	Transform other.transform = other.transform;
+		if(ignoreTerrain&&other.transform.tag=="Untagged" ||
+		   other.transform.tag == "Bouncy" ||
+		   ignoreBullet&&other.transform.tag=="Bullet"	||
+		   !explodeOnPlayerContact&&other.transform.tag=="Player" 
 		   )return;
-	//	BulletHit(otherTransform);
+		BulletHit(other);
+	}
+	IEnumerator LifeTime(float delayTime)
+	{
+		yield return new WaitForSeconds(delayTime);
+		if(isExplode){
+			BulletHit(null);
+		}else{
+			NetworkServer.Destroy(this.gameObject);
+		}
+	}
+	[Server]
+	void BulletHit(Collision other){
 		Instantiate(explosion, transform.position, transform.rotation);
+		if(explosion2!=null)Instantiate(explosion2, transform.position, transform.rotation);
 		RpcExplosion();
-		Destroy(gameObject);//TODO:
 		if(isExplode){
 			//EXPLOSIVE BULLET CALCULATION
 			Collider[] objectsInRange = Physics.OverlapSphere(transform.position, explodeRadius); 
@@ -45,16 +63,19 @@ public class Bullet : NetworkBehaviour {
 			}
 		}else{
 			//NORMAL BULLET HIT
-			if(otherTransform.tag=="Player"){
-		//		Debug.Log("Bullet hit dmg: "+damage+" ownerName: "+ownerName+" ownerGun: "+ownerGun);
-				otherTransform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun);
+			if(other!=null&&other.transform.tag=="Player"){
+				//		Debug.Log("Bullet hit dmg: "+damage+" ownerName: "+ownerName+" ownerGun: "+ownerGun);
+				other.transform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun);
 			}
 		}
-	}
+		NetworkServer.Destroy(this.gameObject);//TODO:
 
+	
+	}
 	[ClientRpc]
 	void RpcExplosion(){
 		Instantiate(explosion, transform.position, transform.rotation);
+		if(explosion2!=null)Instantiate(explosion2, transform.position, transform.rotation);
 	}
 
 

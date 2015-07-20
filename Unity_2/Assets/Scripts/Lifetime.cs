@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class Lifetime : MonoBehaviour {
+public class Lifetime : NetworkBehaviour {
 
 	public float lifetime;
 

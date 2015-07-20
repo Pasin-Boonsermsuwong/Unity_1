@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
-
 public class PlayerChatControl : NetworkBehaviour {
 
 	GameController gc;
@@ -13,7 +12,7 @@ public class PlayerChatControl : NetworkBehaviour {
 		if(isLocalPlayer)Invoke("JoinedMessage", 1);
 	}
 	void JoinedMessage(){
-		CmdSendChatMsg(playerID.displayName+" has joined");
+		CmdSendChatMsg(playerID.displayName+" joined the game");
 	}
 	void Update () {
 		if(!isLocalPlayer)return;
@@ -34,4 +33,14 @@ public class PlayerChatControl : NetworkBehaviour {
 	void RpcChat(string s){
 		gc.AddChatMessage(s);
 	}
+	void OnConnectedToServer() {
+		Debug.Log("Connected to server");
+	}
+	void OnPlayerDisconnected(NetworkPlayer player)
+	{
+		Debug.Log ("clean up after " + player);
+		Network.RemoveRPCs (player);
+		Network.DestroyPlayerObjects (player);
+	}
+
 }

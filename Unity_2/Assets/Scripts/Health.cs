@@ -5,6 +5,7 @@ using System.Collections;
 public class Health : NetworkBehaviour {
 
 	public int maxHP;
+	public int armor;
 	
 	[SyncVar (hook = "OnHealthChanged")]int curHP;
 
@@ -58,7 +59,8 @@ public class Health : NetworkBehaviour {
 	*/
 	public void TakeDamage(int amount,string sourceName,string sourceWeapon){
 		if(!isServer)return;
-		Debug.Log("TakeDamage: "+amount);
+		Debug.Log("TakeDamage: "+amount+"-"+armor+"="+(amount-armor));
+		if(amount > 0)amount = Mathf.Max(amount - armor,0);
 		curHP -= amount;
 		if(curHP<=0){
 			curHP = maxHP;
@@ -94,7 +96,7 @@ public class Health : NetworkBehaviour {
 		yield return new WaitForSeconds(6);
 		RpcRespawnPos();
 		yield return new WaitForSeconds(0.4f);
-		RpcRespawnServer();
+		RpcRespawnVisible();
 	}
 
 	[ClientRpc]
@@ -107,6 +109,7 @@ public class Health : NetworkBehaviour {
 		characterCollider.enabled = false;//RB
 		if(isLocalPlayer){
 	//		isDead = true;
+			if(playerName=="")GetOwnerName();
 			CmdSendKillMsg(sourceName+" > "+playerName+"("+sourceWeapon+")");
 			StartCoroutine(gc.DeadScreen(this));
 		//	curHP = maxHP;
@@ -123,20 +126,19 @@ public class Health : NetworkBehaviour {
 	void RpcRespawnPos(){
 		if(isLocalPlayer){
 			spawnPositionScript.ChangeSpawnPosition();
-			myTransform.position = spawnPosition.position;
 			characterController.isDead = false;
 //			isDead = false;
 		}
+		myTransform.position = spawnPosition.position;
 	}
 
 	[ClientRpc]
-	void RpcRespawnServer(){
+	void RpcRespawnVisible(){
 		OnHealthChanged(curHP);
 		if(!isLocalPlayer){
 			model.SetActive(true);
 			playerCanvas.SetActive(true);
 		}
-	//	characterController.enabled = true;//NRB
 		rb.useGravity = true;
 		characterCollider.enabled = true;
 		gun.enabled = true;
