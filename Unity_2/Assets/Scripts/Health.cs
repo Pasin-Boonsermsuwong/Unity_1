@@ -58,15 +58,33 @@ public class Health : NetworkBehaviour {
 	}
 	*/
 	public void TakeDamage(int amount,string sourceName,string sourceWeapon){
+		TakeDamage(amount, sourceName, sourceWeapon,"");
+	}
+	public void TakeDamage(int amount,string sourceName,string sourceWeapon,string specialTag){
 		if(!isServer)return;
-		Debug.Log("TakeDamage: "+amount+"-"+armor+"="+(amount-armor));
+		Debug.Log("TakeDamage: "+amount+"-"+armor+"="+Mathf.Max(amount - armor,0));
 		if(amount > 0)amount = Mathf.Max(amount - armor,0);
 		curHP -= amount;
 		if(curHP<=0){
 			curHP = maxHP;
 			StartCoroutine(ServerSideDeath(sourceName,sourceWeapon));
+		}else{
+			if(!string.IsNullOrEmpty(specialTag)){
+				switch (specialTag)
+				{
+				case "rof":
+					GetComponent<Gun>().RofBuffServer();
+					break;
+				default:
+					Debug.LogError("WTF!?");
+					break;
+				}
+
+			}
 		}
 	}
+
+
 
 	[Command]
 	void CmdSendKillMsg(string s){
@@ -114,6 +132,7 @@ public class Health : NetworkBehaviour {
 			StartCoroutine(gc.DeadScreen(this));
 		//	curHP = maxHP;
 			characterController.isDead = true;
+			gun.DeathReset();
 			gun.enabled = false;
 		}else{
 			//SERVER ONLY

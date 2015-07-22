@@ -32,8 +32,12 @@ public class Gun : NetworkBehaviour {
 	float chargeRate;
 	float chargeCurrent;
 
+	//Special ROF BUFF
+	bool isRofBuff;
+	GameObject buffEffect;
+
 	float[][] fireRateTable = {
-		new float[]{0.2f,0.5f,1,0.75f,0,0},//fighter
+		new float[]{0.2f,0.5f,1,2,3,0},//fighter
 		new float[]{0,0,0,0,0,0},//healer
 		new float[]{0,0,0,0,0,0},//range
 		new float[]{0,0,0,0,0,0},//scout
@@ -53,12 +57,12 @@ public class Gun : NetworkBehaviour {
 
 
 	GameObject[] shotTable;
-	string[] shotNameTable = {"B50","BB50","BG150","BS50"};
+	string[] shotNameTable = {"B50","BB50","BG150","BS50","BA200","PErofCast"};//0-5
 
 	//Collider collider;
 
 	void Start () {
-
+		buffEffect = (GameObject) Resources.Load("PErof");
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		currentClass = GameController.currentClass;
 
@@ -124,7 +128,7 @@ public class Gun : NetworkBehaviour {
 		if(isCharging){
 		//	Debug.Log("Charging");
 			if(Input.GetButton("Fire1")){
-				chargeCurrent += chargeRate;
+				chargeCurrent += chargeRate*Time.deltaTime;
 				gc.localSliderCharge.value = chargeCurrent;
 				if(chargeCurrent>1){
 		//			Debug.Log("Charging end >1 ");
@@ -151,26 +155,32 @@ public class Gun : NetworkBehaviour {
 			{
 			case 0:
 				switch (activeWeapon)
-				{//int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount)
+				{//shotID,launchForceMin,launchForceMax,shotDeviation, shotAmount)
 				case 0:
-					shootSuccess = FireCheck(1,8000,8000,0,1);
+					shootSuccess = FireCheck(1,8000,8000,0.5f,1);
 					break;
 				case 1:
 					shootSuccess = FireCheck(3,1800,2500,4,6);
 					break;
 				case 2:
 					if(!isChargeRelease){
-						ActivateChargeUp(0.02f);
+						ActivateChargeUp(0.5f);
 					}else{
 						shootSuccess = FireCheck(2,27000*chargeCurrent,27000*chargeCurrent,0,1);
 						isChargeRelease = false;
 					}
 					break;
 				case 3:
-
+					if(!isChargeRelease){
+						ActivateChargeUp(0.25f);
+					}else{
+						shootSuccess = FireCheck(4,55000*chargeCurrent,55000*chargeCurrent,0,1);
+						isChargeRelease = false;
+					}
 					break;
 				case 4:
-					
+					CmdAoEStandard(0,20,5,"rof");
+					shootSuccess = true;
 					break;
 				case 5:
 					
@@ -358,7 +368,9 @@ public class Gun : NetworkBehaviour {
 		}else{
 			gunIsActive = true;
 			fireRate = fireRateTable[currentClass][n];
+			RofBuffApply(isRofBuff);
 			nextFire = Time.time + fireRate;
+
 		}
 	}
 	void setActiveWeapon(int n){
@@ -408,5 +420,70 @@ public class Gun : NetworkBehaviour {
 			NetworkServer.Spawn(instantiated);
 		}
 	}
+	[Command]
+	void CmdAoEStandard(int damage, float explodeRadius, int effectID,string specialTag){
+		RpcAoEEffect(effectID);
+		Collider[] objectsInRange = Physics.OverlapSphere(transform.position, explodeRadius); 
+		foreach (Collider col in objectsInRange) {
+			if(col.tag == "Player"){
+				float proximity = (transform.position - col.transform.position).magnitude; 
+				float effect = 1 - (proximity / explodeRadius);
+				int calculatedDamage = Mathf.RoundToInt(damage * effect);
+				col.GetComponent<Health>().TakeDamage(calculatedDamage,playerName,weaponNameTable[currentClass][activeWeapon],specialTag);
+			}
+		}
+	}
+	[ClientRpc]
+	void RpcAoEEffect(int effectID){
+		Instantiate(shotTable[effectID], transform.position, Quaternion.identity);
+	}
+	public void DeathReset(){
+		isCharging = false;
+		isChargeRelease = false;
+		chargeCurrent = 0;
+		nextFire = Time.time + fireRate;
+		gc.localSliderReload.value = 0;
+		gc.localSliderCharge.value = 0;
+	}
+
+	public void RofBuffServer(){
+		StopCoroutine("RofBuffRoutine");
+		StartCoroutine("RofBuffRoutine");
+	}
+	IEnumerator RofBuffRoutine(){
+		RpcRofBuff();
+		yield return new WaitForSeconds(6);
+		RpcRofBuffEnd();
+	}
+	[ClientRpc]
+	void RpcRofBuff(){
+		if(isLocalPlayer){
+			isRofBuff = true;
+			RofBuffApply(isRofBuff);
+		}else{
+			if(transform.FindChild("PErof(Clone)")==null){
+				GameObject PErof = (GameObject)Instantiate(buffEffect,transform.position,Quaternion.identity);
+				PErof.transform.SetParent(this.transform);
+			}
+
+		}
+	}
+	[ClientRpc]
+	void RpcRofBuffEnd(){
+		if(isLocalPlayer){
+			isRofBuff = false;
+			RofBuffApply(isRofBuff);
+		}else{
+			Transform t = transform.FindChild("PErof(Clone)");
+			if(t!=null)Destroy(t.gameObject);
+		}
+	}
+	void RofBuffApply(bool buffActivated){
+		if(buffActivated)fireRate = fireRateTable[currentClass][activeWeapon]*0.5f;
+		else fireRate = fireRateTable[currentClass][activeWeapon];
+	}
+
+
+
 
 }

@@ -19,6 +19,7 @@ public class Bullet : NetworkBehaviour {
 	public bool ignoreBullet;
 	public bool isExplode;
 	public float explodeRadius;
+	public string specialTag;
 
 	void Start(){
 		if(!isServer)return;
@@ -58,14 +59,14 @@ public class Bullet : NetworkBehaviour {
 					float proximity = (transform.position - col.transform.position).magnitude; 
 					float effect = 1 - (proximity / explodeRadius);
 					int calculatedDamage = Mathf.RoundToInt(damage * effect);
-					col.GetComponent<Health>().TakeDamage(calculatedDamage,ownerName,ownerGun);
+					col.GetComponent<Health>().TakeDamage(calculatedDamage,ownerName,ownerGun,specialTag);
 				}
 			}
 		}else{
 			//NORMAL BULLET HIT
 			if(other!=null&&other.transform.tag=="Player"){
 				//		Debug.Log("Bullet hit dmg: "+damage+" ownerName: "+ownerName+" ownerGun: "+ownerGun);
-				other.transform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun);
+				other.transform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun,specialTag);
 			}
 		}
 		NetworkServer.Destroy(this.gameObject);//TODO:
