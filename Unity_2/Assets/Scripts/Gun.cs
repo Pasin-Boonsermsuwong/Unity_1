@@ -3,7 +3,19 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Collections;
 public class Gun : NetworkBehaviour {
+
 	int currentClass;
+	public enumClass classSelect;
+	public enum enumClass
+	{
+		Fighter = 0,
+		Healer = 1,
+		Ranger = 2,
+		Assassin = 3,
+		Tank = 4,
+		Spartan = 5,
+		Juggernaut = 6,
+	}
 	// 0 = fighter
 	// 1 = healer
 	// 2 = ranger
@@ -33,6 +45,8 @@ public class Gun : NetworkBehaviour {
 	float chargeCurrent;
 
 	//Special ROF BUFF
+	Transform effects;
+
 	bool isRofBuff;
 	GameObject buffEffect;
 
@@ -63,8 +77,10 @@ public class Gun : NetworkBehaviour {
 
 	void Start () {
 		buffEffect = (GameObject) Resources.Load("PErof");
+		effects = this.transform.Find("Effects");
+
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-		currentClass = GameController.currentClass;
+		currentClass = (int)classSelect;
 
 
 		shotTable = new GameObject[shotNameTable.Length];
@@ -461,9 +477,9 @@ public class Gun : NetworkBehaviour {
 			isRofBuff = true;
 			RofBuffApply(isRofBuff);
 		}else{
-			if(transform.FindChild("PErof(Clone)")==null){
+			if(effects.FindChild("PErof(Clone)")==null){
 				GameObject PErof = (GameObject)Instantiate(buffEffect,transform.position,Quaternion.identity);
-				PErof.transform.SetParent(this.transform);
+				PErof.transform.SetParent(effects);
 			}
 
 		}
@@ -474,7 +490,7 @@ public class Gun : NetworkBehaviour {
 			isRofBuff = false;
 			RofBuffApply(isRofBuff);
 		}else{
-			Transform t = transform.FindChild("PErof(Clone)");
+			Transform t = effects.FindChild("PErof(Clone)");
 			if(t!=null)Destroy(t.gameObject);
 		}
 	}
@@ -482,8 +498,5 @@ public class Gun : NetworkBehaviour {
 		if(buffActivated)fireRate = fireRateTable[currentClass][activeWeapon]*0.5f;
 		else fireRate = fireRateTable[currentClass][activeWeapon];
 	}
-
-
-
 
 }

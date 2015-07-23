@@ -123,7 +123,7 @@ public class Health : NetworkBehaviour {
 		Instantiate(deathExplosion, transform.position, transform.rotation);
 		//characterController.enabled = false;//NRB
 		rb.useGravity = false;
-		rb.velocity = new Vector3(0,0,0);
+	//	rb.velocity = new Vector3(0,0,0);
 		characterCollider.enabled = false;//RB
 		if(isLocalPlayer){
 	//		isDead = true;
@@ -138,12 +138,18 @@ public class Health : NetworkBehaviour {
 			//SERVER ONLY
 			model.SetActive(false);
 			playerCanvas.SetActive(false);
+			Transform effects = transform.FindChild("Effects");
+			foreach (Transform child in effects) {
+				GameObject.Destroy(child.gameObject);
+			}
 		}
+		rb.velocity = new Vector3(0,0,0);
 	}
 
 	[ClientRpc]
 	void RpcRespawnPos(){
 		if(isLocalPlayer){
+			rb.velocity = new Vector3(0,0,0);
 			spawnPositionScript.ChangeSpawnPosition();
 			characterController.isDead = false;
 //			isDead = false;
