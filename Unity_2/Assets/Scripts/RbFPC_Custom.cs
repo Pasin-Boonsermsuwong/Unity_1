@@ -97,6 +97,9 @@ public class RbFPC_Custom : MonoBehaviour{
 	bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
 	GameController gc;
 	public bool isDead;
+	float capsuleHeight;
+	float capsuleRadius;
+
 
 	public Vector3 Velocity
 	{
@@ -132,6 +135,8 @@ public class RbFPC_Custom : MonoBehaviour{
 		movementSettings.SetRunData();
 		m_RigidBody = GetComponent<Rigidbody>();
 		m_Capsule = GetComponent<CapsuleCollider>();
+		capsuleHeight = m_Capsule.height * transform.localScale.x;
+		capsuleRadius = m_Capsule.radius * transform.localScale.x;
 		mouseLook.Init (transform, cam.transform);
 	}
 	
@@ -209,8 +214,8 @@ public class RbFPC_Custom : MonoBehaviour{
 	void StickToGroundHelper()
 	{
 		RaycastHit hitInfo;
-		if (Physics.SphereCast(transform.position, m_Capsule.radius, Vector3.down, out hitInfo,
-		                       ((m_Capsule.height/2f) - m_Capsule.radius) +
+		if (Physics.SphereCast(transform.position, capsuleRadius, Vector3.down, out hitInfo,
+		                       ((capsuleHeight/2f) - capsuleRadius) +
 		                       advancedSettings.stickToGroundHelperDistance))
 		{
 			if (Mathf.Abs(Vector3.Angle(hitInfo.normal, Vector3.up)) < 85f)
@@ -258,8 +263,8 @@ public class RbFPC_Custom : MonoBehaviour{
 	{
 		m_PreviouslyGrounded = m_IsGrounded;
 		RaycastHit hitInfo;
-		if (Physics.SphereCast(transform.position, m_Capsule.radius, Vector3.down, out hitInfo,
-		                       ((m_Capsule.height/2f) - m_Capsule.radius) + advancedSettings.groundCheckDistance))
+		if (Physics.SphereCast(transform.position, capsuleRadius, Vector3.down, out hitInfo,
+		                       ((capsuleHeight/2f) - capsuleRadius) + advancedSettings.groundCheckDistance))
 		{
 			m_IsGrounded = true;
 			m_GroundContactNormal = hitInfo.normal;

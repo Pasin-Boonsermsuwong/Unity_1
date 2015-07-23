@@ -22,7 +22,7 @@ public class PlayerData : MonoBehaviour {
 	//	Debug.Log("SetClass");
 		playerClass = s;
 	//	selectedClass = s;
-		classText.text = "Player Class: "+ s;
+		classText.text = s;
 	}
 
 }

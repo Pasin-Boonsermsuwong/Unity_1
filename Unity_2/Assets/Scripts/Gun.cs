@@ -19,20 +19,18 @@ public class Gun : NetworkBehaviour {
 	// 0 = fighter
 	// 1 = healer
 	// 2 = ranger
-	// 3 = scout
+	// 3 = assassin
 	// 4 = tank
 	// 5 = spartan
 	// 6 = juggernaut
 	GameController gc;
 	public Transform gunHardpoint;
 	Rigidbody rb;
-//	AudioSource audio;
 	string playerName;
-//	NetworkInstanceId ownerID;		//OF ROOT TRANSOFRM
-
 	float fireRate;
 	float nextFire;
 
+	//WEAPON AMOUNT
 	int weaponAmount = 6;
 	Text[] weaponText;
 	int activeWeapon;
@@ -51,8 +49,8 @@ public class Gun : NetworkBehaviour {
 	GameObject buffEffect;
 
 	float[][] fireRateTable = {
-		new float[]{0.2f,0.5f,1,2,3,0},//fighter
-		new float[]{0,0,0,0,0,0},//healer
+		new float[]{0.2f,0.5f,1,3,3,0},//fighter
+		new float[]{0.5f,0.25f,1,0.25f,2,0},//healer
 		new float[]{0,0,0,0,0,0},//range
 		new float[]{0,0,0,0,0,0},//scout
 		new float[]{0,0,0,0,0,0},//tank
@@ -61,7 +59,7 @@ public class Gun : NetworkBehaviour {
 	};
 	string[][] weaponNameTable =  {
 		new string[]{"Machine Gun","Shotgun","[C]Grenade","[C]Artillery","ROF Buff",""},//fighter
-		new string[]{"","","","","",""},//healer
+		new string[]{"Gun","Heal Gun","Area Heal","Max HP Buff","Armor Buff",""},//healer
 		new string[]{"","","","","",""},//range
 		new string[]{"","","","","",""},//scout
 		new string[]{"","","","","",""},//tank
@@ -71,7 +69,8 @@ public class Gun : NetworkBehaviour {
 
 
 	GameObject[] shotTable;
-	string[] shotNameTable = {"B50","BB50","BG150","BS50","BA200","PErofCast"};//0-5
+	string[] shotNameTable = {"B50","BB50","BG150","BS50","BA200","PErofCast",//0-5 FIGHTER
+		"BB50LongLife","B50Heal"};		//6-10 HEALER
 
 	//Collider collider;
 
@@ -210,9 +209,10 @@ public class Gun : NetworkBehaviour {
 				switch (activeWeapon)
 				{
 				case 0:
+					shootSuccess = FireCheck(6,6500,7800,0.2f,1);
 					break;
 				case 1:
-					
+					shootSuccess = FireCheck(7,5500,6500,0,1);
 					break;
 				case 2:
 					
@@ -400,11 +400,7 @@ public class Gun : NetworkBehaviour {
 			return false;
 		}
 		float radius = sph.radius;
-	//	Debug.Log("Bullet start overlapLength: "+Physics.OverlapSphere(transform.position,radius).Length);
-		//~(1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("PlayerLocal"))
 		if(Physics.OverlapSphere(transform.position,radius).Length>1){
-			//BY DEFAULT WILL HIT TURRETCOLLIDER , SO LENGTH = 1;
-	//		Debug.Log("SpawnCollide");
 			return false;
 		}
 		CmdFireStandard(shotID, launchForceMin, launchForceMax, shotDeviation, shotAmount,playerName,weaponNameTable[currentClass][activeWeapon]);
@@ -450,7 +446,7 @@ public class Gun : NetworkBehaviour {
 		}
 	}
 	[ClientRpc]
-	void RpcAoEEffect(int effectID){
+	void RpcAoEEffect(int effectID){	//FROM IN SHOTID
 		Instantiate(shotTable[effectID], transform.position, Quaternion.identity);
 	}
 	public void DeathReset(){
