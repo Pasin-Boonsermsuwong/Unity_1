@@ -134,12 +134,15 @@ public class RbFPC_Custom : MonoBehaviour{
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		movementSettings.SetRunData();
 		m_RigidBody = GetComponent<Rigidbody>();
+
+
+		mouseLook.Init (transform, cam.transform);
+	}
+	public void SetCapsuleSize(){
 		m_Capsule = GetComponent<CapsuleCollider>();
 		capsuleHeight = m_Capsule.height * transform.localScale.x;
 		capsuleRadius = m_Capsule.radius * transform.localScale.x;
-		mouseLook.Init (transform, cam.transform);
 	}
-	
 	
 	void Update()
 	{

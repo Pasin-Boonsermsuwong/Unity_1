@@ -4,11 +4,13 @@ using UnityEngine.Networking;
 using System.Collections;
 public class Health : NetworkBehaviour {
 
+
 	public int maxHP;
 	public int armor;
 	
 	[SyncVar (hook = "OnHealthChanged")]int curHP;
 
+	bool isDead = false;
 	Slider localSlider;
 	public Slider slider;
 	public GameObject playerCanvas;
@@ -27,20 +29,27 @@ public class Health : NetworkBehaviour {
 	GameController gc;
 
 	void Start () {
+
+
 		gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
 		localSlider = gc.localSliderHealth;
-
 		myTransform = GetComponent<Transform>();
 		spawnPosition = GameObject.FindWithTag("SpawnPosition").transform;
 		spawnPositionScript = spawnPosition.GetComponent<SpawnPosition>();
-		curHP = maxHP;
 
 		model = myTransform.FindChild("Model").gameObject;
 		characterController = GetComponent<RbFPC_Custom>();
 		characterCollider = GetComponent<Collider>();
 		rb = GetComponent<Rigidbody>();
 		gun = GetComponent<Gun>();
-		Invoke("GetOwnerName", 0.5f);
+		playerName = GetComponent<PlayerID>().displayName;
+	}
+
+	public void LateStart(){	//CALLED BY PLAYERID
+		if(isLocalPlayer)curHP = maxHP;
+		else{
+			OnHealthChanged(curHP);
+		}
 	}
 
 	void GetOwnerName(){
@@ -61,11 +70,12 @@ public class Health : NetworkBehaviour {
 		TakeDamage(amount, sourceName, sourceWeapon,"");
 	}
 	public void TakeDamage(int amount,string sourceName,string sourceWeapon,string specialTag){
-		if(!isServer)return;
+		if(!isServer||isDead)return;
 		Debug.Log("TakeDamage: "+amount+"-"+armor+"="+Mathf.Max(amount - armor,0));
 		if(amount > 0)amount = Mathf.Max(amount - armor,0);
-		curHP -= amount;
+		curHP = Mathf.Min (curHP - amount,maxHP);
 		if(curHP<=0){
+			isDead = true;
 			curHP = maxHP;
 			StartCoroutine(ServerSideDeath(sourceName,sourceWeapon));
 		}else{
@@ -167,6 +177,7 @@ public class Health : NetworkBehaviour {
 		rb.useGravity = true;
 		characterCollider.enabled = true;
 		gun.enabled = true;
+		isDead = false;
 	}
 
 }

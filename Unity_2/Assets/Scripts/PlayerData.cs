@@ -7,9 +7,11 @@ public class PlayerData : MonoBehaviour {
 	public string playerName;
 	public string playerClass;
 	Text classText;
+	NetworkPlayerSelect netManager;
 
 	void Start(){
 	//	selectedClass = enumClass.Fighter;
+		netManager = GameObject.Find("NetManager").GetComponent<NetworkPlayerSelect>();
 		playerClass = "Fighter";
 		classText = GameObject.Find("Canvas").transform.FindChild("TextEnterClass").GetComponent<Text>();
 		if(classText==null)Debug.LogError("classText is null");
@@ -19,9 +21,7 @@ public class PlayerData : MonoBehaviour {
 	}
 
 	public void SetClass(string s){
-	//	Debug.Log("SetClass");
 		playerClass = s;
-	//	selectedClass = s;
 		classText.text = s;
 	}
 

@@ -5,17 +5,8 @@ using System.Collections;
 public class Gun : NetworkBehaviour {
 
 	int currentClass;
-	public enumClass classSelect;
-	public enum enumClass
-	{
-		Fighter = 0,
-		Healer = 1,
-		Ranger = 2,
-		Assassin = 3,
-		Tank = 4,
-		Spartan = 5,
-		Juggernaut = 6,
-	}
+//	public enumClass classSelect;
+
 	// 0 = fighter
 	// 1 = healer
 	// 2 = ranger
@@ -79,7 +70,7 @@ public class Gun : NetworkBehaviour {
 		effects = this.transform.Find("Effects");
 
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-		currentClass = (int)classSelect;
+		currentClass =  GetComponent<PlayerID>().currentClass;
 
 
 		shotTable = new GameObject[shotNameTable.Length];
@@ -90,15 +81,16 @@ public class Gun : NetworkBehaviour {
 		}
 
 
+
+		rb = GetComponentInParent<Rigidbody>();
+		Invoke("GetOwnerName", 1);
+		if(!isLocalPlayer)return;
 		weaponText = new Text[weaponAmount];
 		//SET UI WEAPON TEXT
 		for(int i =0;i<weaponAmount;i++){
 			weaponText[i] = gc.weaponPanel.transform.GetChild(i).GetComponent<Text>();
 			weaponText[i].text = weaponNameTable[currentClass][i];
 		}
-		rb = GetComponentInParent<Rigidbody>();
-		Invoke("GetOwnerName", 1);
-		if(!isLocalPlayer)return;
 		setActiveWeapon(0,true);
 
 	}
