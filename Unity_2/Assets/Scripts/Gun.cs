@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 public class Gun : NetworkBehaviour {
 
-	int currentClass;
+	public int currentClass;
 //	public enumClass classSelect;
 
 	// 0 = fighter
@@ -66,12 +66,13 @@ public class Gun : NetworkBehaviour {
 	//Collider collider;
 
 	void Start () {
+		Debug.Log ("GunStart");
 		buffEffect = (GameObject) Resources.Load("PErof");
 		effects = this.transform.Find("Effects");
 
 		rb = GetComponentInParent<Rigidbody>();
 
-		GetOwnerName();
+
 	//	Invoke("GetOwnerName", 1);
 
 		if(isServer){
@@ -81,9 +82,8 @@ public class Gun : NetworkBehaviour {
 				shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
 			}
 		}
-
 		if(isLocalPlayer){
-
+			GetOwnerName();
 			if(shotTable == null){
 				shotTable = new GameObject[shotNameTable.Length];
 				//LOAD BULLETS INTO ARRAY
@@ -93,7 +93,7 @@ public class Gun : NetworkBehaviour {
 			}
 
 			gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-			currentClass =  GetComponent<PlayerID>().currentClass;
+			currentClass = GetComponent<PlayerID>().currentClass;
 			weaponText = new Text[weaponAmount];
 			//SET UI WEAPON TEXT
 			for(int i =0;i<weaponAmount;i++){
@@ -102,9 +102,11 @@ public class Gun : NetworkBehaviour {
 			}
 			setActiveWeapon(0,true);
 		}
+
 	}
 	void GetOwnerName(){
 		playerName = GetComponent<PlayerID>().displayName;
+		if(playerName=="")Debug.LogError("Player Name Empty");
 	}
 
 	void ActivateChargeUp(float chargeRate1){

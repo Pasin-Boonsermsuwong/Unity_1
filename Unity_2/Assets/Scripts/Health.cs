@@ -6,7 +6,7 @@ public class Health : NetworkBehaviour {
 
 
 	[SyncVar (hook = "OnMaxHealthChanged")]public int maxHP;
-	public int armor;
+	[SyncVar]public int armor;
 	
 	[SyncVar (hook = "OnHealthChanged")]int curHP;
 
@@ -25,44 +25,35 @@ public class Health : NetworkBehaviour {
 	string playerName;
 	Transform spawnPosition;
 	SpawnPosition spawnPositionScript;
-	Transform myTransform;
 	GameController gc;
 
 	void Start () {
-		Debug.Log("HealthStart");
-		curHP = maxHP;
 		gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
 		localSlider = gc.localSliderHealth;
-		myTransform = GetComponent<Transform>();
 		spawnPosition = GameObject.FindWithTag("SpawnPosition").transform;
 		spawnPositionScript = spawnPosition.GetComponent<SpawnPosition>();
-
-		model = myTransform.FindChild("Model").gameObject;
+		model = transform.FindChild("Model").gameObject;
 		characterController = GetComponent<RbFPC_Custom>();
 		characterCollider = GetComponent<Collider>();
 		rb = GetComponent<Rigidbody>();
 		gun = GetComponent<Gun>();
 		playerName = GetComponent<PlayerID>().displayName;
+		UpdateSlider();
 	}
 
-	public void LateStart(){	//CALLED BY PLAYERID
-
+	public void SetCurHP(){
+		curHP = maxHP;
+		Invoke("UpdateSlider",1);
 	}
-
 	void GetOwnerName(){
 		playerName = GetComponent<PlayerID>().displayName;
 	}
-	/*
+
 	[Command]
-	void CmdTellServerPlayerName(string playerName){
-		if(!isServer)return;
-		RpcTellPlayerName(playerName);
+	void CmdSuicide(){
+		TakeDamage(int.MaxValue,playerName,"Suicide");
 	}
-	[ClientRpc]
-	void RpcTellPlayerName(string playerName){
-		if(!isLocalPlayer)this.playerName = playerName;
-	}
-	*/
+
 	public void TakeDamage(int amount,string sourceName,string sourceWeapon){
 		TakeDamage(amount, sourceName, sourceWeapon,"");
 	}
@@ -102,7 +93,6 @@ public class Health : NetworkBehaviour {
 	}
 	void OnMaxHealthChanged(int h){
 		maxHP = h;
-		curHP = maxHP;
 		UpdateSlider();
 	}
 	void OnHealthChanged(int h){
@@ -112,8 +102,9 @@ public class Health : NetworkBehaviour {
 	void UpdateSlider(){
 		if(isLocalPlayer){
 			if(localSlider==null){
+				gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
+				localSlider = gc.localSliderHealth;
 				Debug.Log("OnHealthChanged: localSlider is null");
-				return;
 			}
 			localSlider.value = curHP/(float)maxHP;
 		}else{
@@ -167,7 +158,7 @@ public class Health : NetworkBehaviour {
 			characterController.isDead = false;
 //			isDead = false;
 		}
-		myTransform.position = spawnPosition.position;
+		transform.position = spawnPosition.position;
 	}
 
 	[ClientRpc]

@@ -3,28 +3,17 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 using System.Collections;
 
-using System.Collections.Generic;
-
-
-/*
-public class ClassItem{
-	public short playerControllerId;
-	public string playerClass;
-	public ClassItem(short ID, string playerClass1){
-		playerControllerId = ID;
-		playerClass = playerClass1;
+public class NetworkPlayerSelect : NetworkManager {
+	/*
+	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+	{
+		GameObject player = (GameObject)Instantiate(playerPrefab, GetStartPosition().position, Quaternion.identity);
+		player.GetComponent<PlayerID>().currentClass = 
+		player.GetComponent<Player>().color = Color.Red;
+		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 	}
-}
-
-public class ClassMessage : MessageBase
-{
-	public short connectionID;
-	public string playerClass;
-}
 */
 
-
-public class NetworkPlayerSelect : NetworkManager {
 	/*
 	 * 
 	 * 
