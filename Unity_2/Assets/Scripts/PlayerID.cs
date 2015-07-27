@@ -10,8 +10,8 @@ public class PlayerID : NetworkBehaviour
 	float[][] characterParameter = {
 		//	TRANSFORM SCALE, MASS, MAXHP, ARMOR, 	FWD_SPEED,	BCK_SPEED,	STRAFE_SPD,	JUMP_FORCE
 		new float[]{2f,8000000,310,10,	7040000,	3520000,	3520000,	61600000},//fighter
-		new float[]{1.5f,3000000,175,5,	800000,		400000,		400000,		7000000},//healer
-		new float[]{0,0,0,0,0,0},//range
+		new float[]{1.5f,3000000,175,5,	2400000,	1200000,	1200000,	21000000},//healer
+		new float[]{0,0,0,0,0,0},//snipe
 		new float[]{0,0,0,0,0,0},//scout
 		new float[]{0,0,0,0,0,0},//tank
 		new float[]{0,0,0,0,0,0},//spartan
@@ -24,14 +24,13 @@ public class PlayerID : NetworkBehaviour
 	{
 		Fighter = 0,
 		Healer = 1,
-		Ranger = 2,
+		Sniper = 2,
 		Assassin = 3,
 		Tank = 4,
 		Spartan = 5,
 		Juggernaut = 6,
 	}
-	public int currentClass;
-	//GameController gc;
+	[SyncVar (hook = "PlayerClassSet")]public int currentClass = -1;
 	[SyncVar] public string playerUniqueName;
 	public Text displayNameText;
 	//NAME ON CANVAS
@@ -39,29 +38,24 @@ public class PlayerID : NetworkBehaviour
 	NetworkInstanceId playerNetID;
 
 	void Start(){
+		Debug.Log("PlayerIDStart");
 		pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
 
 		if(isLocalPlayer){
 			SetPlayerName();
 			currentClass = (int)(enumClass)System.Enum.Parse( typeof( enumClass ), pd.playerClass);
-			CmdSetupChar(currentClass);
+			SetupChar();
 		}else{
 			displayNameText.text = displayName;
 		}
-
-
 	}
-
-	[Command]
-	void CmdSetupChar(int curClass){
-		RpcSetupChar(curClass);
-	}
-	[ClientRpc]
-	void RpcSetupChar(int curClass){
+	void PlayerClassSet(int a){
+		Debug.Log("PlayerClassSet");
+		currentClass = a;
 		SetupChar();
 	}
-
 	void SetupChar(){
+		Debug.Log("SetupChar");
 		transform.localScale = new Vector3(characterParameter[currentClass][0],characterParameter[currentClass][0],characterParameter[currentClass][0]);
 		GetComponent<Rigidbody>().mass = characterParameter[currentClass][1];
 		

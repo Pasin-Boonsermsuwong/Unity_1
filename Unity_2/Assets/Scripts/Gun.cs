@@ -69,30 +69,39 @@ public class Gun : NetworkBehaviour {
 		buffEffect = (GameObject) Resources.Load("PErof");
 		effects = this.transform.Find("Effects");
 
-		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-		currentClass =  GetComponent<PlayerID>().currentClass;
-
-
-		shotTable = new GameObject[shotNameTable.Length];
-		//LOAD BULLETS INTO ARRAY
-
-		for(int i = 0;i<shotTable.Length;i++){
-			shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
-		}
-
-
-
 		rb = GetComponentInParent<Rigidbody>();
-		Invoke("GetOwnerName", 1);
-		if(!isLocalPlayer)return;
-		weaponText = new Text[weaponAmount];
-		//SET UI WEAPON TEXT
-		for(int i =0;i<weaponAmount;i++){
-			weaponText[i] = gc.weaponPanel.transform.GetChild(i).GetComponent<Text>();
-			weaponText[i].text = weaponNameTable[currentClass][i];
-		}
-		setActiveWeapon(0,true);
 
+		GetOwnerName();
+	//	Invoke("GetOwnerName", 1);
+
+		if(isServer){
+			shotTable = new GameObject[shotNameTable.Length];
+			//LOAD BULLETS INTO ARRAY
+			for(int i = 0;i<shotTable.Length;i++){
+				shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
+			}
+		}
+
+		if(isLocalPlayer){
+
+			if(shotTable == null){
+				shotTable = new GameObject[shotNameTable.Length];
+				//LOAD BULLETS INTO ARRAY
+				for(int i = 0;i<shotTable.Length;i++){
+					shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
+				}
+			}
+
+			gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+			currentClass =  GetComponent<PlayerID>().currentClass;
+			weaponText = new Text[weaponAmount];
+			//SET UI WEAPON TEXT
+			for(int i =0;i<weaponAmount;i++){
+				weaponText[i] = gc.weaponPanel.transform.GetChild(i).GetComponent<Text>();
+				weaponText[i].text = weaponNameTable[currentClass][i];
+			}
+			setActiveWeapon(0,true);
+		}
 	}
 	void GetOwnerName(){
 		playerName = GetComponent<PlayerID>().displayName;

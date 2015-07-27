@@ -29,7 +29,7 @@ public class Health : NetworkBehaviour {
 	GameController gc;
 
 	void Start () {
-
+		Debug.Log("HealthStart");
 
 		gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
 		localSlider = gc.localSliderHealth;
@@ -46,10 +46,7 @@ public class Health : NetworkBehaviour {
 	}
 
 	public void LateStart(){	//CALLED BY PLAYERID
-		if(isLocalPlayer)curHP = maxHP;
-		else{
-			OnHealthChanged(curHP);
-		}
+		curHP = maxHP;
 	}
 
 	void GetOwnerName(){

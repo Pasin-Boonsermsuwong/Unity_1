@@ -6,12 +6,12 @@ public class RbFPC_Custom : MonoBehaviour{
 	public class MovementSettings
 	{
 		GameController gc;
-		public float ForwardSpeed = 8.0f;   // Speed when walking forward
-		public float BackwardSpeed = 4.0f;  // Speed when walking backwards
-		public float StrafeSpeed = 4.0f;    // Speed when walking sideways
-		public float RunMultiplier = 2.0f;   // Speed when sprinting
+		public float ForwardSpeed = 0;   // Speed when walking forward
+		public float BackwardSpeed = 0;  // Speed when walking backwards
+		public float StrafeSpeed = 0;    // Speed when walking sideways
+		public float RunMultiplier = 0;   // Speed when sprinting
 	//	public KeyCode RunKey = KeyCode.LeftShift;
-		public float JumpForce = 30f;
+		public float JumpForce = 0;
 		public AnimationCurve SlopeCurveModifier = new AnimationCurve(new Keyframe(-90.0f, 1.0f), new Keyframe(0.0f, 1.0f), new Keyframe(90.0f, 0.0f));
 		[HideInInspector] public float CurrentTargetSpeed = 8f;
 
@@ -134,8 +134,6 @@ public class RbFPC_Custom : MonoBehaviour{
 		gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 		movementSettings.SetRunData();
 		m_RigidBody = GetComponent<Rigidbody>();
-
-
 		mouseLook.Init (transform, cam.transform);
 	}
 	public void SetCapsuleSize(){
