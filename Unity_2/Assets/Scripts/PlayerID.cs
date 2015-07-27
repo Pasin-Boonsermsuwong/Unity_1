@@ -18,8 +18,6 @@ public class PlayerID : NetworkBehaviour
 		new float[]{0,0,0,0,0,0},//juggernaut
 	};
 
-
-
 	public enum enumClass
 	{
 		Fighter = 0,
@@ -30,7 +28,8 @@ public class PlayerID : NetworkBehaviour
 		Spartan = 5,
 		Juggernaut = 6,
 	}
-	[SyncVar (hook = "PlayerClassSet")]public int currentClass = -1;
+
+	[SyncVar (hook = "PlayerClassSet")]public int currentClass;
 	[SyncVar] public string playerUniqueName;
 	public Text displayNameText;
 	//NAME ON CANVAS
@@ -38,31 +37,32 @@ public class PlayerID : NetworkBehaviour
 	NetworkInstanceId playerNetID;
 
 	void Start(){
-		Debug.Log("PlayerIDStart");
-		pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
-
+	//	Debug.Log("PlayerIDStart");
 		if(isLocalPlayer){
+			pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
 			SetPlayerName();
 			currentClass = (int)(enumClass)System.Enum.Parse( typeof( enumClass ), pd.playerClass);
-			SetupChar();
+			Debug.Log("Start currentClass: "+currentClass);
 		}else{
 			displayNameText.text = displayName;
 		}
+		SetupChar();
 	}
+
 	void PlayerClassSet(int a){
 		Debug.Log("PlayerClassSet");
 		currentClass = a;
-		SetupChar();
 	}
+
 	void SetupChar(){
-		Debug.Log("SetupChar");
+		if(currentClass==-1)Debug.LogError("Class not set");
+		Debug.Log("SetupChar: "+currentClass);
 		transform.localScale = new Vector3(characterParameter[currentClass][0],characterParameter[currentClass][0],characterParameter[currentClass][0]);
 		GetComponent<Rigidbody>().mass = characterParameter[currentClass][1];
 		
 		Health h = GetComponent<Health>();
 		h.maxHP = (int)characterParameter[currentClass][2];
 		h.armor = (int)characterParameter[currentClass][3];
-		h.LateStart();
 
 		RbFPC_Custom c = GetComponent<RbFPC_Custom>();
 		c.movementSettings.ForwardSpeed = characterParameter[currentClass][4];

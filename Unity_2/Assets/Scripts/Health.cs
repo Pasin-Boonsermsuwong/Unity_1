@@ -5,7 +5,7 @@ using System.Collections;
 public class Health : NetworkBehaviour {
 
 
-	public int maxHP;
+	[SyncVar (hook = "OnMaxHealthChanged")]public int maxHP;
 	public int armor;
 	
 	[SyncVar (hook = "OnHealthChanged")]int curHP;
@@ -30,7 +30,7 @@ public class Health : NetworkBehaviour {
 
 	void Start () {
 		Debug.Log("HealthStart");
-
+		curHP = maxHP;
 		gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
 		localSlider = gc.localSliderHealth;
 		myTransform = GetComponent<Transform>();
@@ -46,7 +46,7 @@ public class Health : NetworkBehaviour {
 	}
 
 	public void LateStart(){	//CALLED BY PLAYERID
-		curHP = maxHP;
+
 	}
 
 	void GetOwnerName(){
@@ -90,9 +90,7 @@ public class Health : NetworkBehaviour {
 			}
 		}
 	}
-
-
-
+	
 	[Command]
 	void CmdSendKillMsg(string s){
 		if(!isServer)return;
@@ -102,9 +100,16 @@ public class Health : NetworkBehaviour {
 	void RpcKillMsg(string s){
 		gc.AddKillMsg(s);
 	}
-
+	void OnMaxHealthChanged(int h){
+		maxHP = h;
+		curHP = maxHP;
+		UpdateSlider();
+	}
 	void OnHealthChanged(int h){
 		curHP = h;
+		UpdateSlider();
+	}
+	void UpdateSlider(){
 		if(isLocalPlayer){
 			if(localSlider==null){
 				Debug.Log("OnHealthChanged: localSlider is null");
@@ -115,6 +120,7 @@ public class Health : NetworkBehaviour {
 			slider.value = curHP/(float)maxHP;
 		}
 	}
+
 
 	IEnumerator ServerSideDeath(string sourceName,string sourceWeapon){
 		RpcDeath(sourceName,sourceWeapon);
