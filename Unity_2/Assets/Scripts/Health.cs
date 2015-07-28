@@ -65,8 +65,16 @@ public class Health : NetworkBehaviour {
 		TakeDamage(amount, sourceName, sourceWeapon,"");
 	}
 	public void TakeDamage(int amount,string sourceName,string sourceWeapon,string specialTag){
+		TakeDamage(amount, sourceName, sourceWeapon,specialTag,0,Quaternion.identity);
+	}
+
+	public void TakeDamage(int amount,string sourceName,string sourceWeapon,string specialTag,float impactForce,Quaternion impactDirection){
 		if(!isServer||isDead)return;
+
 		Debug.Log("TakeDamage: "+amount+"-"+armor+"="+Mathf.Max(amount - armor,0));
+		if(impactForce>0){
+			rb.AddForce(impactForce * impactDirection.eulerAngles.normalized);
+		}
 		if(amount > 0)amount = Mathf.Max(amount - armor,0);
 		curHP = Mathf.Min (curHP - amount,maxHP);
 		if(curHP<=0){
@@ -87,11 +95,10 @@ public class Health : NetworkBehaviour {
 					Debug.LogError("WTF!?");
 					break;
 				}
-
 			}
 		}
 	}
-	
+
 	[Command]
 	void CmdSendKillMsg(string s){
 		if(!isServer)return;

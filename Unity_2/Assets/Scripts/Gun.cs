@@ -41,8 +41,8 @@ public class Gun : NetworkBehaviour {
 
 	float[][] fireRateTable = {
 		new float[]{0.2f,0.5f,1,3,3,0},//fighter
-		new float[]{0.5f,0.25f,1,1.25f,2,0},//healer
-		new float[]{0,0,0,0,0,0},//sniper
+		new float[]{0.5f,0.33f,1,1.25f,2,0},//healer
+		new float[]{2,5,7,5,0.5f,0},//sniper
 		new float[]{0,0,0,0,0,0},//assassin
 		new float[]{0,0,0,0,0,0},//tank
 		new float[]{0,0,0,0,0,0},//spartan
@@ -51,7 +51,7 @@ public class Gun : NetworkBehaviour {
 	string[][] weaponNameTable =  {
 		new string[]{"Machine Gun","Shotgun","[C]Grenade","[C]Artillery","ROF Buff",""},//fighter
 		new string[]{"Gun","Heal Gun","Area Heal","Bullet Blocker","Armor Buff",""},//healer
-		new string[]{"","","","","",""},//sniper
+		new string[]{"Sniper","Heavy Sniper","[C]Artillery","[C]Superbomb","Force gun",""},//sniper
 		new string[]{"","","","","",""},//assassin
 		new string[]{"","","","","",""},//tank
 		new string[]{"","","","","",""},//spartan
@@ -61,7 +61,8 @@ public class Gun : NetworkBehaviour {
 
 	GameObject[] shotTable;
 	static string[] shotNameTable = {"B50","BB50","BG150","BS50","BA200","PErofCast",//0-5 FIGHTER
-		"BB50LongLife","B50Heal","PEAreaHealCast","BP0","PEarmorCast"};		//6-10 HEALER
+		"BB50LongLife","B50Heal","PEAreaHealCast","BP0","PEarmorCast",  //6-10 HEALER
+	"B200","B500","BG450","BF50"};	//11-  SNIPER
 
 	//Collider collider;
 
@@ -235,19 +236,29 @@ public class Gun : NetworkBehaviour {
 				switch (activeWeapon)
 				{
 				case 0:
-					
+					shootSuccess = FireCheck(11,15000,15000,0,1);
 					break;
 				case 1:
-					
+					shootSuccess = FireCheck(12,13000,13000,0,1);
 					break;
 				case 2:
-					
+					if(!isChargeRelease){
+						ActivateChargeUp(0.5f);
+					}else{
+						shootSuccess = FireCheck(4,96000*chargeCurrent,96000*chargeCurrent,0,1);
+						isChargeRelease = false;
+					}
 					break;
 				case 3:
-					
+					if(!isChargeRelease){
+						ActivateChargeUp(0.4f);
+					}else{
+						shootSuccess = FireCheck(13,70000*chargeCurrent,70000*chargeCurrent,0,1);
+						isChargeRelease = false;
+					}
 					break;
 				case 4:
-					
+					shootSuccess = FireCheck(14,8000,8000,1,1);
 					break;
 				case 5:
 					
