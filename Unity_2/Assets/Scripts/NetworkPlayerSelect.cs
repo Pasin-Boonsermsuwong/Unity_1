@@ -4,6 +4,27 @@ using UnityEngine.Networking.NetworkSystem;
 using System.Collections;
 
 public class NetworkPlayerSelect : NetworkManager {
+	short MsgClassReceive = 5001;
+	public string playerClass;
+	NetworkClient m_client;
+	public override void OnClientConnect(NetworkConnection conn){
+	//	base.OnClientConnect(conn);
+	//	Debug.Log("OnClientConnect");
+		SendClassInfoToServer();
+
+	//	DataSend dataSend = GameObject.Find("DataSend").GetComponent<DataSend>();
+	//	dataSend.CmdSendPlayerClass(playerData.playerClass);
+	}
+
+	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+	{
+	//	Debug.Log("OnServerAddPlayer, connID: "+conn.connectionId);
+		if(playerClass == "")Debug.LogError("playerClass is empty!");
+	//	Debug.Log("ServerPclass: Char"+playerClass);
+		playerPrefab = (GameObject)Resources.Load("Char"+playerClass);
+		GameObject player = (GameObject)Instantiate(playerPrefab, GetStartPosition().position, Quaternion.identity);
+		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+	}
 	/*
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
 	{
@@ -18,79 +39,44 @@ public class NetworkPlayerSelect : NetworkManager {
 	 * 
 	 * 
 	short MsgClassRequest = 5000;
-	short MsgClassReceive = 5001;
+
 	List<ClassItem> PlayerClassList = new List<ClassItem>();
-	NetworkClient m_client;
+
 	short localConnID;
 	PlayerData pd;
 	void Start(){
 		pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
 	}
-	public override void OnStartServer(){
-		base.OnStartServer();
-		Debug.Log("OnStartServer");
-		NetworkServer.RegisterHandler(MsgClassReceive, OnServerReceiveClass);
-	}
-	public override void OnStartClient(NetworkClient client1){
-		base.OnStartClient(client1);
-		Debug.Log("OnStartClient");
-		m_client = client1;
-	//	localConnID = (short)client1.connection.connectionId;
-	}
-	public override void OnClientConnect(NetworkConnection conn){
-		base.OnClientConnect(conn);
-		Debug.Log("OnClientConnect");
-		SendClassInfoToServer(pd.playerClass,(short)m_client.connection.connectionId);
-	}
+
+
+
 
 	public override void OnClientSceneChanged(NetworkConnection conn){
 		base.OnClientSceneChanged(conn);
 		Debug.Log("OnClientSceneChanged");
 	}
-
-	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
-	{
-		Debug.Log("OnServerAddPlayer, connID: "+conn.connectionId);
-		string playerClass = "";
-		bool found = false;
-		foreach(ClassItem s in PlayerClassList){
-			if(s.playerControllerId == conn.connectionId){
-				Debug.Log("FoundPlayer");
-				int index = PlayerClassList.IndexOf(s);
-				playerClass = s.playerClass;
-				PlayerClassList.RemoveAt(index);		
-				found = true;
-				break;
-			}
-		}
-		if(!found){
-			Debug.Log("Player class not found, resetting to fighter");
-			playerClass = "Fighter";
-		}
-
-
-	//	playerClass = pd.playerClass;
-		if(playerClass == "")Debug.LogError("playerClass is empty!");
-		GameObject playerClassPrefab = (GameObject)Resources.Load("Char"+playerClass);
-		GameObject player = (GameObject)Instantiate(playerClassPrefab, GetStartPosition().position, Quaternion.identity);
-		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-
+	*/
+	public override void OnStartClient(NetworkClient client1){
+		base.OnStartClient(client1);
+	//	Debug.Log("OnStartClient");
+		m_client = client1;
 	}
 	void OnServerReceiveClass(NetworkMessage netMsg){
-		ClassMessage message = netMsg.ReadMessage<ClassMessage>();
-		Debug.Log("Added: "+message.connectionID);
-		PlayerClassList.Add(new ClassItem(message.connectionID,message.playerClass));
+		StringMessage message = netMsg.ReadMessage<StringMessage>();
+		playerClass = message.value;
+	//	Debug.Log("Server receive class: "+playerClass);
 	}
-
-	void SendClassInfoToServer(string cls,short connID){
-		Debug.Log("SendClassInfoToServer");
-		ClassMessage message = new ClassMessage();
-		message.playerClass = cls;
-		message.connectionID = connID;
+	public override void OnStartServer(){
+		base.OnStartServer();
+	//	Debug.Log("OnStartServer");
+		NetworkServer.RegisterHandler(MsgClassReceive, OnServerReceiveClass);
+	}
+	void SendClassInfoToServer(){
+	//	Debug.Log("SendClassInfoToServer");
+		PlayerData playerData = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
+		StringMessage message = new StringMessage(playerData.playerClass);
 		m_client.Send(MsgClassReceive,message);
 	}
-
-	*/
 	
 
 }

@@ -27,7 +27,14 @@ public class Health : NetworkBehaviour {
 	SpawnPosition spawnPositionScript;
 	GameController gc;
 
+	//ARMOR BUFF
+	bool isArmorBuff;
+	Transform effects;		//CHILD OF PLAYER OBJECT THAT HOLDS ALL THE BUFF PARTICLE EFFECT
+	GameObject buffEffect;
+	int originalArmor;
+
 	void Start () {
+
 		gc = GameObject.FindWithTag("GameController").transform.GetComponent<GameController>();
 		localSlider = gc.localSliderHealth;
 		spawnPosition = GameObject.FindWithTag("SpawnPosition").transform;
@@ -39,12 +46,12 @@ public class Health : NetworkBehaviour {
 		gun = GetComponent<Gun>();
 		playerName = GetComponent<PlayerID>().displayName;
 		UpdateSlider();
+		curHP = maxHP;
+
+		buffEffect = (GameObject) Resources.Load("PEarmor");
+		effects = this.transform.Find("Effects");
 	}
 
-	public void SetCurHP(){
-		curHP = maxHP;
-		Invoke("UpdateSlider",1);
-	}
 	void GetOwnerName(){
 		playerName = GetComponent<PlayerID>().displayName;
 	}
@@ -72,6 +79,9 @@ public class Health : NetworkBehaviour {
 				{
 				case "rof":
 					GetComponent<Gun>().RofBuffServer();
+					break;
+				case "armor":
+					ArmorBuffServer();
 					break;
 				default:
 					Debug.LogError("WTF!?");
@@ -173,5 +183,50 @@ public class Health : NetworkBehaviour {
 		gun.enabled = true;
 		isDead = false;
 	}
+
+	public void ArmorBuffServer(){
+		StopCoroutine("ArmorBuffRoutine");
+		StartCoroutine("ArmorBuffRoutine");
+	}
+	IEnumerator ArmorBuffRoutine(){
+		RpcArmorBuff();
+		yield return new WaitForSeconds(10);
+		RpcArmorBuffEnd();
+	}
+	[ClientRpc]
+	void RpcArmorBuff(){
+		if(isLocalPlayer){
+			if(isArmorBuff)return;	//BUFF ALREADY ACTIVATED
+			isArmorBuff = true;
+			ArmorBuffApply(isArmorBuff);
+		}else{
+			if(effects.FindChild("PEarmor(Clone)")==null){
+				GameObject PErof = (GameObject)Instantiate(buffEffect,transform.position,Quaternion.identity);
+				PErof.transform.SetParent(effects);
+			}
+		}
+	}
+	void ArmorBuffApply(bool buffActivated){
+		if(buffActivated){
+			originalArmor = armor;
+			armor = Mathf.Max(armor + 10, armor*2);
+		}
+		else{
+			armor = originalArmor ;
+		}
+	}
+	[ClientRpc]
+	void RpcArmorBuffEnd(){
+		if(isLocalPlayer){
+			isArmorBuff = false;
+			ArmorBuffApply(isArmorBuff);
+		}else{
+			Transform t = effects.FindChild("PEarmor(Clone)");
+			if(t!=null)Destroy(t.gameObject);
+		}
+	}
+
+
+
 
 }

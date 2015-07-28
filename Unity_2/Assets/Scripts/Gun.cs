@@ -34,25 +34,25 @@ public class Gun : NetworkBehaviour {
 	float chargeCurrent;
 
 	//Special ROF BUFF
-	Transform effects;
+	Transform effects;		//CHILD OF PLAYER OBJECT THAT HOLDS ALL THE BUFF PARTICLE EFFECT
 
 	bool isRofBuff;
 	GameObject buffEffect;
 
 	float[][] fireRateTable = {
 		new float[]{0.2f,0.5f,1,3,3,0},//fighter
-		new float[]{0.5f,0.25f,1,0.25f,2,0},//healer
-		new float[]{0,0,0,0,0,0},//range
-		new float[]{0,0,0,0,0,0},//scout
+		new float[]{0.5f,0.25f,1,1.25f,2,0},//healer
+		new float[]{0,0,0,0,0,0},//sniper
+		new float[]{0,0,0,0,0,0},//assassin
 		new float[]{0,0,0,0,0,0},//tank
 		new float[]{0,0,0,0,0,0},//spartan
 		new float[]{0,0,0,0,0,0},//juggernaut
 	};
 	string[][] weaponNameTable =  {
 		new string[]{"Machine Gun","Shotgun","[C]Grenade","[C]Artillery","ROF Buff",""},//fighter
-		new string[]{"Gun","Heal Gun","Area Heal","Max HP Buff","Armor Buff",""},//healer
-		new string[]{"","","","","",""},//range
-		new string[]{"","","","","",""},//scout
+		new string[]{"Gun","Heal Gun","Area Heal","Bullet Blocker","Armor Buff",""},//healer
+		new string[]{"","","","","",""},//sniper
+		new string[]{"","","","","",""},//assassin
 		new string[]{"","","","","",""},//tank
 		new string[]{"","","","","",""},//spartan
 		new string[]{"","","","","",""},//juggernaut
@@ -60,40 +60,32 @@ public class Gun : NetworkBehaviour {
 
 
 	GameObject[] shotTable;
-	string[] shotNameTable = {"B50","BB50","BG150","BS50","BA200","PErofCast",//0-5 FIGHTER
-		"BB50LongLife","B50Heal"};		//6-10 HEALER
+	static string[] shotNameTable = {"B50","BB50","BG150","BS50","BA200","PErofCast",//0-5 FIGHTER
+		"BB50LongLife","B50Heal","PEAreaHealCast","BP0","PEarmorCast"};		//6-10 HEALER
 
 	//Collider collider;
 
 	void Start () {
-		Debug.Log ("GunStart");
+		//Debug.Log ("GunStart");
 		buffEffect = (GameObject) Resources.Load("PErof");
 		effects = this.transform.Find("Effects");
-
 		rb = GetComponentInParent<Rigidbody>();
 
-
 	//	Invoke("GetOwnerName", 1);
+		shotTable = new GameObject[shotNameTable.Length];
+		//LOAD BULLETS INTO ARRAY
+		for(int i = 0;i<shotTable.Length;i++){
+			shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
+		}
 
 		if(isServer){
-			shotTable = new GameObject[shotNameTable.Length];
-			//LOAD BULLETS INTO ARRAY
-			for(int i = 0;i<shotTable.Length;i++){
-				shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
-			}
+
 		}
 		if(isLocalPlayer){
 			GetOwnerName();
-			if(shotTable == null){
-				shotTable = new GameObject[shotNameTable.Length];
-				//LOAD BULLETS INTO ARRAY
-				for(int i = 0;i<shotTable.Length;i++){
-					shotTable[i] = (GameObject)Resources.Load(shotNameTable[i]);
-				}
-			}
 
 			gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-			currentClass = GetComponent<PlayerID>().currentClass;
+		//	currentClass = GetComponent<PlayerID>().currentClass;
 			weaponText = new Text[weaponAmount];
 			//SET UI WEAPON TEXT
 			for(int i =0;i<weaponAmount;i++){
@@ -106,7 +98,10 @@ public class Gun : NetworkBehaviour {
 	}
 	void GetOwnerName(){
 		playerName = GetComponent<PlayerID>().displayName;
-		if(playerName=="")Debug.LogError("Player Name Empty");
+		if(playerName==""){
+			Debug.Log("Player name is empty, reinvoking...");
+			Invoke("GetOwnerName",0.5f);
+		}
 	}
 
 	void ActivateChargeUp(float chargeRate1){
@@ -218,13 +213,15 @@ public class Gun : NetworkBehaviour {
 					shootSuccess = FireCheck(7,5500,6500,0,1);
 					break;
 				case 2:
-					
+					CmdAoEStandard(-60,20,8,null);
+					shootSuccess = true;
 					break;
 				case 3:
-					
+					shootSuccess = FireIgnoreCheck(9,35000,35000,0,1);
 					break;
 				case 4:
-					
+					CmdAoEStandard(0,20,10,"armor");
+					shootSuccess = true;
 					break;
 				case 5:
 					
@@ -410,6 +407,11 @@ public class Gun : NetworkBehaviour {
 		return true;
 	}
 
+	bool FireIgnoreCheck(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount){
+		CmdFireStandard(shotID, launchForceMin, launchForceMax, shotDeviation, shotAmount,playerName,weaponNameTable[currentClass][activeWeapon]);
+		return true;
+	}
+
 	[Command]
 	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount,string ownerName1,string ownerGun1){
 		for(int i = 0;i<shotAmount;i++){
@@ -430,8 +432,11 @@ public class Gun : NetworkBehaviour {
 			}
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
 			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
-			instantiated.GetComponent<Bullet>().ownerName = ownerName1;
-			instantiated.GetComponent<Bullet>().ownerGun = ownerGun1;
+			Bullet bullet = instantiated.GetComponent<Bullet>();
+			if(bullet != null){
+				instantiated.GetComponent<Bullet>().ownerName = ownerName1;
+				instantiated.GetComponent<Bullet>().ownerGun = ownerGun1;
+			}
 			NetworkServer.Spawn(instantiated);
 		}
 	}

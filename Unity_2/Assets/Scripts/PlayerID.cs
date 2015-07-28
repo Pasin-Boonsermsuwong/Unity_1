@@ -6,7 +6,23 @@ using UnityEngine.Networking;
 public class PlayerID : NetworkBehaviour
 {
 	PlayerData pd;
+	[SyncVar (hook = "OnDisplayNameChanged")]public string displayName;	//USE THIS TO SYNC PLAYER NAME
+	public Text displayNameText;
+	public int currentClass;
 
+	void Start(){
+		Debug.Log("PlayerIDStart");
+		if(isLocalPlayer){
+			pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
+			currentClass = ClassStringToInt( pd.playerClass);
+			SetPlayerName();
+		}else{
+			displayNameText.text = displayName;
+		}
+	}
+
+
+	/*
 	float[][] characterParameter = {
 	//	TRANSFORM SCALE, MASS, MAXHP, ARMOR, 	FWD_SPEED,	BCK_SPEED,	STRAFE_SPD,	JUMP_FORCE
 		new float[]{2f,8000000,310,10,	7040000,	3520000,	3520000,	61600000},//fighter
@@ -22,25 +38,13 @@ public class PlayerID : NetworkBehaviour
 	public int currentClass; //ARRAY INDEX STARTS WITH 0 (Fighter)
 
 //	[SyncVar] public string playerUniqueName;
-	public Text displayNameText;
+
 
 	//NAME ON CANVAS
-	[SyncVar (hook = "OnDisplayNameChanged")]public string displayName;	//USE THIS TO SYNC PLAYER NAME
+
 	NetworkInstanceId playerNetID;
 
-	void Start(){
-		Debug.Log("PlayerIDStart");
-		if(isLocalPlayer){
-			pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
-			SetPlayerName();
-			int c = ClassStringToInt(pd.playerClass);
-			SetupCharLocal(c);
-			CmdTellServerMyClass(c);
-		}else{
-			SetupCharRemote();
-			displayNameText.text = displayName;
-		}
-	}
+
 	void SetupCharLocal(int c){
 		Debug.Log("SetupCharLocal: "+c);
 		transform.localScale = new Vector3(characterParameter[currentClass][0],characterParameter[currentClass][0],characterParameter[currentClass][0]);
@@ -84,6 +88,7 @@ public class PlayerID : NetworkBehaviour
 		SetupCharRemote();
 	}
 
+*/
 	void SetPlayerName(){
 		string s = pd.playerName;
 		
@@ -107,6 +112,7 @@ public class PlayerID : NetworkBehaviour
 		displayNameText.text = displayName;
 	}
 
+
 	int ClassStringToInt(string className){
 		switch (className)
 		{
@@ -129,4 +135,5 @@ public class PlayerID : NetworkBehaviour
 			return -1;
 		}
 	}
+
 }

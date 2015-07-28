@@ -135,6 +135,7 @@ public class RbFPC_Custom : MonoBehaviour{
 		movementSettings.SetRunData();
 		m_RigidBody = GetComponent<Rigidbody>();
 		mouseLook.Init (transform, cam.transform);
+		SetCapsuleSize();
 	}
 	public void SetCapsuleSize(){
 		m_Capsule = GetComponent<CapsuleCollider>();
