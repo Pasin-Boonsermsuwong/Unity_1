@@ -41,8 +41,8 @@ public class Gun : NetworkBehaviour {
 
 	float[][] fireRateTable = {
 		new float[]{0.2f,0.5f,1,3,3,0},//fighter
-		new float[]{0.5f,0.33f,1,1.25f,2,0},//healer
-		new float[]{2,5,7,5,0.5f,0},//sniper
+		new float[]{0.5f,0.33f,1,2,2,0},//healer
+		new float[]{2,5,7,4,0.5f,0},//sniper
 		new float[]{0,0,0,0,0,0},//assassin
 		new float[]{0,0,0,0,0,0},//tank
 		new float[]{0,0,0,0,0,0},//spartan
@@ -174,7 +174,7 @@ public class Gun : NetworkBehaviour {
 					shootSuccess = FireCheck(1,8000,8000,0.5f,1);
 					break;
 				case 1:
-					shootSuccess = FireCheck(3,1800,2500,4,6);
+					shootSuccess = FireCheck(3,1800,2500,4,5);
 					break;
 				case 2:
 					if(!isChargeRelease){

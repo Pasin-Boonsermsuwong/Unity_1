@@ -21,8 +21,6 @@ public class Bullet : NetworkBehaviour {
 	public float explodeRadius;
 	public string specialTag;
 
-	public float impactForce;	//NOT FOR EXPLOSIVES
-
 	void Start(){
 		if(!isServer)return;
 		StartCoroutine(LifeTime(lifeTime));
@@ -67,8 +65,7 @@ public class Bullet : NetworkBehaviour {
 		}else{
 			//NORMAL BULLET HIT
 			if(other!=null&&other.transform.tag=="Player"){
-				if(impactForce>0)other.transform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun,specialTag,impactForce,this.transform.rotation);
-				else other.transform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun,specialTag);
+				other.transform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun,specialTag);
 			}
 		}
 		NetworkServer.Destroy(this.gameObject);//TODO:
