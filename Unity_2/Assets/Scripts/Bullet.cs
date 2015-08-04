@@ -20,21 +20,35 @@ public class Bullet : NetworkBehaviour {
 	public bool isExplode;
 	public float explodeRadius;
 	public string specialTag;
+	public float specialTagParameter;
+
+	public float safety;		//SECONDS UNTIL BULLET CAN DEAL DAMAGE
+	bool safetyOn;
 
 	void Start(){
 		if(!isServer)return;
-		StartCoroutine(LifeTime(lifeTime));
+		if(safety>0){
+			safetyOn = true;
+			Invoke("DisableSafety",safety);
+		}
+		if(lifeTime>=0)StartCoroutine(LifeTime(lifeTime));
 	}
-//	[Server]
+
+	void DisableSafety(){
+		safetyOn = false;
+	}
+
+	[ServerCallback]
 	void OnCollisionEnter(Collision other){
 		if(!isServer)return;
-	//	Debug.Log("Bullet hit: "+other.transform.name);
-	//	Transform other.transform = other.transform;
-		if(ignoreTerrain&&other.transform.tag=="Untagged" ||
-		   other.transform.tag == "Bouncy" ||
-		   ignoreBullet&&other.transform.tag=="Bullet"	||
-		   !explodeOnPlayerContact&&other.transform.tag=="Player" 
+		//Debug.Log("Bullethit: "+other.collider.tag);
+		string tag1 = other.collider.tag;
+		if(ignoreTerrain&&tag1=="Untagged" ||
+		   tag1 == "Bouncy" ||
+		   ignoreBullet&&tag1=="Bullet"	||
+		   !explodeOnPlayerContact&&(tag1=="Player"||tag1=="Destructible") 
 		   )return;
+
 		BulletHit(other);
 	}
 	IEnumerator LifeTime(float delayTime)
@@ -47,10 +61,11 @@ public class Bullet : NetworkBehaviour {
 		}
 	}
 	[Server]
-	void BulletHit(Collision other){
-		Instantiate(explosion, transform.position, transform.rotation);
-		if(explosion2!=null)Instantiate(explosion2, transform.position, transform.rotation);
-		RpcExplosion();
+	public void BulletHit(Collision other){
+		if(safetyOn)return;
+		Instantiate(explosion, transform.position, Quaternion.identity);
+		if(explosion2!=null)Instantiate(explosion2, transform.position, Quaternion.identity);
+		RpcExplosion(transform.position);
 		if(isExplode){
 			//EXPLOSIVE BULLET CALCULATION
 			Collider[] objectsInRange = Physics.OverlapSphere(transform.position, explodeRadius); 
@@ -59,32 +74,30 @@ public class Bullet : NetworkBehaviour {
 					float proximity = (transform.position - col.transform.position).magnitude; 
 					float effect = 1 - (proximity / explodeRadius);
 					int calculatedDamage = Mathf.RoundToInt(damage * effect);
-					col.GetComponent<Health>().TakeDamage(calculatedDamage,ownerName,ownerGun,specialTag);
+					col.GetComponent<Health>().TakeDamage(calculatedDamage,ownerName,ownerGun,specialTag,specialTagParameter);
+				}else if(col.tag == "Destructible"){
+					float proximity = (transform.position - col.transform.position).magnitude; 
+					float effect = 1 - (proximity / explodeRadius);
+					int calculatedDamage = Mathf.RoundToInt(damage * effect);
+					col.GetComponent<HealthSimple>().TakeDamage(calculatedDamage,ownerName,ownerGun,specialTag,specialTagParameter);
 				}
 			}
 		}else{
 			//NORMAL BULLET HIT
-			if(other!=null&&other.transform.tag=="Player"){
-				other.transform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun,specialTag);
+			if(other!=null){
+				if(other.transform.tag=="Player"){
+					other.transform.GetComponent<Health>().TakeDamage(damage,ownerName,ownerGun,specialTag,specialTagParameter);
+				}else if(other.transform.tag=="Destructible"){
+					other.transform.GetComponent<HealthSimple>().TakeDamage(damage,ownerName,ownerGun,specialTag,specialTagParameter);
+				}
 			}
 		}
 		NetworkServer.Destroy(this.gameObject);//TODO:
-
-	
 	}
 	[ClientRpc]
-	void RpcExplosion(){
-		Instantiate(explosion, transform.position, transform.rotation);
-		if(explosion2!=null)Instantiate(explosion2, transform.position, transform.rotation);
+	void RpcExplosion(Vector3 pos){
+		Instantiate(explosion, pos, Quaternion.identity);
+		if(explosion2!=null)Instantiate(explosion2, pos, Quaternion.identity);
 	}
-
-
-
-	/*
-	[ClientRpc]
-	void RpcDestroy(){
-		Destroy(gameObject);
-	}
-	*/
 
 }

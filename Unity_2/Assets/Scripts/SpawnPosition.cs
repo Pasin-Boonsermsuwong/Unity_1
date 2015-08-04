@@ -23,6 +23,5 @@ public class SpawnPosition : MonoBehaviour {
 			yield return new WaitForSeconds(3);
 			ChangeSpawnPosition();
 		}
-
 	}
 }

@@ -53,7 +53,6 @@ public class RbFPC_Custom : MonoBehaviour{
 			if (Input.GetButton("Run")&&RunCurrent>0)
 			{
 				CurrentTargetSpeed *= RunMultiplier;
-
 				m_Running = true;
 				RunCurrent--;
 			}
@@ -97,6 +96,7 @@ public class RbFPC_Custom : MonoBehaviour{
 	bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
 	GameController gc;
 	public bool isDead;
+	public bool isStun;
 	float capsuleHeight;
 	float capsuleRadius;
 
@@ -146,7 +146,6 @@ public class RbFPC_Custom : MonoBehaviour{
 	void Update()
 	{
 		RotateView();
-		
 		if (!gc.chatState && Input.GetButtonDown("Jump") && !m_Jump)
 		{
 			m_Jump = true;
@@ -230,7 +229,7 @@ public class RbFPC_Custom : MonoBehaviour{
 	
 	Vector2 GetInput()
 	{
-		if(gc.chatState||isDead)return new Vector2(0,0);
+		if(gc.chatState||isDead||isStun)return new Vector2(0,0);
 		Vector2 input = new Vector2
 		{
 			x = Input.GetAxis("Horizontal"),
@@ -244,7 +243,7 @@ public class RbFPC_Custom : MonoBehaviour{
 	void RotateView()
 	{
 		//avoids the mouse looking if the game is effectively paused
-		if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
+		if ((Mathf.Abs(Time.timeScale) < float.Epsilon)||isStun) return;
 		
 		// get the rotation before it's changed
 		float oldYRotation = transform.eulerAngles.y;
@@ -258,8 +257,7 @@ public class RbFPC_Custom : MonoBehaviour{
 			m_RigidBody.velocity = velRotation*m_RigidBody.velocity;
 		}
 	}
-	
-	
+
 	/// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
 	void GroundCheck()
 	{
@@ -280,5 +278,10 @@ public class RbFPC_Custom : MonoBehaviour{
 		{
 			m_Jumping = false;
 		}
+	}
+
+	public void Dash(){
+		m_RigidBody.drag = 0f;
+		m_Jumping = true;
 	}
 }

@@ -10,14 +10,16 @@ public class Health : NetworkBehaviour {
 	
 	[SyncVar (hook = "OnHealthChanged")]int curHP;
 
-	bool isDead = false;
+	bool isDead;
+	bool isInvincible;
+
 	Slider localSlider;
 	public Slider slider;
 	public GameObject playerCanvas;
 	public GameObject deathExplosion;
 	GameObject model;
 	//CharacterController characterController;//NRB
-	RbFPC_Custom characterController;
+	RbFPC_Custom fpc;
 	Collider characterCollider;//RB
 	Rigidbody rb;//RB
 	Gun gun;
@@ -30,8 +32,17 @@ public class Health : NetworkBehaviour {
 	//ARMOR BUFF
 	bool isArmorBuff;
 	Transform effects;		//CHILD OF PLAYER OBJECT THAT HOLDS ALL THE BUFF PARTICLE EFFECT
-	GameObject buffEffect;
+	GameObject armorBuffEffect;
 	int originalArmor;
+
+	//STUN
+	bool isStun;
+	int stunTimeLimit = 5;
+	GameObject stunEffect;
+	float stunEndTime;
+
+	//DMG BUFF
+	GameObject dmgBuffEffect;
 
 	void Start () {
 
@@ -40,7 +51,7 @@ public class Health : NetworkBehaviour {
 		spawnPosition = GameObject.FindWithTag("SpawnPosition").transform;
 		spawnPositionScript = spawnPosition.GetComponent<SpawnPosition>();
 		model = transform.FindChild("Model").gameObject;
-		characterController = GetComponent<RbFPC_Custom>();
+		fpc = GetComponent<RbFPC_Custom>();
 		characterCollider = GetComponent<Collider>();
 		rb = GetComponent<Rigidbody>();
 		gun = GetComponent<Gun>();
@@ -48,9 +59,13 @@ public class Health : NetworkBehaviour {
 		UpdateSlider();
 		curHP = maxHP;
 
-		buffEffect = (GameObject) Resources.Load("PEarmor");
+		originalArmor = armor;
+		armorBuffEffect = (GameObject) Resources.Load("PEarmor");
+		stunEffect = (GameObject) Resources.Load("PEstun");
+		dmgBuffEffect = (GameObject) Resources.Load("PEdamage");
 		effects = this.transform.Find("Effects");
 	}
+
 
 	void GetOwnerName(){
 		playerName = GetComponent<PlayerID>().displayName;
@@ -65,23 +80,35 @@ public class Health : NetworkBehaviour {
 		TakeDamage(amount, sourceName, sourceWeapon,"");
 	}
 	public void TakeDamage(int amount,string sourceName,string sourceWeapon,string specialTag){
-		if(!isServer||isDead)return;
-		Debug.Log("TakeDamage: "+amount+"-"+armor+"="+Mathf.Max(amount - armor,0));
-		if(amount > 0)amount = Mathf.Max(amount - armor,0);
+		TakeDamage(amount, sourceName, sourceWeapon,specialTag,0);
+	}
+	public void TakeDamage(int amount,string sourceName,string sourceWeapon,string specialTag,float specialTagParam){
+		if(!isServer||isDead||isInvincible)return;
+	//	Debug.Log("TakeDamageRAW: "+amount);
+		if(amount > 0){
+			//ARMOR MAXES AT 90% DAMAGE REDUCTION
+			amount = Mathf.Max(amount - armor,(int)Mathf.Round(amount * 0.1f));
+		}
+		Debug.Log("TakeDamage: "+amount);
 		curHP = Mathf.Min (curHP - amount,maxHP);
 		if(curHP<=0){
 			isDead = true;
-			curHP = maxHP;
 			StartCoroutine(ServerSideDeath(sourceName,sourceWeapon));
 		}else{
 			if(!string.IsNullOrEmpty(specialTag)){
 				switch (specialTag)
 				{
 				case "rof":
-					GetComponent<Gun>().RofBuffServer();
+					gun.RofBuffServer();
 					break;
 				case "armor":
 					ArmorBuffServer();
+					break;
+				case "stun":
+					StunServer(specialTagParam);
+					break;
+				case "dmg":
+					DmgBuffServer();
 					break;
 				default:
 					Debug.LogError("WTF!?");
@@ -123,12 +150,15 @@ public class Health : NetworkBehaviour {
 
 	IEnumerator ServerSideDeath(string sourceName,string sourceWeapon){
 		RpcDeath(sourceName,sourceWeapon);
-		yield return new WaitForSeconds(6);
+		yield return new WaitForSeconds(5.5f);
 		RpcRespawnPos();
-		yield return new WaitForSeconds(0.4f);
+		yield return new WaitForSeconds(0.5f);
+		isInvincible = true;
+		curHP = maxHP;
 		RpcRespawnVisible();
+		yield return new WaitForSeconds(3);
+		isInvincible = false;
 	}
-
 	[ClientRpc]
 	void RpcDeath(string sourceName,string sourceWeapon){
 		//TODO: death sound
@@ -140,10 +170,10 @@ public class Health : NetworkBehaviour {
 		if(isLocalPlayer){
 	//		isDead = true;
 			if(playerName=="")GetOwnerName();
-			CmdSendKillMsg(sourceName+" > "+playerName+"("+sourceWeapon+")");
+			CmdSendKillMsg(sourceName+" > "+playerName+" ("+sourceWeapon+")");
 			StartCoroutine(gc.DeadScreen(this));
 		//	curHP = maxHP;
-			characterController.isDead = true;
+			fpc.isDead = true;
 			gun.DeathReset();
 			gun.enabled = false;
 		}else{
@@ -163,10 +193,8 @@ public class Health : NetworkBehaviour {
 		if(isLocalPlayer){
 			rb.velocity = new Vector3(0,0,0);
 			spawnPositionScript.ChangeSpawnPosition();
-			characterController.isDead = false;
-//			isDead = false;
+			transform.position = spawnPosition.position;
 		}
-		transform.position = spawnPosition.position;
 	}
 
 	[ClientRpc]
@@ -177,6 +205,7 @@ public class Health : NetworkBehaviour {
 			playerCanvas.SetActive(true);
 		}
 		rb.useGravity = true;
+		fpc.isDead = false;
 		characterCollider.enabled = true;
 		gun.enabled = true;
 		isDead = false;
@@ -186,28 +215,32 @@ public class Health : NetworkBehaviour {
 		StopCoroutine("ArmorBuffRoutine");
 		StartCoroutine("ArmorBuffRoutine");
 	}
+	[Server]
 	IEnumerator ArmorBuffRoutine(){
-		RpcArmorBuff();
+		if(!isArmorBuff){		//DO IF BUFF IS NOT ACTIVATED YET
+			RpcArmorBuff();
+			ArmorBuffApply(true);
+		}
 		yield return new WaitForSeconds(10);
 		RpcArmorBuffEnd();
+		ArmorBuffApply(false);
 	}
 	[ClientRpc]
 	void RpcArmorBuff(){
 		if(isLocalPlayer){
-			if(isArmorBuff)return;	//BUFF ALREADY ACTIVATED
+			if(isArmorBuff)return;
+			gc.ActivateStatus("armor");
 			isArmorBuff = true;
-			ArmorBuffApply(isArmorBuff);
 		}else{
 			if(effects.FindChild("PEarmor(Clone)")==null){
-				GameObject PErof = (GameObject)Instantiate(buffEffect,transform.position,Quaternion.identity);
+				GameObject PErof = (GameObject)Instantiate(armorBuffEffect,transform.position,Quaternion.identity);
 				PErof.transform.SetParent(effects);
 			}
 		}
 	}
 	void ArmorBuffApply(bool buffActivated){
 		if(buffActivated){
-			originalArmor = armor;
-			armor = Mathf.Max(armor + 10, armor*2);
+			armor = armor + 30;
 		}
 		else{
 			armor = originalArmor ;
@@ -217,14 +250,117 @@ public class Health : NetworkBehaviour {
 	void RpcArmorBuffEnd(){
 		if(isLocalPlayer){
 			isArmorBuff = false;
-			ArmorBuffApply(isArmorBuff);
+			gc.DeactivateStatus("armor");
 		}else{
+
 			Transform t = effects.FindChild("PEarmor(Clone)");
 			if(t!=null)Destroy(t.gameObject);
 		}
 	}
 
+	[ServerCallback]
+	void Update(){
+		if(isStun){
+			if(Time.time > stunEndTime){
+				RpcStunEnd();
+				isStun = false;
+			}
 
+		}
+	}
 
+	public void StunServer(float stunTime){
+		Debug.Log( "StunServer: "+stunTime+" "+isStun );
+		if(isStun){		//ALREADY STUNNED, ADD MORE TIME
+			stunEndTime = Mathf.Min(stunEndTime + stunTime,Time.time + stunTimeLimit);
+		}else{			//ACTIVATE STUN
+			stunEndTime = Time.time + stunTime;
+			isStun = true;
+			RpcStun();
+		}
+	}
 
+	[ClientRpc]
+	void RpcStun(){
+	//	Debug.Log("RpcStun: "+isLocalPlayer+" "+isStun);
+		if(isLocalPlayer){
+			isStun = true;
+			StunApply(isStun);
+		}else{
+			if(effects.FindChild("PEstun(Clone)")==null){
+				GameObject PEarmor = (GameObject)Instantiate(stunEffect,transform.position,Quaternion.identity);
+				PEarmor.transform.SetParent(effects);
+			}
+		}
+	}
+	[Client]
+	void StunApply(bool isActivate){
+	//	Debug.Log("StunApply: "+isActivate);
+		if(isActivate){
+			gc.ActivateStatus("stun");
+			gun.isStun = true;
+			fpc.isStun = true;
+		}
+		else{
+			gc.DeactivateStatus("stun");
+			gun.isStun = false;
+			fpc.isStun = false;
+		}
+	}
+	[ClientRpc]
+	void RpcStunEnd(){
+	//	Debug.Log("RpcStunEnd");
+		if(isLocalPlayer){
+			isStun = false;
+			StunApply(isStun);
+		}else{
+			Transform t = effects.FindChild("PEstun(Clone)");
+			if(t!=null)Destroy(t.gameObject);
+		}
+	}
+
+	public void DmgBuffServer(){
+		StopCoroutine("DmgBuffRoutine");
+		StartCoroutine("DmgBuffRoutine");
+	}
+	[Server]
+	IEnumerator DmgBuffRoutine(){
+		Debug.Log("DmgBuffRoutine");
+		if(!gun.isDmgBuff){		// DO IF BUFF NOT ACTIVATED YET
+			RpcDmgBuff();
+			DmgBuffApply(true);
+		}
+		yield return new WaitForSeconds(5);
+		RpcDmgBuffEnd();
+		DmgBuffApply(false);
+	}
+	[Server]
+	void DmgBuffApply(bool buffActivated){
+		if(buffActivated){
+			gun.isDmgBuff = true;
+		}
+		else{
+			gun.isDmgBuff = false;
+		}
+	}
+	[ClientRpc]
+	void RpcDmgBuff(){
+		if(isLocalPlayer){
+			gc.ActivateStatus("dmg");
+		}else{
+			if(effects.FindChild("PEdamage(Clone)")==null){
+				GameObject PEdmg = (GameObject)Instantiate(dmgBuffEffect,transform.position,Quaternion.identity);
+				PEdmg.transform.SetParent(effects);
+			}
+		}
+	}
+	[ClientRpc]
+	void RpcDmgBuffEnd(){
+		if(isLocalPlayer){
+			gc.DeactivateStatus("dmg");
+		}else{
+			Transform t = effects.FindChild("PEdamage(Clone)");
+			if(t!=null)Destroy(t.gameObject);
+		}
+	}
 }

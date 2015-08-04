@@ -34,6 +34,9 @@ public class GameController : MonoBehaviour {
 	GameObject KillText;
 	public GameObject PanelKill;
 
+	//STATUS EFFECT DISPLAY TEXT
+	public Transform StatusEffectPanel;
+
 	void Start(){
 		KillText = (GameObject)Resources.Load("KillText");
 	}
@@ -120,11 +123,21 @@ public class GameController : MonoBehaviour {
 		deadPanel.SetActive(false);
 	//	respawn = true;
 	}
-	/*
-	public void nameInputChanged(string s){
-	//	Debug.Log ("nameInputChanged");
-		displayName = s;
+
+	public void ActivateStatus(string statusName){
+		Transform statusText = StatusEffectPanel.FindChild(statusName);
+		if(statusText==null){
+			Debug.Log("ActivateStatus: Given status does not exist!");
+		}
+		statusText.gameObject.SetActive(true);
 	}
-*/
+
+	public void DeactivateStatus(string statusName){
+		Transform statusText = StatusEffectPanel.FindChild(statusName);
+		if(statusText==null){
+			Debug.Log("DeactivateStatus: Given status does not exist!");
+		}
+		statusText.gameObject.SetActive(false);
+	}
 
 }
