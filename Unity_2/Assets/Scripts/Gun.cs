@@ -57,7 +57,7 @@ public class Gun : NetworkBehaviour {
 		new float[]{0.2f,0.5f,1,3,3,0},//fighter
 		new float[]{0.5f,0.33f,1,2,2,0},//healer
 		new float[]{2,5,7,4,14,0},//sniper
-		new float[]{5,5,1,0.1f,10,0},//assassin
+		new float[]{5,5,4,0.1f,10,0},//assassin
 		new float[]{0.4f,0.4f,4,6,0,0},//tank
 		new float[]{0.75f,0.2f,1f,1.5f,5,0},//juggernaut
 	};
