@@ -56,7 +56,7 @@ public class Gun : NetworkBehaviour {
 	float[][] fireRateTable = {
 		new float[]{0.2f,0.5f,1,3,3,0},//fighter
 		new float[]{0.5f,0.33f,1,2,2,0},//healer
-		new float[]{2,5,7,4,14,0},//sniper
+		new float[]{0.5f,2,7,4,14,0},//sniper
 		new float[]{5,5,4,0.1f,10,0},//assassin
 		new float[]{0.4f,0.4f,4,6,0,0},//tank
 		new float[]{0.75f,0.2f,1f,1.5f,5,0},//juggernaut
@@ -64,8 +64,8 @@ public class Gun : NetworkBehaviour {
 	string[][] weaponNameTable =  {
 		new string[]{"Machine Gun","Shotgun","[C]Grenade","[C]Artillery","ROF Buff",""},//fighter
 		new string[]{"Gun","Heal Gun","Area Heal","Bullet Eraser","Armor Buff",""},//healer
-		new string[]{"Sniper","Heavy Sniper","[C]Artillery","[C]Superbomb","Air Strike",""},//sniper
-		new string[]{"Heavy Shotgun","Mine","[C]Sticky Bomb","[C]Super Dash","Instakill",""},//assassin
+		new string[]{"Long Gun","Sniper","[C]Artillery","[C]Superbomb","Air Strike",""},//sniper
+		new string[]{"Heavy Shotgun","Mine","[C]Sticky Bomb","[C]Super Dash","Devastator",""},//assassin
 		new string[]{"Big Gun","Stun Gun","Area Stun","Blockade","Shield",""},//tank
 		new string[]{"Big Shotgun","Mega Vulcan","Area Burst","[C]Bouncy Cannon","DMG Buff",""},//juggernaut
 	};
@@ -186,14 +186,14 @@ public class Gun : NetworkBehaviour {
 			bool shootSuccess = false;
 			switch (currentClass)
 			{
-			case 0:
+			case 0:			//FIGHTER
 				switch (activeWeapon)
 				{//shotID,launchForceMin,launchForceMax,shotDeviation, shotAmount)
 				case 0:
-					shootSuccess = FireCheck(1,8000,8000,0.5f,1);
+					shootSuccess = FireCheck(1,8000,8000,300f,1);
 					break;
 				case 1:
-					shootSuccess = FireCheck(3,9000,12500,4,6);
+					shootSuccess = FireCheck(3,9000,12500,1000f,6);
 					break;
 				case 2:
 					if(!isChargeRelease){
@@ -223,11 +223,11 @@ public class Gun : NetworkBehaviour {
 					break;
 				}
 				break;
-			case 1:
+			case 1:		//HEALER
 				switch (activeWeapon)
 				{
 				case 0:
-					shootSuccess = FireCheck(6,6500,7800,0.2f,1);
+					shootSuccess = FireCheck(6,6500,7800,200f,1);
 					break;
 				case 1:
 					shootSuccess = FireCheck(7,5500,6500,0,1);
@@ -255,10 +255,10 @@ public class Gun : NetworkBehaviour {
 				switch (activeWeapon)
 				{
 				case 0:
-					shootSuccess = FireCheck(11,15000,15000,0,1);
+					shootSuccess = FireCheck(1,15000,15000,0,1);
 					break;
 				case 1:
-					shootSuccess = FireCheck(12,13000,13000,0,1);
+					shootSuccess = FireCheck(11,15000,15000,0,1);
 					break;
 				case 2:
 					if(!isChargeRelease){
@@ -287,11 +287,11 @@ public class Gun : NetworkBehaviour {
 					break;
 				}
 				break;
-			case 3:
+			case 3:		//ASSASSIN
 				switch (activeWeapon)
 				{
 				case 0:
-					shootSuccess = FireCheck(16,25000,40000,1.5f,6);
+					shootSuccess = FireCheck(16,25000,40000,1000f,6);
 					break;
 				case 1:
 					CmdLayobject(17,playerName,weaponNameTable[currentClass][activeWeapon],10,0);
@@ -330,10 +330,10 @@ public class Gun : NetworkBehaviour {
 				switch (activeWeapon)
 				{
 				case 0:
-					shootSuccess = FireCheck(20,15000,20000,1.5f,1);
+					shootSuccess = FireCheck(20,15000,20000,750f,1);
 					break;
 				case 1:
-					shootSuccess = FireCheck(21,7250,8000,1f,1);
+					shootSuccess = FireCheck(21,7250,8000,300f,1);
 					break;
 				case 2:
 					CmdAoEStandard(0,20,22,"stun",3f,false,playerName,weaponNameTable[currentClass][activeWeapon]);
@@ -358,10 +358,11 @@ public class Gun : NetworkBehaviour {
 				switch (activeWeapon)
 				{
 				case 0:
-					shootSuccess = FireCheck(16,18000,55000,10f,7);
+					shootSuccess = FireCheck(16,18000,55000,5000f,7);
+					//shootSuccess = FireCheck(16,33000,33000,10f,7);
 					break;
 				case 1:
-					shootSuccess = FireCheck(24,45000,55000,3f,1);
+					shootSuccess = FireCheck(24,45000,55000,3000f,1);
 					break;
 				case 2:
 					CmdAoEStandard(200,35,25,null,0,false,playerName,weaponNameTable[currentClass][activeWeapon]);
@@ -476,9 +477,17 @@ public class Gun : NetworkBehaviour {
 			Debug.Log("Bullet collider is not sphere");
 			return false;
 		}
-		float radius = sph.radius;
-		if(Physics.OverlapSphere(gunCheckpoint.position,radius).Length>0){
-		//	Debug.Log("Fire Overlap"+Physics.OverlapSphere(transform.position,radius)[0]);
+		float radius = sph.transform.localScale.x/2;
+	//	Debug.Log(" FireCheck: "+sph.name);
+		Debug.Log(" FireCheck radius: "+ radius);
+		Collider[] colliders = Physics.OverlapSphere(gunCheckpoint.position,radius);
+		if(colliders.Length>1){
+			return false;
+		}if(colliders.Length>0){	//ENABLES POINT-BLANK FIRING INTO ANOTHER PLAYER
+			if(colliders[0].tag=="Player"&&colliders[0]!=this.GetComponent<Collider>()){
+				CmdFireStandard(shotID, launchForceMin, launchForceMax, shotDeviation, shotAmount,playerName,weaponNameTable[currentClass][activeWeapon]);
+				return true;
+			}
 			return false;
 		}
 		CmdFireStandard(shotID, launchForceMin, launchForceMax, shotDeviation, shotAmount,playerName,weaponNameTable[currentClass][activeWeapon]);
@@ -491,6 +500,7 @@ public class Gun : NetworkBehaviour {
 	}
 	[Command]
 	void CmdFireStandard(int shotID,float launchForceMin,float launchForceMax,float shotDeviation,float shotAmount,string ownerName1,string ownerGun1){
+	//	shotDeviation = shotDeviation * 300f;
 		for(int i = 0;i<shotAmount;i++){
 
 			GameObject instantiated;
@@ -499,15 +509,25 @@ public class Gun : NetworkBehaviour {
 				instantiated = Instantiate(shotTable[shotID], gunHardpoint.position, 
 				                           gunHardpoint.rotation) as GameObject; 
 			}else{
-				Vector3 eulerAngle = gunHardpoint.rotation.eulerAngles;
+//				Vector3 eulerAngle = gunHardpoint.rotation.eulerAngles;
 				instantiated = Instantiate(shotTable[shotID], gunHardpoint.position, 
-				                           Quaternion.Euler(new Vector3(
-					eulerAngle.x+Random.Range(-shotDeviation,shotDeviation), 
-					eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
-					eulerAngle.z))) as GameObject;
+				                          gunHardpoint.rotation
+			//	                           Quaternion.Euler(new Vector3(
+			//		eulerAngle.x+Random.Range(-shotDeviation,shotDeviation), 
+			//		eulerAngle.y+Random.Range(-shotDeviation,shotDeviation), 
+			//		eulerAngle.z+Random.Range(-shotDeviation,shotDeviation)))
+				                           ) as GameObject;
 			}
+
+			//Vector3 deviation = Random.insideUnitCircle * shotDeviation;
+			//deviation.z = gunHardpoint.position.z; // circle is at Z units 
+			//deviation = transform.TransformDirection( deviation.normalized );
+//			Vector3 forward = instantiated.transform.forward;//
 			instantiated.GetComponent<Rigidbody>().velocity = rb.velocity;
-			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward*Random.Range(launchForceMin,launchForceMax));
+			instantiated.GetComponent<Rigidbody>().AddForce(instantiated.transform.forward
+			                                                * Random.Range(launchForceMin,launchForceMax) +
+			                                                instantiated.transform.up * Random.Range(-shotDeviation,shotDeviation) +
+			                                                instantiated.transform.right * Random.Range(-shotDeviation,shotDeviation));
 			Bullet bullet = instantiated.GetComponent<Bullet>();
 			if(bullet != null){
 				bullet.ownerName = ownerName1;

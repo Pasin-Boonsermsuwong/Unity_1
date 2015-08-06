@@ -11,7 +11,7 @@ public class PlayerID : NetworkBehaviour
 	public int currentClass;
 
 	void Start(){
-		Debug.Log("PlayerIDStart");
+	//	Debug.Log("PlayerIDStart");
 		if(isLocalPlayer){
 			pd = GameObject.FindWithTag("PlayerData").GetComponent<PlayerData>();
 			currentClass = ClassStringToInt( pd.playerClass);
@@ -126,10 +126,8 @@ public class PlayerID : NetworkBehaviour
 			return 3;
 		case "Tank":
 			return 4;
-		case "Spartan":
-			return 5;
 		case "Juggernaut":
-			return 6;
+			return 5;
 		default:
 			Debug.LogError("Class name not found!");
 			return -1;

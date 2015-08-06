@@ -14,7 +14,7 @@ public class SpawnPosition : MonoBehaviour {
 		Vector3 randomPos =  new Vector3(Random.Range(-150,150),200,Random.Range(-150,150));
 		Physics.Raycast(randomPos,rayDirection,out hitPos,400);
 	//	Debug.Log(hitPos.point);
-		Debug.Log("ChangeSpawnPosition");
+//		Debug.Log("ChangeSpawnPosition");
 		myTransform.position = hitPos.point + new Vector3(0,10,0);
 	}
 
