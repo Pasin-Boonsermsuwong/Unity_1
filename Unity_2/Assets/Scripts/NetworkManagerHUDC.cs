@@ -5,7 +5,7 @@ namespace UnityEngine.Networking
 	[AddComponentMenu("Network/NetworkManagerHUD")]
 	[RequireComponent(typeof(NetworkManager))]
 	[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-	public class NetworkManagerHUD : MonoBehaviour
+	public class NetworkManagerHUDC : MonoBehaviour
 	{
 		public NetworkManager manager;
 		[SerializeField] public bool showGUI = true;
@@ -14,50 +14,29 @@ namespace UnityEngine.Networking
 
 		// Runtime variable
 		bool showServer = false;
+		public string[] msg;
 
 		void Awake()
 		{
 			manager = GetComponent<NetworkManager>();
+			msg = new string[4];
 		}
-		/*
-		void Update()
-		{
-			if (!showGUI)
-				return;
 
-			if (!NetworkClient.active && !NetworkServer.active && manager.matchMaker == null)
-			{
-				if (Input.GetKeyDown(KeyCode.S))
-				{
-					manager.StartServer();
-				}
-				if (Input.GetKeyDown(KeyCode.H))
-				{
-					manager.StartHost();
-				}
-				if (Input.GetKeyDown(KeyCode.C))
-				{
-					manager.StartClient();
-				}
-			}
-			if (NetworkServer.active && NetworkClient.active)
-			{
-				if (Input.GetKeyDown(KeyCode.X))
-				{
-					manager.StopHost();
-				}
-			}
-			
-		}
-*/
 		void OnGUI()
 		{
 			if (!showGUI)
 				return;
 
 			int xpos = 10 + offsetX;
-			int ypos = 40 + offsetY;
+			int ypos = 20 + offsetY;
 			int spacing = 24;
+			int spacingMini = 12;
+
+			for(int i = 0;i<msg.Length;i++){
+				GUI.Label(new Rect(xpos,ypos,200,30),"- "+msg[i]);
+				ypos += spacingMini;
+			}
+			ypos += spacingMini;
 
 			if (!NetworkClient.active && !NetworkServer.active && manager.matchMaker == null)
 			{
@@ -206,6 +185,12 @@ namespace UnityEngine.Networking
 					ypos += spacing;
 				}
 			}
+		}
+		public void UpdateMsg(string message){
+			for(int i = msg.Length-1;i>0;i--){
+				msg[i] = msg[i-1];
+			}
+			msg[0] = message;
 		}
 	}
 };

@@ -23,7 +23,7 @@ public class Bullet : NetworkBehaviour {
 	public float specialTagParameter;
 
 	public float safety;		//SECONDS UNTIL BULLET CAN DEAL DAMAGE
-	bool safetyOn;
+	public bool safetyOn;
 
 	void Start(){
 		if(!isServer)return;
@@ -65,7 +65,7 @@ public class Bullet : NetworkBehaviour {
 		if(safetyOn)return;
 		Instantiate(explosion, transform.position, Quaternion.identity);
 		if(explosion2!=null)Instantiate(explosion2, transform.position, Quaternion.identity);
-		RpcExplosion(transform.position);
+	//	RpcExplosion(transform.position);
 		if(isExplode){
 			//EXPLOSIVE BULLET CALCULATION
 			Collider[] objectsInRange = Physics.OverlapSphere(transform.position, explodeRadius); 
@@ -94,10 +94,17 @@ public class Bullet : NetworkBehaviour {
 		}
 		NetworkServer.Destroy(this.gameObject);//TODO:
 	}
+
+	public override void OnNetworkDestroy()
+	{
+		Instantiate(explosion, transform.position, Quaternion.identity);
+		if(explosion2!=null)Instantiate(explosion2, transform.position, Quaternion.identity);
+	}
+	/*
 	[ClientRpc]
 	void RpcExplosion(Vector3 pos){
 		Instantiate(explosion, pos, Quaternion.identity);
 		if(explosion2!=null)Instantiate(explosion2, pos, Quaternion.identity);
 	}
-
+*/
 }

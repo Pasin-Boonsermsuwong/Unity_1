@@ -9,5 +9,9 @@ public class Lifetime : NetworkBehaviour {
 	void Start () {
 		Destroy(gameObject,lifetime);
 	}
-
+	/*
+	void OnDisconnectedFromServer(){
+		Debug.Log("OnDisconnectedFromServer");
+	}
+	*/
 }

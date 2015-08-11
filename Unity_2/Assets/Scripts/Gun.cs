@@ -24,7 +24,7 @@ public class Gun : NetworkBehaviour {
 	float nextFire;
 
 	//WEAPON AMOUNT
-	int weaponAmount = 6;
+	int weaponAmount = 5;
 	Text[] weaponText;
 	int activeWeapon;
 	bool gunIsActive;
@@ -63,11 +63,11 @@ public class Gun : NetworkBehaviour {
 	};
 	string[][] weaponNameTable =  {
 		new string[]{"Machine Gun","Shotgun","[C]Grenade","[C]Artillery","ROF Buff",""},//fighter
-		new string[]{"Gun","Heal Gun","Area Heal","Bullet Eraser","Armor Buff",""},//healer
+		new string[]{"Gun","Heal Gun","Area Heal","Bullet Eater","Armor Buff",""},//healer
 		new string[]{"Long Gun","Sniper","[C]Artillery","[C]Superbomb","Air Strike",""},//sniper
-		new string[]{"Heavy Shotgun","Mine","[C]Sticky Bomb","[C]Super Dash","Devastator",""},//assassin
+		new string[]{"Burst Shotgun","Mine","[C]Sticky Bomb","[C]Dash","Instakill",""},//assassin
 		new string[]{"Big Gun","Stun Gun","Area Stun","Blockade","Shield",""},//tank
-		new string[]{"Big Shotgun","Mega Vulcan","Area Burst","[C]Bouncy Cannon","DMG Buff",""},//juggernaut
+		new string[]{"Heavy Shotgun","Devastator","Area Burst","[C]Cannon","DMG Buff",""},//juggernaut
 	};
 
 
@@ -149,7 +149,7 @@ public class Gun : NetworkBehaviour {
 			}else if(Input.GetButtonDown("Weapon4")){
 				setActiveWeapon(4);
 			}else if(Input.GetButtonDown("Weapon5")){
-				setActiveWeapon(5);
+		//		setActiveWeapon(5);
 			}else if(Input.GetButtonDown("WeaponNext")||scrollWheelInput<0){
 				setActiveWeapon(Mathf.Clamp(activeWeapon+1,0,weaponAmount-1));
 			}else if(Input.GetButtonDown("WeaponPrevious")||scrollWheelInput>0){
@@ -479,7 +479,7 @@ public class Gun : NetworkBehaviour {
 		}
 		float radius = sph.transform.localScale.x/2;
 	//	Debug.Log(" FireCheck: "+sph.name);
-		Debug.Log(" FireCheck radius: "+ radius);
+	//	Debug.Log(" FireCheck radius: "+ radius);
 		Collider[] colliders = Physics.OverlapSphere(gunCheckpoint.position,radius);
 		if(colliders.Length>1){
 			return false;
